@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.02 (12/01/2026)
+
+- **Corrección Escáner QR**: Solucionado el problema de pantalla negra mediante refactorización de la inicialización de la cámara (`useRef`).
+
 ## v1.0.01 (12/01/2026)
 
 - **Versión inicial estable PWA.**
