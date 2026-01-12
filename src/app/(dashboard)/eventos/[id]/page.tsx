@@ -35,12 +35,40 @@ export default function DetalleEvento() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await supabase
+            const { data: eventData } = await supabase
                 .from("eventos")
                 .select("*")
                 .eq("id", params.id)
                 .single();
-            if (data) setEvento(data);
+
+            if (eventData) {
+                setEvento(eventData);
+
+                // Obtener fecha del evento (YYYY-MM-DD)
+                // Nota: Asumimos que la fecha de inicio es la fecha de la asistencia
+                // y que se guarda en UTC/ISO.
+                const eventDate = new Date(eventData.fecha_inicio).toISOString().split('T')[0];
+
+                // Hacer consultas en paralelo para velocidad
+                const [costalerosRes, asistenciasRes] = await Promise.all([
+                    supabase.from("costaleros").select("id", { count: "exact", head: true }),
+                    supabase.from("asistencias").select("estado").eq("fecha", eventDate)
+                ]);
+
+                const totalCostaleros = costalerosRes.count || 0;
+                const asistencias = asistenciasRes.data || [];
+
+                const presentes = asistencias.filter(a => a.estado === 'presente').length;
+                const justificados = asistencias.filter(a => a.estado === 'justificado').length;
+                const ausentes = asistencias.filter(a => a.estado === 'ausente').length; // Ausencias EXPLÍCITAS
+
+                setStats({
+                    presentes,
+                    justificados,
+                    ausentes, // Mostramos ausencias EXPLÍCITAS en la tarjeta
+                    total: totalCostaleros
+                });
+            }
             setLoading(false);
         };
         fetchData();
@@ -155,7 +183,7 @@ export default function DetalleEvento() {
                             </div>
                             <div className="text-left">
                                 <p className="font-extrabold text-neutral-900 text-sm italic">Ver Pendientes</p>
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.ausentes} sin registrar</p>
+                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.total - (stats.presentes + stats.justificados + stats.ausentes)} sin registrar</p>
                             </div>
                         </div>
                         <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
