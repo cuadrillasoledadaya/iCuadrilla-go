@@ -12,7 +12,7 @@ import { QRCodeSVG } from "qrcode.react";
 const formSchema = z.object({
     nombre: z.string().min(2, "El nombre es obligatorio"),
     apellidos: z.string().min(2, "Los apellidos son obligatorios"),
-    email: z.string().email("Email inválido"),
+    email: z.string().email("Email inválido").optional().or(z.literal("")),
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
     puesto: z.string().min(2, "El puesto es obligatorio"),
@@ -39,7 +39,7 @@ export default function AltaCostalero() {
             altura: values.altura ? parseFloat(values.altura) : null,
             trabajadera: parseInt(values.trabajadera),
             qr_code: qrCode,
-            email: values.email.toLowerCase()
+            email: values.email ? values.email.toLowerCase() : null
         }]);
 
         if (error) {
@@ -70,7 +70,7 @@ export default function AltaCostalero() {
                         {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos.message}</p>}
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-neutral-400">Email (Whitelist)</label>
+                        <label className="text-sm font-medium text-neutral-400">Email (Opcional)</label>
                         <Input {...register("email")} type="email" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
                     </div>
