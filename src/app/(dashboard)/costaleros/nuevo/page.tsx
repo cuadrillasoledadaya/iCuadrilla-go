@@ -61,31 +61,31 @@ export default function AltaCostalero() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Nombre</label>
-                        <Input {...register("nombre")} className="bg-neutral-900 border-neutral-800" />
+                        <Input {...register("nombre")} className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.nombre && <p className="text-xs text-red-500">{errors.nombre.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Apellidos</label>
-                        <Input {...register("apellidos")} className="bg-neutral-900 border-neutral-800" />
+                        <Input {...register("apellidos")} className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Email (Whitelist)</label>
-                        <Input {...register("email")} type="email" className="bg-neutral-900 border-neutral-800" />
+                        <Input {...register("email")} type="email" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Altura (m)</label>
-                        <Input {...register("altura")} type="number" step="0.01" className="bg-neutral-900 border-neutral-800" />
+                        <Input {...register("altura")} type="number" step="0.01" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Trabajadera (1-7)</label>
-                        <Input {...register("trabajadera")} type="number" min="1" max="7" className="bg-neutral-900 border-neutral-800" />
+                        <Input {...register("trabajadera")} type="number" min="1" max="7" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.trabajadera && <p className="text-xs text-red-500">{errors.trabajadera.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Puesto</label>
-                        <Input {...register("puesto")} placeholder="Patero, Costero..." className="bg-neutral-900 border-neutral-800" />
+                        <Input {...register("puesto")} placeholder="Patero, Costero..." className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.puesto && <p className="text-xs text-red-500">{errors.puesto.message}</p>}
                     </div>
                 </div>
