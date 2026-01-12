@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,51 +10,73 @@ export default function AsistenciaScanner() {
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
+    const mountedRef = useRef(false);
 
     useEffect(() => {
-        // Evitar doble inicialización
-        if (scannerRef.current) {
-            return;
-        }
+        mountedRef.current = true;
 
-        const scanner = new Html5QrcodeScanner(
-            "reader",
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                showTorchButtonIfSupported: true
-            },
-            /* verbose= */ false
-        );
+        const initializeScanner = async () => {
+            // Prevenir doble inicialización
+            if (scannerRef.current) return;
 
-        scannerRef.current = scanner;
+            try {
+                // Crear instancia
+                const html5QrCode = new Html5Qrcode("reader");
+                scannerRef.current = html5QrCode;
 
-        function onScanSuccess(decodedText: string) {
-            // Limpiar inmediatamente al detectar
-            if (scannerRef.current) {
-                scannerRef.current.clear().catch((err) => console.error("Error clearing scanner:", err));
-                scannerRef.current = null;
+                // Configuración de arranque
+                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+                // Iniciar cámara trasera explícitamente
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onScanSuccess,
+                    onScanError
+                );
+
+                if (mountedRef.current) setHasPermission(true);
+
+            } catch (err) {
+                console.error("Error starting scanner:", err);
+                if (mountedRef.current) {
+                    setHasPermission(false);
+                    setMessage("Error: No se pudo acceder a la cámara. Verifique permisos.");
+                }
             }
-            setScanResult(decodedText);
-            registrarAsistencia(decodedText);
-        }
+        };
 
-        function onScanError(err: any) {
-            // Ignorar errores de escaneo continuo
-        }
+        // Pequeño delay para asegurar que el DOM está listo
+        const timer = setTimeout(() => {
+            initializeScanner();
+        }, 500);
 
-        scanner.render(onScanSuccess, onScanError);
-
-        // Cleanup robusto al desmontar
         return () => {
+            mountedRef.current = false;
+            clearTimeout(timer);
             if (scannerRef.current) {
-                scannerRef.current.clear().catch((err) => console.error("Error clearing scanner on unmount:", err));
+                scannerRef.current.stop().then(() => {
+                    scannerRef.current?.clear();
+                }).catch(console.error);
                 scannerRef.current = null;
             }
         };
     }, []);
+
+    const onScanSuccess = (decodedText: string) => {
+        // Pausar escaneo al detectar éxito
+        if (scannerRef.current) {
+            scannerRef.current.pause();
+        }
+        setScanResult(decodedText);
+        registrarAsistencia(decodedText);
+    };
+
+    const onScanError = (errorMessage: string) => {
+        // Ignorar errores de "no QR found"
+    };
 
     const registrarAsistencia = async (qrCode: string) => {
         setLoading(true);
@@ -94,12 +116,27 @@ export default function AsistenciaScanner() {
         setLoading(false);
     };
 
+    const handleReset = () => {
+        setScanResult(null);
+        setMessage("");
+        setLoading(false);
+        if (scannerRef.current) {
+            scannerRef.current.resume();
+        }
+    };
+
     return (
         <div className="max-w-md mx-auto p-4 space-y-6">
             <h2 className="text-xl font-bold text-center text-primary">Escáner de Asistencia</h2>
 
-            {/* Contenedor del scanner con estilo mejorado */}
-            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 relative min-h-[300px]">
+            {/* Contenedor del scanner */}
+            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 relative min-h-[300px] flex flex-col justify-center">
+                {!hasPermission && hasPermission !== null && (
+                    <div className="text-white text-center p-4">
+                        <p className="mb-2">⚠️</p>
+                        <p>Se requiere permiso de cámara</p>
+                    </div>
+                )}
                 <div id="reader" className="w-full h-full"></div>
             </div>
 
@@ -116,13 +153,12 @@ export default function AsistenciaScanner() {
 
             {scanResult && (
                 <Button
-                    onClick={() => window.location.reload()}
+                    onClick={handleReset}
                     className="w-full h-12 rounded-xl text-md font-bold shadow-lg"
                 >
                     Escanear Siguiente
                 </Button>
             )}
-
             {!scanResult && !loading && (
                 <p className="text-center text-xs text-neutral-400 uppercase tracking-widest mt-4">
                     Enfoca el código QR
