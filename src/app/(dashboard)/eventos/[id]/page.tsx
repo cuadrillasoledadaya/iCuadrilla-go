@@ -163,7 +163,10 @@ export default function DetalleEvento() {
             <div className="space-y-4 pt-4">
                 <h3 className="text-xl font-black text-neutral-900 tracking-tight">Listas de Asistencia</h3>
                 <div className="space-y-3">
-                    <button className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group">
+                    <button
+                        onClick={() => router.push(`/eventos/${params.id}/asistentes`)}
+                        className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                    >
                         <div className="flex items-center gap-4">
                             <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
                                 <Users size={24} />
@@ -176,7 +179,10 @@ export default function DetalleEvento() {
                         <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
                     </button>
 
-                    <button className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group">
+                    <button
+                        onClick={() => router.push(`/eventos/${params.id}/pendientes`)}
+                        className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                    >
                         <div className="flex items-center gap-4">
                             <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
                                 <Hourglass size={24} />
