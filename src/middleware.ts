@@ -54,7 +54,22 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Protección de rutas
+    const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
+        request.nextUrl.pathname.startsWith('/registro')
+    const isRootPage = request.nextUrl.pathname === '/'
+
+    // Si no hay usuario y no estamos en login/registro o la raíz, redirigir a login
+    if (!user && !isAuthPage && !isRootPage) {
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // Si hay usuario e intentamos entrar a login/registro o la raíz, redirigir a dashboard
+    if (user && (isAuthPage || isRootPage)) {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
 
     return response
 }
