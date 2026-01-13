@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.24 (13/01/2026)
+
+- **CORRECCIÓN CRÍTICA DE PERSISTENCIA**: Se han activado las políticas de seguridad (RLS) en la base de datos que faltaban. Sin ellas, el servidor denegaba silenciosamente cualquier intento de borrar o actualizar estados, lo que causaba que los cambios "desaparecieran" al recargar. Ahora las limpiezas y cambios de estado son permanentes.
+
 ## v1.0.23 (13/01/2026)
 
 - **Borrado Ultra-Robusto**: Cambiada la lógica de "Limpiar Asistencia" para usar el ID único del registro. Esto garantiza que el borrado funcione siempre, sin importar discrepancias de fecha o zona horaria.
