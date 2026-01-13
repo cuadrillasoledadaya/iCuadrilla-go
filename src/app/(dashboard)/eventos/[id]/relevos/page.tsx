@@ -119,9 +119,8 @@ export default function GestionRelevos() {
         }
 
         // Caso 2: Nadie seleccionado.
-        // Siempre seleccionamos la posición y abrimos el modal para permitir elegir de la lista (reservas)
+        // Solo seleccionamos la posición. El modal se abre desde el botón de la barra flotante.
         setSelectedPos({ t, p });
-        setShowModal(true);
     };
 
     const assignCostalero = async (cid: string | null) => {
@@ -323,20 +322,29 @@ export default function GestionRelevos() {
 
             {/* Float Help */}
             {selectedPos && !showModal && (
-                <div className="fixed bottom-6 right-6 z-40 w-full max-w-[320px]">
-                    <div className="bg-neutral-900 border border-white/10 p-5 rounded-[28px] shadow-2xl flex items-center justify-between text-white animate-in slide-in-from-bottom duration-300">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-primary rounded-xl">
-                                <ArrowLeftRight size={20} />
+                <div className="fixed bottom-6 right-6 z-40 w-full max-w-[340px]">
+                    <div className="bg-neutral-900 border border-white/10 p-5 rounded-[28px] shadow-2xl flex flex-col gap-4 text-white animate-in slide-in-from-bottom duration-300">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-primary rounded-xl">
+                                    <ArrowLeftRight size={20} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-black uppercase tracking-tight truncate">{getCostaleroAt(selectedPos.t, selectedPos.p)?.nombre || 'Hueco'}</p>
+                                    <p className="text-[8px] text-neutral-400 font-bold leading-tight">Toca otro hueco para intercambio</p>
+                                </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs font-black uppercase tracking-tight truncate">{getCostaleroAt(selectedPos.t, selectedPos.p)?.nombre || 'Hueco'}</p>
-                                <p className="text-[8px] text-neutral-400 font-bold leading-tight">Toca destino para mover o intercambiar</p>
-                            </div>
+                            <button onClick={() => setSelectedPos(null)} className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors px-2">
+                                ×
+                            </button>
                         </div>
-                        <button onClick={() => setSelectedPos(null)} className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors px-2 ml-2">
-                            ×
-                        </button>
+
+                        <Button
+                            className="bg-white text-black hover:bg-neutral-200 font-black text-[10px] uppercase tracking-widest h-10 rounded-xl w-full"
+                            onClick={() => setShowModal(true)}
+                        >
+                            {getCostaleroAt(selectedPos.t, selectedPos.p) ? 'Cambiar por otro' : 'Asignar Costalero'}
+                        </Button>
                     </div>
                 </div>
             )}

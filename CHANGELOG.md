@@ -1,6 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
-## v1.1.0 (13/01/2026)
+## v1.1.03 (13/01/2026)
+
+- **Corrección de Relevos**: Restaurada la funcionalidad de intercambio (swap) entre huecos que se había bloqueado por el modal.
+- **Acceso a Reservas mejorado**: Añadido botón en la barra flotante para asignar/cambiar costaleros desde la reserva sin bloquear el swap.
+- **Ajuste de Versión**: Corregido formato correlativo a dos dígitos.
 
 - **Gestión de Relevos Táctica**: Implementado sistema de formación del paso por evento.
 - **Intercambio Dinámico (Swap)**: Permite intercambiar o mover costaleros tocando sus posiciones.
