@@ -20,7 +20,7 @@ interface Costalero {
     apellidos: string;
     trabajadera: number;
     puesto: string;
-    estado?: 'presente' | 'ausente' | 'justificado' | null;
+    estado?: 'presente' | 'ausente' | 'justificado' | 'justificada' | null;
     asistencia_id?: string;
 }
 
@@ -152,7 +152,7 @@ export default function AsistentesPage() {
                             <div className={cn(
                                 "h-10 w-10 rounded-full flex items-center justify-center text-white font-bold",
                                 m.estado === 'presente' ? "bg-emerald-500" :
-                                    m.estado === 'justificada' ? "bg-amber-500" :
+                                    (m.estado === 'justificada' || m.estado === 'justificado') ? "bg-amber-500" :
                                         "bg-red-500"
                             )}>
                                 {m.nombre.charAt(0)}
@@ -162,10 +162,10 @@ export default function AsistentesPage() {
                                 <div className={cn(
                                     "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
                                     m.estado === 'presente' ? "bg-emerald-50 text-emerald-600" :
-                                        m.estado === 'justificada' ? "bg-amber-50 text-amber-600" :
+                                        (m.estado === 'justificada' || m.estado === 'justificado') ? "bg-amber-50 text-amber-600" :
                                             "bg-red-50 text-red-600"
                                 )}>
-                                    {m.estado === 'justificada' ? 'justificado' : m.estado}
+                                    {(m.estado === 'justificada' || m.estado === 'justificado') ? 'justificado' : m.estado}
                                 </div>
                             </div>
                         </div>

@@ -19,7 +19,7 @@ interface Costalero {
     apellidos: string;
     trabajadera: number;
     puesto: string;
-    estado?: 'presente' | 'ausente' | 'justificado';
+    estado?: 'presente' | 'ausente' | 'justificado' | 'justificada' | null;
     hora?: string;
 }
 

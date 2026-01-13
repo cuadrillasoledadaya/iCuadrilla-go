@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.22 (13/01/2026)
+
+- **Limpieza de Código y Tipos**: Corregidos errores de TypeScript relacionados con la discrepancia entre el estado visual (justificado) y el de base de datos (justificada).
+- **Consistencia de Estados**: Asegurada la visibilidad y el color correcto de los estados en todas las listas de asistencia.
+
 ## v1.0.21 (13/01/2026)
 
 - **Corrección de Fechas y Timezones**: Cambiada la lógica de cálculo de fecha para usar la hora local en lugar de UTC. Esto evita que los registros se guarden en el día anterior/siguiente por error de zona horaria.

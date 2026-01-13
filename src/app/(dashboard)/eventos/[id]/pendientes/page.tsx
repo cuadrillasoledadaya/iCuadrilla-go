@@ -20,7 +20,7 @@ interface Costalero {
     apellidos: string;
     trabajadera: number;
     puesto: string;
-    estado?: string | null;
+    estado?: string | 'justificada' | null;
 }
 
 export default function PendientesPage() {
