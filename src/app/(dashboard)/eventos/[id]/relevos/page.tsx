@@ -215,7 +215,7 @@ export default function GestionRelevos() {
                                         key={`${t}-${p}`}
                                         onClick={() => handlePosClick(t, p)}
                                         className={cn(
-                                            "relative p-5 rounded-[24px] border-2 transition-all flex flex-col justify-center space-y-1 h-28 text-left",
+                                            "relative p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-left",
                                             isSelected ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
                                                 costalero ? "bg-white border-neutral-100 shadow-sm" : "bg-neutral-50/50 border-dashed border-neutral-200"
                                         )}
@@ -237,7 +237,7 @@ export default function GestionRelevos() {
                                 <button
                                     onClick={() => handlePosClick(t, 5)}
                                     className={cn(
-                                        "w-full max-w-[240px] p-5 rounded-[24px] border-2 transition-all flex flex-col justify-center space-y-1 h-28 text-center",
+                                        "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
                                         selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
                                             getCostaleroAt(t, 5) ? "bg-white border-neutral-100 shadow-sm" : "bg-neutral-50/50 border-dashed border-neutral-200"
                                     )}
