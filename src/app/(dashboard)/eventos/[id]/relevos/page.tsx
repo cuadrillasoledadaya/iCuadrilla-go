@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { ChevronLeft, Plus, Search, Check, UserPlus, Trash2, ArrowLeftRight } from "lucide-react";
+import { ChevronLeft, Plus, Search, Check, UserPlus, Trash2, ArrowLeftRight, Settings2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -254,12 +254,20 @@ export default function GestionRelevos() {
         if (!confirm("¿Seguro que quieres borrar este relevo? Se perderá toda su formación.")) return;
 
         setLoading(true);
-        await supabase.from("muda_nombres").delete().eq("id", editingMuda.id);
+        try {
+            const { error } = await supabase.from("muda_nombres").delete().eq("id", editingMuda.id);
+            if (error) throw error;
 
-        setShowMudaModal(false);
-        setEditingMuda(null);
-        setMudaNameInput("");
-        await fetchInitialData();
+            setShowMudaModal(false);
+            setEditingMuda(null);
+            setMudaNameInput("");
+            await fetchInitialData();
+        } catch (error: any) {
+            console.error("Error deleting muda:", error);
+            alert("Error al borrar el relevo: " + (error.message || "Error desconocido"));
+        } finally {
+            setLoading(false);
+        }
     };
 
     const occupadas = relevos.filter(r => r.costalero_id).length;
@@ -319,9 +327,9 @@ export default function GestionRelevos() {
                                         setMudaNameInput(muda.nombre);
                                         setShowMudaModal(true);
                                     }}
-                                    className="p-1 hover:bg-neutral-50 rounded-lg text-neutral-300"
+                                    className="p-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-neutral-500 transition-colors"
                                 >
-                                    <Plus size={10} className="rotate-45" />
+                                    <Settings2 size={12} />
                                 </span>
                             )}
                         </button>
