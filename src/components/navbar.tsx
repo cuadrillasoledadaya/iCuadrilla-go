@@ -8,10 +8,10 @@ import { useLayout } from "./layout-context";
 
 const navItems = [
     { label: "Inicio", href: "/dashboard", icon: Home },
-    { label: "Escáner", href: "/asistencia/scanner", icon: QrCode },
+    { label: "Eventos", href: "/eventos", icon: Calendar },
     { label: "Relevos", href: "/relevos", icon: Repeat },
     { label: "Cuadrilla", href: "/cuadrilla", icon: Users },
-    { label: "Temporadas", href: "/temporadas", icon: Calendar },
+    { label: "Temporadas", href: "/temporadas", icon: BarChart },
 ];
 
 export function Navbar() {
