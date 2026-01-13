@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.19 (13/01/2026)
+
+- **Corrección UX (Spinner Infinito)**: Eliminado el estado de carga (`setLoading`) al cambiar estados. Al haber quitado la recarga de página, el spinner se quedaba bloqueado para siempre. Ahora la actualización es instantánea y sin bloqueos.
+
 ## v1.0.18 (13/01/2026)
 
 - **Corrección UX (Race Condition)**: Eliminada la recarga automática de datos al cerrar el modal en listas de asistencia. Esto evita que la aplicación "olvide" el cambio reciente si el servidor tarda en responder, confiando en la actualización instantánea (Optimistic UI) para una experiencia más fluida.

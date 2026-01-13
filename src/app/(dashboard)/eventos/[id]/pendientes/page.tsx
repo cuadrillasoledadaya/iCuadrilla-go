@@ -67,7 +67,7 @@ export default function PendientesPage() {
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente') => {
         if (!selectedCostalero || !evento) return;
-        setLoading(true);
+        // setLoading(true); // Removed to rely on optimistic UI and prevent hanging
 
         const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
 
