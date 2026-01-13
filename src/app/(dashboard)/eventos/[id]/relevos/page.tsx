@@ -220,24 +220,33 @@ export default function GestionRelevos() {
         if (!mudaNameInput.trim()) return;
         setLoading(true);
 
-        if (editingMuda) {
-            // Renombrar
-            await supabase.from("muda_nombres")
-                .update({ nombre: mudaNameInput })
-                .eq("id", editingMuda.id);
-        } else {
-            // Crear
-            await supabase.from("muda_nombres").insert({
-                evento_id: params.id,
-                nombre: mudaNameInput,
-                orden: mudas.length + 1
-            });
-        }
+        try {
+            if (editingMuda) {
+                // Renombrar
+                const { error } = await supabase.from("muda_nombres")
+                    .update({ nombre: mudaNameInput })
+                    .eq("id", editingMuda.id);
+                if (error) throw error;
+            } else {
+                // Crear
+                const { error } = await supabase.from("muda_nombres").insert({
+                    evento_id: params.id,
+                    nombre: mudaNameInput,
+                    orden: mudas.length + 1
+                });
+                if (error) throw error;
+            }
 
-        setShowMudaModal(false);
-        setMudaNameInput("");
-        setEditingMuda(null);
-        await fetchInitialData();
+            setShowMudaModal(false);
+            setMudaNameInput("");
+            setEditingMuda(null);
+            await fetchInitialData();
+        } catch (error: any) {
+            console.error("Error managing muda:", error);
+            alert("Error al guardar el relevo: " + (error.message || "Error desconocido"));
+        } finally {
+            setLoading(false);
+        }
     };
 
     const deleteMuda = async () => {
@@ -298,7 +307,7 @@ export default function GestionRelevos() {
                                 "flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center justify-center gap-2",
                                 activeMudaId === muda.id
                                     ? "bg-white text-primary shadow-sm ring-1 ring-black/5 translate-y-[-1px]"
-                                    : "text-neutral-400 hover:text-neutral-600"
+                                    : "bg-neutral-200/50 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-200"
                             )}
                         >
                             {muda.nombre}
@@ -317,16 +326,6 @@ export default function GestionRelevos() {
                             )}
                         </button>
                     ))}
-                    <button
-                        onClick={() => {
-                            setEditingMuda(null);
-                            setMudaNameInput("");
-                            setShowMudaModal(true);
-                        }}
-                        className="p-2.5 px-4 rounded-xl text-neutral-400 hover:text-primary transition-colors"
-                    >
-                        <Plus size={18} />
-                    </button>
                 </div>
 
                 <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm space-y-4">
@@ -533,6 +532,18 @@ export default function GestionRelevos() {
                     </div>
                 </div>
             )}
+
+            {/* Floating Action Button for New Muda */}
+            <button
+                onClick={() => {
+                    setEditingMuda(null);
+                    setMudaNameInput("");
+                    setShowMudaModal(true);
+                }}
+                className="fixed bottom-24 right-6 z-40 p-5 bg-primary text-white rounded-full shadow-[0_8px_30px_rgba(128,0,32,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-500"
+            >
+                <Plus size={28} />
+            </button>
         </div>
     );
 }
