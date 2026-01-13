@@ -86,11 +86,25 @@ export default function AsistentesPage() {
         if (newStatus === 'delete') {
             await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
         } else {
-            const { error } = await supabase.from("asistencias").upsert({
-                costalero_id: selectedCostalero.id,
-                fecha: eventDate,
-                estado: newStatus
-            }, { onConflict: 'costalero_id,fecha' });
+            // 1. Check if exists
+            const { data: existing } = await supabase.from("asistencias")
+                .select("id")
+                .eq("costalero_id", selectedCostalero.id)
+                .eq("fecha", eventDate)
+                .single();
+
+            let error;
+            if (existing) {
+                const res = await supabase.from("asistencias").update({ estado: newStatus }).eq("id", existing.id);
+                error = res.error;
+            } else {
+                const res = await supabase.from("asistencias").insert({
+                    costalero_id: selectedCostalero.id,
+                    fecha: eventDate,
+                    estado: newStatus
+                });
+                error = res.error;
+            }
 
             if (error) {
                 console.error(error);

@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.16 (13/01/2026)
+
+- **Corrección Lógica de Guardado**: Reemplazado `upsert` por una lógica manual de `check -> insert/update` para evitar el error de restricción de base de datos ("unique constraint"). Esto asegura compatibilidad total sin tener que tocar la base de datos.
+
 ## v1.0.15 (13/01/2026)
 
 - **Corrección Base de Datos**: Eliminado campo `hora` en las actualizaciones, ya que no existe en la estructura actual de `asistencias`.
