@@ -54,9 +54,17 @@ export default function AgendaEventos() {
 
     const getStatusStyle = (estado: string) => {
         switch (estado) {
-            case 'en-curso': return 'status-en-curso';
-            case 'finalizado': return 'status-finalizado';
-            default: return 'status-pendiente';
+            case 'en-curso': return 'bg-emerald-100/50 border-emerald-200 text-emerald-700';
+            case 'finalizado': return 'bg-red-100/50 border-red-200 text-red-700';
+            default: return 'bg-orange-100/50 border-orange-200 text-orange-700';
+        }
+    };
+
+    const getCardStyle = (estado: string) => {
+        switch (estado) {
+            case 'en-curso': return 'bg-emerald-50/40 border-emerald-100/50';
+            case 'finalizado': return 'bg-red-50/40 border-red-100/50';
+            default: return 'bg-orange-50/40 border-orange-100/50';
         }
     };
 
@@ -75,6 +83,43 @@ export default function AgendaEventos() {
             default: return 'PENDIENTE';
         }
     };
+
+    // Calcular estado dinámico
+    const calculateStatus = (inicio: string, fin: string | null): 'pendiente' | 'en-curso' | 'finalizado' => {
+        const now = new Date();
+        const start = new Date(inicio);
+        const end = fin ? new Date(fin) : new Date(start.getTime() + 3 * 60 * 60 * 1000); // Default 3h if no end time
+
+        if (now < start) return 'pendiente';
+        if (now >= start && now <= end) return 'en-curso';
+        return 'finalizado';
+    };
+
+    // Sincronizar estados con DB periódicamente
+    useEffect(() => {
+        if (eventos.length === 0) return;
+
+        const syncStatuses = async () => {
+            const updates = eventos.map(async (e) => {
+                const realStatus = calculateStatus(e.fecha_inicio, e.fecha_fin);
+                if (realStatus !== e.estado) {
+                    await supabase.from("eventos").update({ estado: realStatus }).eq("id", e.id);
+                    return { ...e, estado: realStatus };
+                }
+                return e;
+            });
+
+            const updatedEventos = await Promise.all(updates);
+            // Solo actualizamos el estado local si algo cambió para evitar loops
+            if (JSON.stringify(updatedEventos) !== JSON.stringify(eventos)) {
+                setEventos(updatedEventos);
+            }
+        };
+
+        syncStatuses();
+        const interval = setInterval(syncStatuses, 60000); // Check every minute
+        return () => clearInterval(interval);
+    }, [eventos.length]); // Depend on length to trigger after initial fetch
 
     if (loading) return (
         <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
@@ -121,7 +166,10 @@ export default function AgendaEventos() {
                         <div
                             key={e.id}
                             onClick={() => router.push(`/eventos/${e.id}`)}
-                            className="bg-white p-6 rounded-[32px] flex flex-col space-y-4 group cursor-pointer active:scale-[0.98] transition-all border border-black/5 shadow-sm"
+                            className={cn(
+                                "p-6 rounded-[32px] flex flex-col space-y-4 group cursor-pointer active:scale-[0.98] transition-all border shadow-sm",
+                                getCardStyle(e.estado)
+                            )}
                         >
                             <div className="flex justify-between items-start">
                                 <h3 className="text-xl font-black text-neutral-900 group-hover:text-primary transition-colors uppercase tracking-tight">
@@ -138,14 +186,14 @@ export default function AgendaEventos() {
 
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-neutral-600 font-bold">
-                                    <div className="p-1.5 rounded-lg bg-primary/5 text-primary">
+                                    <div className="p-1.5 rounded-lg bg-white/50 text-neutral-700">
                                         <Calendar size={14} />
                                     </div>
                                     <span className="text-xs">
                                         {new Date(e.fecha_inicio).toLocaleDateString('es-ES')}
                                     </span>
                                     <span className="text-neutral-300 mx-1">•</span>
-                                    <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+                                    <div className="p-1.5 rounded-lg bg-white/50 text-neutral-700">
                                         <Clock size={14} />
                                     </div>
                                     <span className="text-xs">
@@ -154,7 +202,7 @@ export default function AgendaEventos() {
                                 </div>
 
                                 <div className="flex items-center gap-2 text-neutral-500 font-medium italic">
-                                    <div className="p-1.5 rounded-lg bg-neutral-50 text-neutral-400">
+                                    <div className="p-1.5 rounded-lg bg-white/50 text-neutral-400">
                                         <MapPin size={14} />
                                     </div>
                                     <span className="text-xs truncate">{e.ubicacion}</span>
@@ -162,8 +210,8 @@ export default function AgendaEventos() {
                             </div>
 
                             <div className="flex justify-end pt-2 border-t border-black/5">
-                                <span className="text-[10px] font-black text-neutral-300 uppercase tracking-widest mr-auto italic group-hover:text-primary transition-colors">Ver Detalles</span>
-                                <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
+                                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mr-auto italic group-hover:text-primary transition-colors">Ver Detalles</span>
+                                <ChevronRight className="text-neutral-400 group-hover:text-primary transition-colors" size={20} />
                             </div>
                         </div>
                     ))

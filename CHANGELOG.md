@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.27 (13/01/2026)
+
+- **Estados Dinámicos Automáticos**: Los eventos cambian de estado (`Pendiente`, `En Curso`, `Finalizado`) automáticamente basándose en la hora actual.
+- **Sincronización Inteligente**: La aplicación actualiza el estado en la base de datos de forma automática cuando detecta cambios de horario.
+- **Diseño Pastel Suave**: Las tarjetas de eventos ahora lucen tonos pastel muy suaves según su estado, mejorando la legibilidad y estética.
+- **Refresco en Tiempo Real**: Los estados se actualizan en el navegador cada minuto sin necesidad de recargar la página.
+
 ## v1.0.26 (13/01/2026)
 
 - **Gestión Completa de Eventos**: Implementada la capacidad de editar y borrar eventos.

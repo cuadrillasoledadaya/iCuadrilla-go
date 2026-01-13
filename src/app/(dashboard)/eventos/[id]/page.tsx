@@ -79,6 +79,17 @@ export default function DetalleEvento() {
         }
     };
 
+    // Calcular estado dinámico
+    const calculateStatus = (inicio: string, fin: string | null): 'pendiente' | 'en-curso' | 'finalizado' => {
+        const now = new Date();
+        const start = new Date(inicio);
+        const end = fin ? new Date(fin) : new Date(start.getTime() + 3 * 60 * 60 * 1000);
+
+        if (now < start) return 'pendiente';
+        if (now >= start && now <= end) return 'en-curso';
+        return 'finalizado';
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             const { data: eventData } = await supabase
@@ -88,6 +99,13 @@ export default function DetalleEvento() {
                 .single();
 
             if (eventData) {
+                // Sincronizar estado si es necesario
+                const realStatus = calculateStatus(eventData.fecha_inicio, eventData.fecha_fin);
+                if (realStatus !== eventData.estado) {
+                    await supabase.from("eventos").update({ estado: realStatus }).eq("id", params.id);
+                    eventData.estado = realStatus;
+                }
+
                 setEvento(eventData);
 
                 // Obtener fecha del evento (YYYY-MM-DD)
@@ -176,8 +194,23 @@ export default function DetalleEvento() {
             </header>
 
             {/* Info Central */}
-            <div className="text-center space-y-2 py-4">
-                <h2 className="text-3xl font-black text-neutral-900 uppercase tracking-tighter">{evento.titulo}</h2>
+            <div className={cn(
+                "text-center space-y-3 py-8 rounded-[40px] border shadow-sm transition-all duration-500",
+                evento.estado === 'en-curso' ? "bg-emerald-50/40 border-emerald-100" :
+                    evento.estado === 'finalizado' ? "bg-red-50/40 border-red-100" :
+                        "bg-orange-50/40 border-orange-100"
+            )}>
+                <div className={cn(
+                    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border mb-2",
+                    evento.estado === 'en-curso' ? "bg-emerald-100/50 border-emerald-200 text-emerald-700" :
+                        evento.estado === 'finalizado' ? "bg-red-100/50 border-red-200 text-red-700" :
+                            "bg-orange-100/50 border-orange-200 text-orange-700"
+                )}>
+                    {evento.estado === 'en-curso' ? <Activity size={12} className="animate-pulse" /> :
+                        evento.estado === 'finalizado' ? <CheckCircle2 size={12} /> : <Timer size={12} />}
+                    {evento.estado.replace('-', ' ')}
+                </div>
+                <h2 className="text-4xl font-black text-neutral-900 uppercase tracking-tighter px-4">{evento.titulo}</h2>
                 <p className="text-neutral-500 font-bold capitalize text-sm">
                     {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </p>
