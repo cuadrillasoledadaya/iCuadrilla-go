@@ -78,22 +78,32 @@ export default function AsistentesPage() {
         const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
         // Optimistic Update
-        if (newStatus === 'delete' || newStatus === 'ausente') {
+        if (newStatus === 'delete') {
             // Remove from assistants list
             setAsistentes(prev => prev.filter(c => c.id !== selectedCostalero.id));
         } else {
-            // Update status in list
+            // Update status in list (including 'ausente')
             setAsistentes(prev => prev.map(c =>
-                c.id === selectedCostalero.id ? { ...c, estado: newStatus } : c
+                c.id === selectedCostalero.id ? { ...c, estado: newStatus === 'justificado' ? 'justificada' : newStatus } : c
             ));
         }
         setSelectedCostalero(null);
 
         if (newStatus === 'delete') {
-            const { error: deleteError } = await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
-            if (deleteError) {
-                console.error("Delete Error:", deleteError);
-                alert("Error al limpiar estado: " + deleteError.message);
+            // Use record ID if we have it, fallback to costalero_id + fecha
+            const query = supabase.from("asistencias").delete();
+            if (selectedCostalero.asistencia_id) {
+                const { error: deleteError } = await query.eq("id", selectedCostalero.asistencia_id);
+                if (deleteError) {
+                    console.error("Delete Error by ID:", deleteError);
+                    alert("Error al limpiar: " + deleteError.message);
+                }
+            } else {
+                const { error: deleteError } = await query.eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
+                if (deleteError) {
+                    console.error("Delete Error by Filter:", deleteError);
+                    alert("Error al limpiar: " + deleteError.message);
+                }
             }
         } else {
             const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;

@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.23 (13/01/2026)
+
+- **Borrado Ultra-Robusto**: Cambiada la lógica de "Limpiar Asistencia" para usar el ID único del registro. Esto garantiza que el borrado funcione siempre, sin importar discrepancias de fecha o zona horaria.
+- **Corrección de Visibilidad 'Ausente'**: Corregido un error donde marcar a alguien como ausente en la lista de Asistentes hacía que desapareciera temporalmente hasta recargar la página.
+
 ## v1.0.22 (13/01/2026)
 
 - **Limpieza de Código y Tipos**: Corregidos errores de TypeScript relacionados con la discrepancia entre el estado visual (justificado) y el de base de datos (justificada).

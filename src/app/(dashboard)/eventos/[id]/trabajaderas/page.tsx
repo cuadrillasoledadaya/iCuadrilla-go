@@ -20,6 +20,7 @@ interface Costalero {
     trabajadera: number;
     puesto: string;
     estado?: 'presente' | 'ausente' | 'justificado' | 'justificada' | null;
+    asistencia_id?: string;
     hora?: string;
 }
 
@@ -54,8 +55,9 @@ export default function TrabajaderasAsistencia() {
                 const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
                 return {
                     ...c,
-                    estado: asistencia ? asistencia.estado : null,
-                    hora: asistencia ? asistencia.hora : null // Si tienes columna hora
+                    estado: asistencia?.estado,
+                    hora: asistencia?.hora, // Si tienes columna hora
+                    asistencia_id: asistencia?.id // Map asistencia_id from the database records.
                 };
             }) as Costalero[]);
 
@@ -76,17 +78,22 @@ export default function TrabajaderasAsistencia() {
         // Optimistic Update
         if (newStatus === 'delete') {
             setCuadrilla(prev => prev.map(c =>
-                c.id === selectedCostalero.id ? { ...c, estado: undefined } : c
+                c.id === selectedCostalero.id ? { ...c, estado: undefined, asistencia_id: undefined } : c
             ));
         } else {
             setCuadrilla(prev => prev.map(c =>
-                c.id === selectedCostalero.id ? { ...c, estado: newStatus } : c
+                c.id === selectedCostalero.id ? { ...c, estado: newStatus === 'justificado' ? 'justificada' : newStatus } : c
             ));
         }
         setSelectedCostalero(null);
 
         if (newStatus === 'delete') {
-            await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
+            const query = supabase.from("asistencias").delete();
+            if (selectedCostalero.asistencia_id) {
+                await query.eq("id", selectedCostalero.asistencia_id);
+            } else {
+                await query.eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
+            }
         } else {
             const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
