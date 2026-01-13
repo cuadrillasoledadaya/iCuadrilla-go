@@ -22,7 +22,14 @@ interface Relevo {
     trabajadera: number;
     posicion: number;
     costalero_id: string | null;
+    muda_id: string;
     costalero?: Costalero;
+}
+
+interface Muda {
+    id: string;
+    nombre: string;
+    orden: number;
 }
 
 export default function GestionRelevos() {
@@ -30,45 +37,88 @@ export default function GestionRelevos() {
     const router = useRouter();
     const [relevos, setRelevos] = useState<Relevo[]>([]);
     const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
+    const [mudas, setMudas] = useState<Muda[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeRelevo, setActiveRelevo] = useState<number>(1);
+    const [activeMudaId, setActiveMudaId] = useState<string | null>(null);
     const [selectedPos, setSelectedPos] = useState<{ t: number, p: number } | null>(null);
     const [showModal, setShowModal] = useState(false);
+    const [showMudaModal, setShowMudaModal] = useState(false);
+    const [mudaNameInput, setMudaNameInput] = useState("");
+    const [editingMuda, setEditingMuda] = useState<Muda | null>(null);
     const [searchOther, setSearchOther] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
 
     const totalHuecos = 35; // 7 trabajaderas * 5 huecos
 
     useEffect(() => {
-        fetchData();
-    }, [params.id, activeRelevo]);
+        fetchInitialData();
+    }, [params.id]);
 
-    const fetchData = async () => {
+    useEffect(() => {
+        if (activeMudaId) {
+            fetchRelevos();
+        }
+    }, [activeMudaId]);
+
+    const fetchInitialData = async () => {
         setLoading(true);
-        const { data: evento } = await supabase.from("eventos").select("fecha_inicio").eq("id", params.id).single();
-        if (!evento) return;
-
-        const dateObj = new Date(evento.fecha_inicio);
-        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-
-        const [relevosRes, costalerosRes, asistenciasRes] = await Promise.all([
-            supabase.from("relevos")
-                .select("*, costalero:costaleros(*)")
+        try {
+            // 1. Mudas
+            let { data: mudasData } = await supabase.from("muda_nombres")
+                .select("*")
                 .eq("evento_id", params.id)
-                .eq("num_relevo", activeRelevo),
-            supabase.from("costaleros").select("*"),
-            supabase.from("asistencias").select("*").eq("fecha", eventDate).eq("estado", "presente")
-        ]);
+                .order("orden", { ascending: true });
 
-        const presentIds = new Set(asistenciasRes.data?.map(a => a.costalero_id) || []);
-        const formattedCuadrilla = (costalerosRes.data || []).map(c => ({
-            ...c,
-            presente: presentIds.has(c.id)
-        }));
+            if (!mudasData || mudasData.length === 0) {
+                // Crear una muda por defecto si no hay ninguna
+                const { data: newMuda } = await supabase.from("muda_nombres").insert({
+                    evento_id: params.id,
+                    nombre: "Relevo 1",
+                    orden: 1
+                }).select().single();
 
-        setCuadrilla(formattedCuadrilla);
-        setRelevos(relevosRes.data || []);
-        setLoading(false);
+                if (newMuda) {
+                    mudasData = [newMuda];
+                }
+            }
+
+            setMudas(mudasData || []);
+            if (mudasData && mudasData.length > 0) {
+                setActiveMudaId(mudasData[0].id);
+            }
+
+            // 2. Costaleros y Asistencias
+            const { data: evento } = await supabase.from("eventos").select("fecha_inicio").eq("id", params.id).single();
+            if (evento) {
+                const dateObj = new Date(evento.fecha_inicio);
+                const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+
+                const [costalerosRes, asistenciasRes] = await Promise.all([
+                    supabase.from("costaleros").select("*"),
+                    supabase.from("asistencias").select("*").eq("fecha", eventDate).eq("estado", "presente")
+                ]);
+
+                const presentIds = new Set(asistenciasRes.data?.map(a => a.costalero_id) || []);
+                const formattedCuadrilla = (costalerosRes.data || []).map(c => ({
+                    ...c,
+                    presente: presentIds.has(c.id)
+                }));
+                setCuadrilla(formattedCuadrilla);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchRelevos = async () => {
+        if (!activeMudaId) return;
+        const { data } = await supabase.from("relevos")
+            .select("*, costalero:costaleros(*)")
+            .eq("evento_id", params.id)
+            .eq("muda_id", activeMudaId);
+        setRelevos(data || []);
     };
 
     const getCostaleroAt = (t: number, p: number) => {
@@ -101,8 +151,8 @@ export default function GestionRelevos() {
                 trabajadera: t,
                 posicion: p,
                 costalero_id: sourceCostalero.id,
-                num_relevo: activeRelevo
-            }, { onConflict: "evento_id,trabajadera,posicion,num_relevo" });
+                muda_id: activeMudaId
+            }, { onConflict: "evento_id,trabajadera,posicion,muda_id" });
 
             let op2;
             if (targetCostalero) {
@@ -111,20 +161,20 @@ export default function GestionRelevos() {
                     trabajadera: selectedPos.t,
                     posicion: selectedPos.p,
                     costalero_id: targetCostalero.id,
-                    num_relevo: activeRelevo
-                }, { onConflict: "evento_id,trabajadera,posicion,num_relevo" });
+                    muda_id: activeMudaId
+                }, { onConflict: "evento_id,trabajadera,posicion,muda_id" });
             } else {
                 // Limpiar el origen si estaba moviendo a un hueco vacío
                 op2 = supabase.from("relevos").delete()
                     .eq("evento_id", params.id)
                     .eq("trabajadera", selectedPos.t)
                     .eq("posicion", selectedPos.p)
-                    .eq("num_relevo", activeRelevo);
+                    .eq("muda_id", activeMudaId);
             }
 
             await Promise.all([op1, op2]);
             setSelectedPos(null);
-            await fetchData();
+            await fetchRelevos();
             return;
         }
 
@@ -134,7 +184,7 @@ export default function GestionRelevos() {
     };
 
     const assignCostalero = async (cid: string | null) => {
-        if (!selectedPos) return;
+        if (!selectedPos || !activeMudaId) return;
         setLoading(true);
 
         if (cid) {
@@ -142,27 +192,65 @@ export default function GestionRelevos() {
             await supabase.from("relevos").delete()
                 .eq("evento_id", params.id)
                 .eq("costalero_id", cid)
-                .eq("num_relevo", activeRelevo);
+                .eq("muda_id", activeMudaId);
 
             await supabase.from("relevos").upsert({
                 evento_id: params.id,
                 trabajadera: selectedPos.t,
                 posicion: selectedPos.p,
                 costalero_id: cid,
-                num_relevo: activeRelevo
-            }, { onConflict: "evento_id,trabajadera,posicion,num_relevo" });
+                muda_id: activeMudaId
+            }, { onConflict: "evento_id,trabajadera,posicion,muda_id" });
         } else {
             await supabase.from("relevos").delete()
                 .eq("evento_id", params.id)
                 .eq("trabajadera", selectedPos.t)
                 .eq("posicion", selectedPos.p)
-                .eq("num_relevo", activeRelevo);
+                .eq("muda_id", activeMudaId);
         }
 
         setShowModal(false);
         setSelectedPos(null);
         setSearchTerm("");
-        await fetchData();
+        await fetchRelevos();
+        setLoading(false);
+    };
+
+    const handleManageMuda = async () => {
+        if (!mudaNameInput.trim()) return;
+        setLoading(true);
+
+        if (editingMuda) {
+            // Renombrar
+            await supabase.from("muda_nombres")
+                .update({ nombre: mudaNameInput })
+                .eq("id", editingMuda.id);
+        } else {
+            // Crear
+            await supabase.from("muda_nombres").insert({
+                evento_id: params.id,
+                nombre: mudaNameInput,
+                orden: mudas.length + 1
+            });
+        }
+
+        setShowMudaModal(false);
+        setMudaNameInput("");
+        setEditingMuda(null);
+        await fetchInitialData();
+    };
+
+    const deleteMuda = async () => {
+        if (!editingMuda) return;
+        if (!confirm("¿Seguro que quieres borrar este relevo? Se perderá toda su formación.")) return;
+
+        setLoading(true);
+        await supabase.from("muda_nombres").delete().eq("id", editingMuda.id);
+
+        setShowMudaModal(false);
+        setEditingMuda(null);
+        setMudaNameInput("");
+        await fetchInitialData();
     };
 
     const occupadas = relevos.filter(r => r.costalero_id).length;
@@ -195,29 +283,57 @@ export default function GestionRelevos() {
                     </div>
                 </header>
 
-                {/* Relevo Selector (Tabs) */}
-                <div className="flex gap-2 bg-neutral-100 p-1.5 rounded-2xl border border-black/5 overflow-x-auto no-scrollbar">
-                    {[1, 2, 3, 4].map((num) => (
+                {/* Relevo Selector (Dynamic Tabs) */}
+                <div className="flex gap-2 bg-neutral-100 p-1.5 rounded-2xl border border-black/5 overflow-x-auto no-scrollbar items-center">
+                    {mudas.map((muda) => (
                         <button
-                            key={num}
-                            onClick={() => setActiveRelevo(num)}
+                            key={muda.id}
+                            onClick={() => setActiveMudaId(muda.id)}
+                            onDoubleClick={() => {
+                                setEditingMuda(muda);
+                                setMudaNameInput(muda.nombre);
+                                setShowMudaModal(true);
+                            }}
                             className={cn(
-                                "flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
-                                activeRelevo === num
+                                "flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center justify-center gap-2",
+                                activeMudaId === muda.id
                                     ? "bg-white text-primary shadow-sm ring-1 ring-black/5 translate-y-[-1px]"
                                     : "text-neutral-400 hover:text-neutral-600"
                             )}
                         >
-                            Muda {num}
+                            {muda.nombre}
+                            {activeMudaId === muda.id && (
+                                <span
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingMuda(muda);
+                                        setMudaNameInput(muda.nombre);
+                                        setShowMudaModal(true);
+                                    }}
+                                    className="p-1 hover:bg-neutral-50 rounded-lg text-neutral-300"
+                                >
+                                    <Plus size={10} className="rotate-45" />
+                                </span>
+                            )}
                         </button>
                     ))}
+                    <button
+                        onClick={() => {
+                            setEditingMuda(null);
+                            setMudaNameInput("");
+                            setShowMudaModal(true);
+                        }}
+                        className="p-2.5 px-4 rounded-xl text-neutral-400 hover:text-primary transition-colors"
+                    >
+                        <Plus size={18} />
+                    </button>
                 </div>
 
                 <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm space-y-4">
                     <div className="flex justify-between items-end">
                         <div className="space-y-1">
                             <h3 className="text-2xl font-black text-neutral-900 tracking-tighter italic">{occupadas}/{totalHuecos} Huecos</h3>
-                            <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">Formación táctica en tiempo real</p>
+                            <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{mudas.find(m => m.id === activeMudaId)?.nombre || 'RELEVO'}</p>
                         </div>
                         <div className="px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-primary font-black text-[10px] shadow-sm">
                             {Math.round(pct)}% LLENO
@@ -356,8 +472,41 @@ export default function GestionRelevos() {
                 </div>
             )}
 
+            {/* Modal de Gestión de Muda (Nombre/Borrar) */}
+            {showMudaModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6" onClick={() => setShowMudaModal(false)}>
+                    <div className="w-full max-w-sm bg-white rounded-[32px] p-8 space-y-6 shadow-2xl animate-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+                        <div className="text-center space-y-2">
+                            <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight italic">
+                                {editingMuda ? 'Editar Relevo' : 'Nuevo Relevo'}
+                            </h3>
+                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Ponle un nombre para identificarlo</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <Input
+                                placeholder="Nombre (ej: Salida, Carrera Oficial...)"
+                                className="h-14 bg-neutral-50 border-none rounded-2xl text-center font-bold text-neutral-900"
+                                value={mudaNameInput}
+                                onChange={(e) => setMudaNameInput(e.target.value)}
+                                autoFocus
+                            />
+                            <Button className="w-full h-14 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest" onClick={handleManageMuda}>
+                                Guardar Cambios
+                            </Button>
+
+                            {editingMuda && (
+                                <Button variant="ghost" className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 font-black text-[10px] uppercase tracking-widest" onClick={deleteMuda}>
+                                    Borrar este Relevo
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Float Help */}
-            {selectedPos && !showModal && (
+            {selectedPos && !showModal && !showMudaModal && (
                 <div className="fixed bottom-6 right-6 z-40 w-full max-w-[340px]">
                     <div className="bg-neutral-900 border border-white/10 p-5 rounded-[28px] shadow-2xl flex flex-col gap-4 text-white animate-in slide-in-from-bottom duration-300">
                         <div className="flex items-center justify-between">
