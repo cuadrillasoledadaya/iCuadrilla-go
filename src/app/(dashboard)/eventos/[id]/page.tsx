@@ -126,10 +126,10 @@ export default function DetalleEvento() {
                 const asistencias = asistenciasRes.data || [];
 
                 const presentes = asistencias.filter(a => a.estado === 'presente').length;
-                const justificados = asistencias.filter(a => a.estado === 'justificado').length;
+                const justificados = asistencias.filter(a => a.estado === 'justificado' || a.estado === 'justificada').length;
                 const ausentes = asistencias.filter(a => a.estado === 'ausente').length;
 
-                // Pendientes reales = Total - (Todos los que tienen registro, sea cual sea)
+                // Pendientes reales = Total - (Todos los que tienen registro)
                 const procesados = asistencias.length;
                 const pendientes = totalCostaleros - procesados;
 
