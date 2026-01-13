@@ -45,7 +45,7 @@ export default function AsistentesPage() {
 
             // 2. Fetch Costaleros & Asistencias
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("*").order("apellidos"),
+                supabase.from("costaleros").select("*").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
                 supabase.from("asistencias").select("*").eq("fecha", eventDate)
             ]);
 

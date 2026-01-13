@@ -44,7 +44,7 @@ export default function PendientesPage() {
 
             // 2. Fetch Costaleros & Asistencias
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("*").order("apellidos"),
+                supabase.from("costaleros").select("*").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
                 supabase.from("asistencias").select("*").eq("fecha", eventDate)
             ]);
 
@@ -136,8 +136,11 @@ export default function PendientesPage() {
                                 <Clock size={16} />
                             </div>
                             <div className="text-left">
-                                <h3 className="font-bold text-neutral-900 text-sm">{m.nombre} {m.apellidos}</h3>
-                                <p className="text-[10px] text-neutral-400 uppercase tracking-wider">Sin registrar</p>
+                                <h3 className="font-bold text-neutral-900 text-sm italic">{m.nombre} {m.apellidos}</h3>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="px-1.5 py-0.5 bg-neutral-100 text-neutral-500 text-[8px] font-black uppercase rounded-md border border-black/5">T-{m.trabajadera}</span>
+                                    <span className="text-[8px] text-neutral-400 font-bold uppercase tracking-wider">Sin registrar</span>
+                                </div>
                             </div>
                         </div>
                         <MoreVertical size={20} className="text-neutral-300" />
