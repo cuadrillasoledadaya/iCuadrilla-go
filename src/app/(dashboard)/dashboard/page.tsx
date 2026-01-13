@@ -159,6 +159,7 @@ export default function DashboardPage() {
                             <div className="flex items-center gap-2">
                                 <span className="text-neutral-900 font-black text-sm">
                                     {new Date(proximoEvento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                    {proximoEvento.fecha_fin && ` - ${new Date(proximoEvento.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`}
                                 </span>
                             </div>
                         </div>

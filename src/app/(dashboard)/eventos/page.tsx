@@ -198,6 +198,7 @@ export default function AgendaEventos() {
                                     </div>
                                     <span className="text-xs">
                                         {new Date(e.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                        {e.fecha_fin && ` - ${new Date(e.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`}
                                     </span>
                                 </div>
 

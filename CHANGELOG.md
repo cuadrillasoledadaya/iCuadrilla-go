@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.29 (13/01/2026)
+
+- **Mejora en Visibilidad Horaria**: Se ha añadido la hora de finalización de los eventos en las tarjetas de la agenda y en la sección de "Próximo Evento" del Dashboard.
+
 ## v1.0.28 (13/01/2026)
 
 - **Corrección Horaria Crítica**: Solucionado el desfase de 1 hora al guardar eventos. Ahora se utiliza UTC ISO de forma estricta.
