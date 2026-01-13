@@ -327,19 +327,19 @@ export default function GestionRelevos() {
 
             {/* Float Help */}
             {selectedPos && !showModal && (
-                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-sm">
+                <div className="fixed bottom-6 right-6 z-40 w-full max-w-[320px]">
                     <div className="bg-neutral-900 border border-white/10 p-5 rounded-[28px] shadow-2xl flex items-center justify-between text-white animate-in slide-in-from-bottom duration-300">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-primary rounded-xl">
                                 <ArrowLeftRight size={20} />
                             </div>
-                            <div>
-                                <p className="text-xs font-black uppercase tracking-tight">{getCostaleroAt(selectedPos.t, selectedPos.p)?.nombre || 'Hueco'}</p>
-                                <p className="text-[9px] text-neutral-400 font-bold">Selecciona otro hueco para mover o intercambiar</p>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-black uppercase tracking-tight truncate">{getCostaleroAt(selectedPos.t, selectedPos.p)?.nombre || 'Hueco'}</p>
+                                <p className="text-[8px] text-neutral-400 font-bold leading-tight">Toca destino para mover o intercambiar</p>
                             </div>
                         </div>
-                        <button onClick={() => setSelectedPos(null)} className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors px-2">
-                            Cancelar
+                        <button onClick={() => setSelectedPos(null)} className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors px-2 ml-2">
+                            ×
                         </button>
                     </div>
                 </div>
