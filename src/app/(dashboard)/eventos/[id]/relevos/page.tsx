@@ -119,13 +119,9 @@ export default function GestionRelevos() {
         }
 
         // Caso 2: Nadie seleccionado.
-        if (costalero) {
-            setSelectedPos({ t, p });
-        } else {
-            // Hueco vacío: Abrir modal de asignación
-            setSelectedPos({ t, p });
-            setShowModal(true);
-        }
+        // Siempre seleccionamos la posición y abrimos el modal para permitir elegir de la lista (reservas)
+        setSelectedPos({ t, p });
+        setShowModal(true);
     };
 
     const assignCostalero = async (cid: string | null) => {
