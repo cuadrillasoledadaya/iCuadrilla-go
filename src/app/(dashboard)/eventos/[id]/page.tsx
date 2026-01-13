@@ -30,7 +30,7 @@ export default function DetalleEvento() {
     const params = useParams();
     const router = useRouter();
     const [evento, setEvento] = useState<Evento | null>(null);
-    const [stats, setStats] = useState({ presentes: 3, justificados: 2, ausentes: 30, total: 35 });
+    const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -60,142 +60,146 @@ export default function DetalleEvento() {
 
                 const presentes = asistencias.filter(a => a.estado === 'presente').length;
                 const justificados = asistencias.filter(a => a.estado === 'justificado').length;
-                const ausentes = asistencias.filter(a => a.estado === 'ausente').length; // Ausencias EXPLÍCITAS
+                const ausentes = asistencias.filter(a => a.estado === 'ausente').length;
 
-                setStats({
-                    presentes,
+                // Pendientes reales = Total - (Todos los que tienen registro, sea cual sea)
+                const procesados = asistencias.length;
+                const pendientes = totalCostaleros - procesados;
+
+                presentes,
                     justificados,
-                    ausentes, // Mostramos ausencias EXPLÍCITAS en la tarjeta
+                    ausentes,
+                    pendientes, // Agregamos pendientes calculado consistentemente
                     total: totalCostaleros
-                });
-            }
-            setLoading(false);
+            });
+}
+setLoading(false);
         };
-        fetchData();
+fetchData();
     }, [params.id]);
 
-    const actionButtons = [
-        { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` },
-        { label: "VER POR TRABAJADERAS", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
-        { label: "WHATSAPP", icon: Share2, color: "bg-green-500 shadow-green-200", href: `https://wa.me/?text=Asistencia` },
-        { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
-        { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` },
-    ];
+const actionButtons = [
+    { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` },
+    { label: "VER POR TRABAJADERAS", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
+    { label: "WHATSAPP", icon: Share2, color: "bg-green-500 shadow-green-200", href: `https://wa.me/?text=Asistencia` },
+    { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
+    { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` },
+];
 
-    if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
-        </div>
-    );
+if (loading) return (
+    <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+    </div>
+);
 
-    if (!evento) return (
-        <div className="p-6 text-center space-y-4 bg-[#FAFAFA] min-h-screen">
-            <p className="text-neutral-500">Evento no encontrado.</p>
-            <Button onClick={() => router.back()}>Volver</Button>
-        </div>
-    );
+if (!evento) return (
+    <div className="p-6 text-center space-y-4 bg-[#FAFAFA] min-h-screen">
+        <p className="text-neutral-500">Evento no encontrado.</p>
+        <Button onClick={() => router.back()}>Volver</Button>
+    </div>
+);
 
-    return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
-            {/* Header */}
-            <header className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => router.back()}
-                        className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-                    >
-                        <ChevronLeft size={24} />
-                    </button>
-                    <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">{evento.titulo}</h1>
-                </div>
-                <div className="flex gap-2">
-                    <button className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors">
-                        <Pencil size={20} />
-                    </button>
-                    <button className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors">
-                        <Trash2 size={20} />
-                    </button>
-                </div>
-            </header>
-
-            {/* Info Central */}
-            <div className="text-center space-y-2 py-4">
-                <h2 className="text-3xl font-black text-neutral-900 uppercase tracking-tighter">{evento.titulo}</h2>
-                <p className="text-neutral-500 font-bold capitalize text-sm">
-                    {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                </p>
+return (
+    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
+        {/* Header */}
+        <header className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <button
+                    onClick={() => router.back()}
+                    className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">{evento.titulo}</h1>
             </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3">
-                <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
-                    <span className="text-3xl font-black text-emerald-600">{stats.presentes}</span>
-                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Presentes</span>
-                </div>
-                <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
-                    <span className="text-3xl font-black text-amber-500">{stats.justificados}</span>
-                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Justif.</span>
-                </div>
-                <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
-                    <span className="text-3xl font-black text-red-500">{stats.ausentes}</span>
-                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Ausentes</span>
-                </div>
+            <div className="flex gap-2">
+                <button className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors">
+                    <Pencil size={20} />
+                </button>
+                <button className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors">
+                    <Trash2 size={20} />
+                </button>
             </div>
+        </header>
 
-            {/* Action Buttons */}
+        {/* Info Central */}
+        <div className="text-center space-y-2 py-4">
+            <h2 className="text-3xl font-black text-neutral-900 uppercase tracking-tighter">{evento.titulo}</h2>
+            <p className="text-neutral-500 font-bold capitalize text-sm">
+                {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
+                <span className="text-3xl font-black text-emerald-600">{stats.presentes}</span>
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Presentes</span>
+            </div>
+            <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
+                <span className="text-3xl font-black text-amber-500">{stats.justificados}</span>
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Justif.</span>
+            </div>
+            <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
+                <span className="text-3xl font-black text-red-500">{stats.ausentes}</span>
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Ausentes</span>
+            </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+            {actionButtons.map((btn) => (
+                <button
+                    key={btn.label}
+                    onClick={() => router.push(btn.href)}
+                    className={cn(
+                        "w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-white font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition-all",
+                        btn.color
+                    )}
+                >
+                    <btn.icon size={20} />
+                    {btn.label}
+                </button>
+            ))}
+        </div>
+
+        {/* Listas Section */}
+        <div className="space-y-4 pt-4">
+            <h3 className="text-xl font-black text-neutral-900 tracking-tight">Listas de Asistencia</h3>
             <div className="space-y-3">
-                {actionButtons.map((btn) => (
-                    <button
-                        key={btn.label}
-                        onClick={() => router.push(btn.href)}
-                        className={cn(
-                            "w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-white font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition-all",
-                            btn.color
-                        )}
-                    >
-                        <btn.icon size={20} />
-                        {btn.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Listas Section */}
-            <div className="space-y-4 pt-4">
-                <h3 className="text-xl font-black text-neutral-900 tracking-tight">Listas de Asistencia</h3>
-                <div className="space-y-3">
-                    <button
-                        onClick={() => router.push(`/eventos/${params.id}/asistentes`)}
-                        className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
-                                <Users size={24} />
-                            </div>
-                            <div className="text-left">
-                                <p className="font-extrabold text-neutral-900 text-sm italic">Ver Asistentes</p>
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.presentes + stats.justificados} registrados</p>
-                            </div>
+                <button
+                    onClick={() => router.push(`/eventos/${params.id}/asistentes`)}
+                    className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+                            <Users size={24} />
                         </div>
-                        <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
-                    </button>
-
-                    <button
-                        onClick={() => router.push(`/eventos/${params.id}/pendientes`)}
-                        className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
-                                <Hourglass size={24} />
-                            </div>
-                            <div className="text-left">
-                                <p className="font-extrabold text-neutral-900 text-sm italic">Ver Pendientes</p>
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.total - (stats.presentes + stats.justificados + stats.ausentes)} sin registrar</p>
-                            </div>
+                        <div className="text-left">
+                            <p className="font-extrabold text-neutral-900 text-sm italic">Ver Asistentes</p>
+                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.presentes + stats.justificados} registrados</p>
                         </div>
-                        <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
-                    </button>
-                </div>
+                    </div>
+                    <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
+                </button>
+
+                <button
+                    onClick={() => router.push(`/eventos/${params.id}/pendientes`)}
+                    className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+                            <Hourglass size={24} />
+                        </div>
+                        <div className="text-left">
+                            <p className="font-extrabold text-neutral-900 text-sm italic">Ver Pendientes</p>
+                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.total - (stats.presentes + stats.justificados + stats.ausentes)} sin registrar</p>
+                        </div>
+                    </div>
+                    <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
+                </button>
             </div>
         </div>
-    );
+    </div>
+);
 }

@@ -65,16 +65,23 @@ export default function TrabajaderasAsistencia() {
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero) return;
-        setLoading(true);
-
-        // Recupear fecha evento de nuevo o guardarla en estado (haremos fetch rapido o prop drill, 
-        // aqui asumimos fetch en updateStatus o guardado en estado, para simplificar upsert usaremos la logica anterior)
-        // Para ser mas robusto, deberiamos guardar la fecha del evento en un state.
-        // Vamos a simplificar: fetch de nuevo el evento es rapido o usar state.
+        // removing setLoading(true) to avoid UI flicker on optimistic update
 
         const { data: evento } = await supabase.from("eventos").select("fecha_inicio").eq("id", params.id).single();
         if (!evento) return;
         const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
+
+        // Optimistic Update
+        if (newStatus === 'delete') {
+            setCuadrilla(prev => prev.map(c =>
+                c.id === selectedCostalero.id ? { ...c, estado: undefined } : c
+            ));
+        } else {
+            setCuadrilla(prev => prev.map(c =>
+                c.id === selectedCostalero.id ? { ...c, estado: newStatus } : c
+            ));
+        }
+        setSelectedCostalero(null);
 
         if (newStatus === 'delete') {
             await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
@@ -87,9 +94,6 @@ export default function TrabajaderasAsistencia() {
                 evento_id: params.id
             }, { onConflict: 'costalero_id,fecha' });
         }
-
-        setSelectedCostalero(null);
-        window.location.reload();
     };
 
     const groups = [1, 2, 3, 4, 5, 6, 7];

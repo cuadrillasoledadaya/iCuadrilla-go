@@ -71,19 +71,25 @@ export default function PendientesPage() {
 
         const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
 
-        // Upsert asistencia
-        const { error } = await supabase.from("asistencias").upsert({
-            costalero_id: selectedCostalero.id,
-            fecha: eventDate,
-            estado: newStatus,
-            hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-            evento_id: params.id
-        }, { onConflict: 'costalero_id,fecha' });
+        if (newStatus === 'presente' || newStatus === 'justificado' || newStatus === 'ausente') {
+            // Optimistic Update: Remove from list immediately
+            setPendientes(prev => prev.filter(p => p.id !== selectedCostalero.id));
+            setSelectedCostalero(null);
 
-        if (error) console.error("Error updating:", error);
+            const { error } = await supabase.from("asistencias").upsert({
+                costalero_id: selectedCostalero.id,
+                fecha: eventDate,
+                estado: newStatus,
+                hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                evento_id: params.id
+            }, { onConflict: 'costalero_id,fecha' });
 
-        setSelectedCostalero(null);
-        window.location.reload();
+            if (error) {
+                console.error("Error updating:", error);
+                // Rollback (simplified: just reload or fetch again, but for now this is fast feedback)
+                alert("Error al actualizar conexión. Por favor refresca.");
+            }
+        }
     };
 
     if (loading && !pendientes.length) return (

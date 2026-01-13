@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.12 (13/01/2026)
+
+- **Corrección de Contadores y UX**: Ajustada la lógica de contadores en el detalle del evento para que "Pendientes" coincida exactamente con la lista interior (incluyendo lógica de ausentes).
+- **Actualización Instantánea (Optimistic UI)**: Eliminados los recargos de página al cambiar estado. Ahora la lista se actualiza instantáneamente al tocar una opción.
+
 ## v1.0.11 (13/01/2026)
 
 - **Corrección Definitiva Build**: Eliminación de bloque de código duplicado persistente en detalle de evento.

@@ -71,25 +71,29 @@ export default function AsistentesPage() {
 
         const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
 
+        // Optimistic Update
+        if (newStatus === 'delete' || newStatus === 'ausente') {
+            // Remove from assistants list
+            setAsistentes(prev => prev.filter(c => c.id !== selectedCostalero.id));
+        } else {
+            // Update status in list
+            setAsistentes(prev => prev.map(c =>
+                c.id === selectedCostalero.id ? { ...c, estado: newStatus } : c
+            ));
+        }
+        setSelectedCostalero(null);
+
         if (newStatus === 'delete') {
-            // Borrar asistencia
             await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
         } else {
-            // Upsert asistencia
-            const { error } = await supabase.from("asistencias").upsert({
+            await supabase.from("asistencias").upsert({
                 costalero_id: selectedCostalero.id,
                 fecha: eventDate,
                 estado: newStatus,
                 hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                evento_id: params.id // Si la tabla lo usa, sino se ignora (según schema anterior parece que usa fecha)
+                evento_id: params.id
             }, { onConflict: 'costalero_id,fecha' });
-
-            if (error) console.error("Error updating:", error);
         }
-
-        setSelectedCostalero(null);
-        // Recargar datos manual
-        window.location.reload();
     };
 
     if (loading && !asistentes.length) return (
