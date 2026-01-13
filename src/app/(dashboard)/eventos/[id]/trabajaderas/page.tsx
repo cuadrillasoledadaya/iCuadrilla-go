@@ -89,8 +89,7 @@ export default function TrabajaderasAsistencia() {
             const { error } = await supabase.from("asistencias").upsert({
                 costalero_id: selectedCostalero.id,
                 fecha: eventDate,
-                estado: newStatus,
-                hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                estado: newStatus
             }, { onConflict: 'costalero_id,fecha' });
 
             if (error) {
