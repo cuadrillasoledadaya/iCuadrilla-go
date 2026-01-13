@@ -31,6 +31,7 @@ export default function GestionRelevos() {
     const [relevos, setRelevos] = useState<Relevo[]>([]);
     const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeRelevo, setActiveRelevo] = useState<number>(1);
     const [selectedPos, setSelectedPos] = useState<{ t: number, p: number } | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [searchOther, setSearchOther] = useState(false);
@@ -40,7 +41,7 @@ export default function GestionRelevos() {
 
     useEffect(() => {
         fetchData();
-    }, [params.id]);
+    }, [params.id, activeRelevo]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -51,7 +52,10 @@ export default function GestionRelevos() {
         const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
         const [relevosRes, costalerosRes, asistenciasRes] = await Promise.all([
-            supabase.from("relevos").select("*, costalero:costaleros(*)").eq("evento_id", params.id),
+            supabase.from("relevos")
+                .select("*, costalero:costaleros(*)")
+                .eq("evento_id", params.id)
+                .eq("num_relevo", activeRelevo),
             supabase.from("costaleros").select("*"),
             supabase.from("asistencias").select("*").eq("fecha", eventDate).eq("estado", "presente")
         ]);
@@ -96,8 +100,9 @@ export default function GestionRelevos() {
                 evento_id: params.id,
                 trabajadera: t,
                 posicion: p,
-                costalero_id: sourceCostalero.id
-            }, { onConflict: "evento_id,trabajadera,posicion" });
+                costalero_id: sourceCostalero.id,
+                num_relevo: activeRelevo
+            }, { onConflict: "evento_id,trabajadera,posicion,num_relevo" });
 
             let op2;
             if (targetCostalero) {
@@ -105,11 +110,16 @@ export default function GestionRelevos() {
                     evento_id: params.id,
                     trabajadera: selectedPos.t,
                     posicion: selectedPos.p,
-                    costalero_id: targetCostalero.id
-                }, { onConflict: "evento_id,trabajadera,posicion" });
+                    costalero_id: targetCostalero.id,
+                    num_relevo: activeRelevo
+                }, { onConflict: "evento_id,trabajadera,posicion,num_relevo" });
             } else {
                 // Limpiar el origen si estaba moviendo a un hueco vacío
-                op2 = supabase.from("relevos").delete().eq("evento_id", params.id).eq("trabajadera", selectedPos.t).eq("posicion", selectedPos.p);
+                op2 = supabase.from("relevos").delete()
+                    .eq("evento_id", params.id)
+                    .eq("trabajadera", selectedPos.t)
+                    .eq("posicion", selectedPos.p)
+                    .eq("num_relevo", activeRelevo);
             }
 
             await Promise.all([op1, op2]);
@@ -128,17 +138,25 @@ export default function GestionRelevos() {
         setLoading(true);
 
         if (cid) {
-            // Si el costalero ya estaba en otra posición, limpiar esa posición primero
-            await supabase.from("relevos").delete().eq("evento_id", params.id).eq("costalero_id", cid);
+            // Si el costalero ya estaba en otra posición EN EL MISMO RELEVO, limpiar esa posición primero
+            await supabase.from("relevos").delete()
+                .eq("evento_id", params.id)
+                .eq("costalero_id", cid)
+                .eq("num_relevo", activeRelevo);
 
             await supabase.from("relevos").upsert({
                 evento_id: params.id,
                 trabajadera: selectedPos.t,
                 posicion: selectedPos.p,
-                costalero_id: cid
-            }, { onConflict: "evento_id,trabajadera,posicion" });
+                costalero_id: cid,
+                num_relevo: activeRelevo
+            }, { onConflict: "evento_id,trabajadera,posicion,num_relevo" });
         } else {
-            await supabase.from("relevos").delete().eq("evento_id", params.id).eq("trabajadera", selectedPos.t).eq("posicion", selectedPos.p);
+            await supabase.from("relevos").delete()
+                .eq("evento_id", params.id)
+                .eq("trabajadera", selectedPos.t)
+                .eq("posicion", selectedPos.p)
+                .eq("num_relevo", activeRelevo);
         }
 
         setShowModal(false);
@@ -173,9 +191,27 @@ export default function GestionRelevos() {
                         <button onClick={() => router.back()} className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors">
                             <ChevronLeft size={24} />
                         </button>
-                        <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Configuración Paso</h1>
+                        <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Gestión de Relevos</h1>
                     </div>
                 </header>
+
+                {/* Relevo Selector (Tabs) */}
+                <div className="flex gap-2 bg-neutral-100 p-1.5 rounded-2xl border border-black/5 overflow-x-auto no-scrollbar">
+                    {[1, 2, 3, 4].map((num) => (
+                        <button
+                            key={num}
+                            onClick={() => setActiveRelevo(num)}
+                            className={cn(
+                                "flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                                activeRelevo === num
+                                    ? "bg-white text-primary shadow-sm ring-1 ring-black/5 translate-y-[-1px]"
+                                    : "text-neutral-400 hover:text-neutral-600"
+                            )}
+                        >
+                            Muda {num}
+                        </button>
+                    ))}
+                </div>
 
                 <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm space-y-4">
                     <div className="flex justify-between items-end">
