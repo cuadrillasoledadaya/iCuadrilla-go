@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.14 (13/01/2026)
+
+- **Corrección Crítica de Base de Datos**: Eliminado campo `evento_id` que provocaba el error "Error al actualizar conexión". Ahora se vincula correctamente por fecha.
+- **Mejora UI**: Añadido espacio extra (padding) al final de los menús desplegables para que los botones de abajo no queden tapados por la barra de navegación del móvil.
+
 ## v1.0.13 (13/01/2026)
 
 - **Corrección Hotfix**: Reparado error de sintaxis en `setStats` que rompía la compilación del detalle del evento.

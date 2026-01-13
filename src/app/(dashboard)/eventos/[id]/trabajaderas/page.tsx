@@ -86,13 +86,17 @@ export default function TrabajaderasAsistencia() {
         if (newStatus === 'delete') {
             await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
         } else {
-            await supabase.from("asistencias").upsert({
+            const { error } = await supabase.from("asistencias").upsert({
                 costalero_id: selectedCostalero.id,
                 fecha: eventDate,
                 estado: newStatus,
-                hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                evento_id: params.id
+                hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
             }, { onConflict: 'costalero_id,fecha' });
+
+            if (error) {
+                console.error(error);
+                alert("Error: " + error.message);
+            }
         }
     };
 
@@ -175,7 +179,7 @@ export default function TrabajaderasAsistencia() {
             {/* Modal de Cambio de Estado */}
             {selectedCostalero && (
                 <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedCostalero(null)}>
-                    <div className="w-full max-w-md bg-white rounded-t-[32px] p-8 space-y-6 animate-in slide-in-from-bottom duration-300" onClick={e => e.stopPropagation()}>
+                    <div className="w-full max-w-md bg-white rounded-t-[32px] p-8 pb-32 space-y-6 animate-in slide-in-from-bottom duration-300" onClick={e => e.stopPropagation()}>
                         <div className="text-center space-y-2">
                             <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight">{selectedCostalero.nombre} {selectedCostalero.apellidos}</h3>
                             <p className="text-sm font-medium text-neutral-400">¿Qué ha pasado con este costalero?</p>
