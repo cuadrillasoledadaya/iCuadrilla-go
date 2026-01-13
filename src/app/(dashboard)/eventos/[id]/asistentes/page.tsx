@@ -93,15 +93,17 @@ export default function AsistentesPage() {
                 .eq("fecha", eventDate)
                 .single();
 
+            const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+
             let error;
             if (existing) {
-                const res = await supabase.from("asistencias").update({ estado: newStatus }).eq("id", existing.id);
+                const res = await supabase.from("asistencias").update({ estado: dbStatus }).eq("id", existing.id);
                 error = res.error;
             } else {
                 const res = await supabase.from("asistencias").insert({
                     costalero_id: selectedCostalero.id,
                     fecha: eventDate,
-                    estado: newStatus
+                    estado: dbStatus
                 });
                 error = res.error;
             }

@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.17 (13/01/2026)
+
+- **Corrección de Texto BD**: Solucionado error `check constraint` donde el servidor esperaba "justificada" (femenino) pero recibía "justificado". Se ha añadido una transformación automática al guardar.
+
 ## v1.0.16 (13/01/2026)
 
 - **Corrección Lógica de Guardado**: Reemplazado `upsert` por una lógica manual de `check -> insert/update` para evitar el error de restricción de base de datos ("unique constraint"). Esto asegura compatibilidad total sin tener que tocar la base de datos.
