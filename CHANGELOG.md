@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.0 (13/01/2026)
+
+- **Gestión de Relevos Táctica**: Implementado sistema de formación del paso por evento.
+- **Intercambio Dinámico (Swap)**: Permite intercambiar o mover costaleros tocando sus posiciones.
+- **Asignación Manual**: Modal de selección con filtros por trabajadera y búsqueda global.
+- **Persistencia en Tiempo Real**: Los relevos se guardan por evento en la base de datos.
+- **Feedback Visual**: Resaltado de selección activa y visualización táctica de las 7 trabajaderas.
+
 ## v1.0.29 (13/01/2026)
 
 - **Mejora en Visibilidad Horaria**: Se ha añadido la hora de finalización de los eventos en las tarjetas de la agenda y en la sección de "Próximo Evento" del Dashboard.
