@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.11 (13/01/2026)
+
+- **Corrección Definitiva Build**: Eliminación de bloque de código duplicado persistente en detalle de evento.
+
 ## v1.0.10 (13/01/2026)
 
 - **Corrección de Build**: Solucionado error crítico en la compilación de la página "Ver por Trabajaderas" debido a código duplicado.
