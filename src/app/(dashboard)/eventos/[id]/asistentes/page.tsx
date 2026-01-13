@@ -40,7 +40,8 @@ export default function AsistentesPage() {
             if (!eventData) return;
             setEvento(eventData);
 
-            const eventDate = new Date(eventData.fecha_inicio).toISOString().split('T')[0];
+            const dateObj = new Date(eventData.fecha_inicio);
+            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
             // 2. Fetch Costaleros & Asistencias
             const [costalerosRes, asistenciasRes] = await Promise.all([
@@ -51,11 +52,11 @@ export default function AsistentesPage() {
             const allCostaleros = costalerosRes.data || [];
             const allAsistencias = asistenciasRes.data || [];
 
-            // 3. Filter Asistentes (Con estado presente o justificada)
+            // 3. Filter Asistentes (Con estado presente, justificada o ausente)
             const filtered = allCostaleros.map(c => {
                 const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
                 return { ...c, estado: asistencia?.estado || null, asistencia_id: asistencia?.id || undefined };
-            }).filter(c => c.estado && (c.estado === 'presente' || c.estado === 'justificada'));
+            }).filter(c => c.estado && (c.estado === 'presente' || c.estado === 'justificada' || c.estado === 'ausente'));
 
             setAsistentes(filtered);
             setLoading(false);
@@ -73,7 +74,8 @@ export default function AsistentesPage() {
         if (!selectedCostalero || !evento) return;
         // setLoading(true); // Removed to rely on optimistic UI and prevent hanging
 
-        const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
+        const dateObj = new Date(evento.fecha_inicio);
+        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
         // Optimistic Update
         if (newStatus === 'delete' || newStatus === 'ausente') {
@@ -94,27 +96,17 @@ export default function AsistentesPage() {
                 alert("Error al limpiar estado: " + deleteError.message);
             }
         } else {
-            // 1. Check if exists
-            const { data: existing } = await supabase.from("asistencias")
-                .select("id")
-                .eq("costalero_id", selectedCostalero.id)
-                .eq("fecha", eventDate)
-                .single();
-
             const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
-            let error;
-            if (existing) {
-                const res = await supabase.from("asistencias").update({ estado: dbStatus }).eq("id", existing.id);
-                error = res.error;
-            } else {
-                const res = await supabase.from("asistencias").insert({
+            const { error } = await supabase
+                .from("asistencias")
+                .upsert({
                     costalero_id: selectedCostalero.id,
                     fecha: eventDate,
                     estado: dbStatus
+                }, {
+                    onConflict: 'costalero_id,fecha'
                 });
-                error = res.error;
-            }
 
             if (error) {
                 console.error(error);
@@ -159,7 +151,9 @@ export default function AsistentesPage() {
                         <div className="flex items-center gap-4">
                             <div className={cn(
                                 "h-10 w-10 rounded-full flex items-center justify-center text-white font-bold",
-                                m.estado === 'presente' ? "bg-emerald-500" : "bg-amber-500"
+                                m.estado === 'presente' ? "bg-emerald-500" :
+                                    m.estado === 'justificada' ? "bg-amber-500" :
+                                        "bg-red-500"
                             )}>
                                 {m.nombre.charAt(0)}
                             </div>
@@ -167,9 +161,11 @@ export default function AsistentesPage() {
                                 <h3 className="font-extrabold text-neutral-900 text-sm tracking-tight italic">{m.nombre} {m.apellidos}</h3>
                                 <div className={cn(
                                     "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
-                                    m.estado === 'presente' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                                    m.estado === 'presente' ? "bg-emerald-50 text-emerald-600" :
+                                        m.estado === 'justificada' ? "bg-amber-50 text-amber-600" :
+                                            "bg-red-50 text-red-600"
                                 )}>
-                                    {m.estado}
+                                    {m.estado === 'justificada' ? 'justificado' : m.estado}
                                 </div>
                             </div>
                         </div>

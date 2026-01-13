@@ -38,7 +38,8 @@ export default function TrabajaderasAsistencia() {
             if (!evento) return;
             setEventoTitulo(evento.titulo);
 
-            const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
+            const dateObj = new Date(evento.fecha_inicio);
+            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
             // 2. Fetch Costaleros & Asistencias (Real Data)
             const [costalerosRes, asistenciasRes] = await Promise.all([
@@ -69,7 +70,8 @@ export default function TrabajaderasAsistencia() {
 
         const { data: evento } = await supabase.from("eventos").select("fecha_inicio").eq("id", params.id).single();
         if (!evento) return;
-        const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
+        const dateObj = new Date(evento.fecha_inicio);
+        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
         // Optimistic Update
         if (newStatus === 'delete') {
@@ -86,27 +88,17 @@ export default function TrabajaderasAsistencia() {
         if (newStatus === 'delete') {
             await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
         } else {
-            // 1. Check if exists
-            const { data: existing } = await supabase.from("asistencias")
-                .select("id")
-                .eq("costalero_id", selectedCostalero.id)
-                .eq("fecha", eventDate)
-                .single();
-
             const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
-            let error;
-            if (existing) {
-                const res = await supabase.from("asistencias").update({ estado: dbStatus }).eq("id", existing.id);
-                error = res.error;
-            } else {
-                const res = await supabase.from("asistencias").insert({
+            const { error } = await supabase
+                .from("asistencias")
+                .upsert({
                     costalero_id: selectedCostalero.id,
                     fecha: eventDate,
                     estado: dbStatus
+                }, {
+                    onConflict: 'costalero_id,fecha'
                 });
-                error = res.error;
-            }
 
             if (error) {
                 console.error(error);

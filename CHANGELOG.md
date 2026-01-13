@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.21 (13/01/2026)
+
+- **Corrección de Fechas y Timezones**: Cambiada la lógica de cálculo de fecha para usar la hora local en lugar de UTC. Esto evita que los registros se guarden en el día anterior/siguiente por error de zona horaria.
+- **Mejora de Visibilidad**: Los costaleros marcados como "Ausente" ahora aparecen en la lista de Asistentes (con indicador rojo) para evitar que desaparezcan de ambas listas.
+- **Sincronización de Agentes**: Verificados y aplicados cambios del equipo de desarrollo para estabilizar el sistema de asistencia.
+
 ## v1.0.20 (13/01/2026)
 
 - **Auto-Refresh al Volver**: Las listas de "Pendientes" y "Asistentes" ahora recargan datos automáticamente cuando vuelves a ellas (al cambiar de pestaña o navegar de vuelta). Esto asegura que al limpiar un estado en Asistentes, el costalero reaparezca correctamente en Pendientes.

@@ -39,7 +39,8 @@ export default function PendientesPage() {
             if (!eventData) return;
             setEvento(eventData);
 
-            const eventDate = new Date(eventData.fecha_inicio).toISOString().split('T')[0];
+            const dateObj = new Date(eventData.fecha_inicio);
+            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
             // 2. Fetch Costaleros & Asistencias
             const [costalerosRes, asistenciasRes] = await Promise.all([
@@ -72,34 +73,25 @@ export default function PendientesPage() {
         if (!selectedCostalero || !evento) return;
         // setLoading(true); // Removed to rely on optimistic UI and prevent hanging
 
-        const eventDate = new Date(evento.fecha_inicio).toISOString().split('T')[0];
+        const dateObj = new Date(evento.fecha_inicio);
+        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
         if (newStatus === 'presente' || newStatus === 'justificado' || newStatus === 'ausente') {
             // Optimistic Update: Remove from list immediately
             setPendientes(prev => prev.filter(p => p.id !== selectedCostalero.id));
             setSelectedCostalero(null);
 
-            // 1. Check if exists
-            const { data: existing } = await supabase.from("asistencias")
-                .select("id")
-                .eq("costalero_id", selectedCostalero.id)
-                .eq("fecha", eventDate)
-                .single();
-
             const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
-            let error;
-            if (existing) {
-                const res = await supabase.from("asistencias").update({ estado: dbStatus }).eq("id", existing.id);
-                error = res.error;
-            } else {
-                const res = await supabase.from("asistencias").insert({
+            const { error } = await supabase
+                .from("asistencias")
+                .upsert({
                     costalero_id: selectedCostalero.id,
                     fecha: eventDate,
                     estado: dbStatus
+                }, {
+                    onConflict: 'costalero_id,fecha'
                 });
-                error = res.error;
-            }
 
             if (error) {
                 console.error("Error updating:", error);
