@@ -198,23 +198,23 @@ export default function DetalleEvento() {
 
             {/* Info Central */}
             <div className={cn(
-                "text-center space-y-3 py-8 rounded-[40px] border shadow-sm transition-all duration-500",
-                evento.estado === 'en-curso' ? "bg-emerald-50/40 border-emerald-100" :
-                    evento.estado === 'finalizado' ? "bg-red-50/40 border-red-100" :
-                        "bg-orange-50/40 border-orange-100"
+                "text-center space-y-3 py-10 rounded-[48px] border shadow-md transition-all duration-500",
+                evento.estado === 'en-curso' ? "bg-emerald-100/60 border-emerald-200" :
+                    evento.estado === 'finalizado' ? "bg-red-100/60 border-red-200" :
+                        "bg-orange-100/60 border-orange-200"
             )}>
                 <div className={cn(
-                    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border mb-2",
-                    evento.estado === 'en-curso' ? "bg-emerald-100/50 border-emerald-200 text-emerald-700" :
-                        evento.estado === 'finalizado' ? "bg-red-100/50 border-red-200 text-red-700" :
-                            "bg-orange-100/50 border-orange-200 text-orange-700"
+                    "inline-flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border mb-2 shadow-sm",
+                    evento.estado === 'en-curso' ? "bg-emerald-200/80 border-emerald-300 text-emerald-900" :
+                        evento.estado === 'finalizado' ? "bg-red-200/80 border-red-300 text-red-900" :
+                            "bg-orange-200/80 border-orange-300 text-orange-900"
                 )}>
-                    {evento.estado === 'en-curso' ? <Activity size={12} className="animate-pulse" /> :
-                        evento.estado === 'finalizado' ? <CheckCircle2 size={12} /> : <Timer size={12} />}
+                    {evento.estado === 'en-curso' ? <Activity size={14} className="animate-pulse" /> :
+                        evento.estado === 'finalizado' ? <CheckCircle2 size={14} /> : <Timer size={14} />}
                     {evento.estado.replace('-', ' ')}
                 </div>
-                <h2 className="text-4xl font-black text-neutral-900 uppercase tracking-tighter px-4">{evento.titulo}</h2>
-                <p className="text-neutral-500 font-bold capitalize text-sm">
+                <h2 className="text-4xl font-black text-neutral-900 uppercase tracking-tighter px-6">{evento.titulo}</h2>
+                <p className="text-neutral-600 font-bold capitalize text-sm">
                     {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </p>
             </div>
