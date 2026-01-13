@@ -33,6 +33,52 @@ export default function DetalleEvento() {
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [loading, setLoading] = useState(true);
 
+    const handleDelete = async () => {
+        if (!evento) return;
+
+        const confirmDelete = window.confirm(
+            `¿Estás seguro de que deseas eliminar el evento "${evento.titulo}"? \n\nESTA ACCIÓN ELIMINARÁ TAMBIÉN TODAS LAS ASISTENCIAS registradas para este día (${new Date(evento.fecha_inicio).toLocaleDateString()}) y no se puede deshacer.`
+        );
+
+        if (!confirmDelete) return;
+
+        setLoading(true);
+        try {
+            // 1. Obtener la fecha exacta del evento para limpiar asistencias
+            const dateObj = new Date(evento.fecha_inicio);
+            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+
+            // 2. Borrar asistencias asociadas (Limpieza de residuos)
+            const { error: assistError } = await supabase
+                .from("asistencias")
+                .delete()
+                .eq("fecha", eventDate);
+
+            if (assistError) {
+                console.error("Error al borrar asistencias:", assistError);
+                // No detenemos el borrado del evento, pero avisamos
+            }
+
+            // 3. Borrar el evento
+            const { error: eventError } = await supabase
+                .from("eventos")
+                .delete()
+                .eq("id", evento.id);
+
+            if (eventError) {
+                alert("Error al borrar el evento: " + eventError.message);
+                setLoading(false);
+                return;
+            }
+
+            router.push("/eventos");
+        } catch (err) {
+            console.error("Error inesperado al borrar:", err);
+            alert("Error inesperado al borrar el evento.");
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             const { data: eventData } = await supabase
@@ -114,10 +160,16 @@ export default function DetalleEvento() {
                     <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">{evento.titulo}</h1>
                 </div>
                 <div className="flex gap-2">
-                    <button className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors">
+                    <button
+                        onClick={() => router.push(`/eventos/${params.id}/editar`)}
+                        className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors"
+                    >
                         <Pencil size={20} />
                     </button>
-                    <button className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors">
+                    <button
+                        onClick={handleDelete}
+                        className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors"
+                    >
                         <Trash2 size={20} />
                     </button>
                 </div>

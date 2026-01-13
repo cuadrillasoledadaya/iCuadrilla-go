@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.26 (13/01/2026)
+
+- **Gestión Completa de Eventos**: Implementada la capacidad de editar y borrar eventos.
+- **Borrado Inteligente**: Al eliminar un evento, se limpian automáticamente todas las asistencias asociadas de ese día para evitar residuos en la base de datos.
+- **Página de Edición**: Nueva interfaz para modificar convocatorias existentes con carga de datos automática.
+
 ## v1.0.25 (13/01/2026)
 
 - **Superadmin God Mode**: Implementado acceso total (`ALL`) para el rol Superadmin en todas las tablas de la base de datos (`costaleros`, `asistencias`, `eventos`, `anuncios`, `temporadas`).
