@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.20 (13/01/2026)
+
+- **Auto-Refresh al Volver**: Las listas de "Pendientes" y "Asistentes" ahora recargan datos automáticamente cuando vuelves a ellas (al cambiar de pestaña o navegar de vuelta). Esto asegura que al limpiar un estado en Asistentes, el costalero reaparezca correctamente en Pendientes.
+- **Manejo de Errores Delete**: Añadido feedback si el borrado de estado falla.
+
 ## v1.0.19 (13/01/2026)
 
 - **Corrección UX (Spinner Infinito)**: Eliminado el estado de carga (`setLoading`) al cambiar estados. Al haber quitado la recarga de página, el spinner se quedaba bloqueado para siempre. Ahora la actualización es instantánea y sin bloqueos.

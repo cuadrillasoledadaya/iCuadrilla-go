@@ -34,6 +34,7 @@ export default function AsistentesPage() {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             // 1. Fetch Evento
             const { data: eventData } = await supabase.from("eventos").select("*").eq("id", params.id).single();
             if (!eventData) return;
@@ -50,20 +51,23 @@ export default function AsistentesPage() {
             const allCostaleros = costalerosRes.data || [];
             const allAsistencias = asistenciasRes.data || [];
 
-            // 3. Filter Asistentes (Presente/Justificado)
-            const filtered = allCostaleros.filter(c => {
+            // 3. Filter Asistentes (Con estado presente o justificada)
+            const filtered = allCostaleros.map(c => {
                 const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
-                return asistencia && (asistencia.estado === 'presente' || asistencia.estado === 'justificado');
-            }).map(c => {
-                const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
-                return { ...c, estado: asistencia.estado, asistencia_id: asistencia.id };
-            });
+                return { ...c, estado: asistencia?.estado || null, asistencia_id: asistencia?.id || undefined };
+            }).filter(c => c.estado && (c.estado === 'presente' || c.estado === 'justificada'));
 
             setAsistentes(filtered);
             setLoading(false);
         };
+
         fetchData();
-    }, [params.id]); // Removed selectedCostalero to avoid race condition
+
+        // Re-fetch when window regains focus
+        const handleFocus = () => fetchData();
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [params.id]);
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero || !evento) return;
@@ -84,7 +88,11 @@ export default function AsistentesPage() {
         setSelectedCostalero(null);
 
         if (newStatus === 'delete') {
-            await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
+            const { error: deleteError } = await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
+            if (deleteError) {
+                console.error("Delete Error:", deleteError);
+                alert("Error al limpiar estado: " + deleteError.message);
+            }
         } else {
             // 1. Check if exists
             const { data: existing } = await supabase.from("asistencias")

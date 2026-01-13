@@ -33,6 +33,7 @@ export default function PendientesPage() {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             // 1. Fetch Evento
             const { data: eventData } = await supabase.from("eventos").select("*").eq("id", params.id).single();
             if (!eventData) return;
@@ -49,11 +50,7 @@ export default function PendientesPage() {
             const allCostaleros = costalerosRes.data || [];
             const allAsistencias = asistenciasRes.data || [];
 
-            // 3. Filter Pendientes (NO presente/justificado/ausente o Explicitamente Ausente si queremos ver a los que faltan)
-            // Lógica actual: Pendientes son los que NO tienen ningún registro en asistencias.
-            // OJO: Si tienen 'ausente' ¿son pendientes? Según el usuario "Ver Pendientes deben aparecer todos y a medida que se les da un estado deben desaparecer".
-            // Entonces, si tiene estado 'ausente' YA TIENE ESTADO, así que desaparece de pendientes.
-
+            // 3. Filter Pendientes (NO tiene registro en asistencias)
             const filtered = allCostaleros.filter(c => {
                 const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
                 return !asistencia; // Si NO tiene asistencia, es pendiente.
@@ -62,8 +59,14 @@ export default function PendientesPage() {
             setPendientes(filtered);
             setLoading(false);
         };
+
         fetchData();
-    }, [params.id]); // Removed selectedCostalero to avoid race condition/overwriting optimistic UI
+
+        // Re-fetch when window regains focus (e.g., navigating back from Asistentes)
+        const handleFocus = () => fetchData();
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [params.id]);
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente') => {
         if (!selectedCostalero || !evento) return;
