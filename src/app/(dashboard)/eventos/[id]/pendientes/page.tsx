@@ -63,7 +63,7 @@ export default function PendientesPage() {
             setLoading(false);
         };
         fetchData();
-    }, [params.id, selectedCostalero]);
+    }, [params.id]); // Removed selectedCostalero to avoid race condition/overwriting optimistic UI
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente') => {
         if (!selectedCostalero || !evento) return;

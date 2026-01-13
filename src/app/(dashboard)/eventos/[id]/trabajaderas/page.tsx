@@ -61,7 +61,7 @@ export default function TrabajaderasAsistencia() {
             setLoading(false);
         };
         fetchData();
-    }, [params.id]);
+    }, [params.id]); // Removed selectedCostalero to avoid race condition
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero) return;

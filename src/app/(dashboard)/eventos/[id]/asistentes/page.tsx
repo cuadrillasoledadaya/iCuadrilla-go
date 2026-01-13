@@ -63,7 +63,7 @@ export default function AsistentesPage() {
             setLoading(false);
         };
         fetchData();
-    }, [params.id, selectedCostalero]); // Reload when selected changes (after update)
+    }, [params.id]); // Removed selectedCostalero to avoid race condition
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero || !evento) return;
