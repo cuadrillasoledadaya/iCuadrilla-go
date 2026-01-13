@@ -28,10 +28,11 @@ export default function DashboardPage() {
     const { setSidebarOpen } = useLayout();
     const [userName, setUserName] = useState("Usuario");
     const [stats, setStats] = useState<Stats>({
-        totalCostaleros: 35,
+        totalCostaleros: 0,
         eventosPendientes: 0,
         asistencias: { total: 0, presentes: 0, porcentaje: 0 }
     });
+    const [proximoEvento, setProximoEvento] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,14 +42,57 @@ export default function DashboardPage() {
                 setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario");
             }
 
+            // 1. Obtener cuadrilla
             const { count: total } = await supabase.from("costaleros").select("*", { count: 'exact', head: true });
 
-            setStats({
-                totalCostaleros: total || 35,
-                eventosPendientes: 0,
-                asistencias: { total: 35, presentes: 0, porcentaje: 0 }
-            });
+            // 2. Obtener próximo evento
+            const now = new Date().toISOString();
+            const [eventosRes, proximosRes] = await Promise.all([
+                supabase.from("eventos").select("*").neq("estado", "finalizado"),
+                supabase.from("eventos")
+                    .select("*")
+                    .gte("fecha_inicio", now)
+                    .order("fecha_inicio", { ascending: true })
+                    .limit(1)
+                    .single()
+            ]);
 
+            const pendientesCount = eventosRes.data?.length || 0;
+            const proximo = proximosRes.data;
+
+            // 3. Estadísticas de asistencia (Último evento finalizado)
+            const { data: ultimoEvento } = await supabase
+                .from("eventos")
+                .select("*")
+                .eq("estado", "finalizado")
+                .order("fecha_inicio", { ascending: false })
+                .limit(1)
+                .single();
+
+            let asistenciaStats = { total: total || 35, presentes: 0, porcentaje: 0 };
+
+            if (ultimoEvento) {
+                const eventDate = new Date(ultimoEvento.fecha_inicio).toISOString().split('T')[0];
+                const { data: asistencias } = await supabase
+                    .from("asistencias")
+                    .select("estado")
+                    .eq("fecha", eventDate);
+
+                const presentes = asistencias?.filter(a => a.estado === 'presente').length || 0;
+                const totalAsistencias = asistencias?.length || total || 1;
+                asistenciaStats = {
+                    total: total || 35,
+                    presentes,
+                    porcentaje: Math.round((presentes / totalAsistencias) * 100)
+                };
+            }
+
+            setStats({
+                totalCostaleros: total || 0,
+                eventosPendientes: pendientesCount,
+                asistencias: asistenciaStats
+            });
+            setProximoEvento(proximo);
             setLoading(false);
         };
         fetchDashboardData();
@@ -92,22 +136,51 @@ export default function DashboardPage() {
                     <Calendar size={18} className="text-neutral-400" />
                     <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">PRÓXIMO EVENTO</h2>
                 </div>
-                <div className="bg-white p-10 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-3 min-h-[140px]">
-                    <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center text-neutral-300">
-                        <Calendar size={24} />
+
+                {proximoEvento ? (
+                    <div className="bg-orange-50/50 border border-orange-100 p-8 rounded-[40px] shadow-sm flex flex-col space-y-4">
+                        <div className="flex justify-between items-start">
+                            <div className="space-y-1">
+                                <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight leading-none">{proximoEvento.titulo}</h3>
+                                <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest">{proximoEvento.tipo}</p>
+                            </div>
+                            <div className="p-3 bg-white/80 rounded-2xl text-orange-600 shadow-sm border border-orange-100">
+                                <Clock size={24} />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-6 pt-2">
+                            <div className="flex items-center gap-2">
+                                <span className="text-neutral-500 font-bold text-xs">
+                                    {new Date(proximoEvento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                </span>
+                            </div>
+                            <div className="h-4 w-[1px] bg-neutral-200" />
+                            <div className="flex items-center gap-2">
+                                <span className="text-neutral-900 font-black text-sm">
+                                    {new Date(proximoEvento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-neutral-400 font-bold italic text-sm">No hay eventos próximos programados</p>
-                </div>
+                ) : (
+                    <div className="bg-white p-10 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-3 min-h-[140px]">
+                        <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center text-neutral-300">
+                            <Calendar size={24} />
+                        </div>
+                        <p className="text-neutral-400 font-bold italic text-sm">No hay eventos próximos programados</p>
+                    </div>
+                )}
             </div>
 
             {/* Avisos Recientes */}
             <div className="space-y-4">
                 <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">Avisos Recientes</h2>
-                <div className="bg-white p-10 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
-                    <div className="p-5 rounded-full bg-primary/5 text-primary/30">
-                        <Bell size={48} />
+                <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                    <div className="p-4 rounded-full bg-primary/5 text-primary/20">
+                        <Bell size={32} />
                     </div>
-                    <p className="text-neutral-500 font-bold text-sm">No hay avisos nuevos en el tablón</p>
+                    <p className="text-neutral-400 font-bold text-xs italic uppercase tracking-wider">Tablón de anuncios vacío</p>
                 </div>
             </div>
 
@@ -116,20 +189,20 @@ export default function DashboardPage() {
                 <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">Estadísticas</h2>
                 <div className="grid grid-cols-2 gap-4">
                     {/* Eventos Card */}
-                    <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4 border-l-4 border-l-amber-500">
-                        <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+                    <div className="bg-amber-50/50 p-7 rounded-[40px] border border-amber-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="p-3 rounded-2xl bg-white shadow-sm text-amber-600">
                             <Calendar size={28} />
                         </div>
                         <div className="space-y-1">
                             <p className="text-4xl font-black text-neutral-900">{stats.eventosPendientes}</p>
                             <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Eventos</p>
-                            <p className="text-[9px] text-neutral-500 font-bold">Pendientes</p>
+                            <p className="text-[9px] text-amber-700 font-black uppercase tracking-tighter">Pendientes</p>
                         </div>
                     </div>
 
                     {/* Asistido Card */}
-                    <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4 border-l-4 border-l-emerald-500">
-                        <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
+                    <div className="bg-emerald-50/50 p-7 rounded-[40px] border border-emerald-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="p-3 rounded-2xl bg-white shadow-sm text-emerald-600">
                             <CheckCircle2 size={28} />
                         </div>
                         <div className="space-y-1">
@@ -138,23 +211,26 @@ export default function DashboardPage() {
                                 <p className="text-xl font-bold text-neutral-400">/{stats.asistencias.total}</p>
                             </div>
                             <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Asistencia</p>
-                            <p className="text-[10px] text-emerald-600 font-black">{stats.asistencias.porcentaje}%</p>
+                            <p className="text-[10px] text-emerald-700 font-black">{stats.asistencias.porcentaje}% Media</p>
                         </div>
                     </div>
 
                     {/* Cuadrilla Card */}
-                    <div className="col-span-2 bg-white p-6 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4 border-l-4 border-l-primary">
-                        <div className="p-3 rounded-2xl bg-primary/5 text-primary">
+                    <div className="col-span-2 bg-blue-50/50 p-7 rounded-[40px] border border-blue-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="p-3 rounded-2xl bg-white shadow-sm text-primary">
                             <Users size={28} />
                         </div>
                         <div className="space-y-1">
                             <p className="text-4xl font-black text-neutral-900">{stats.totalCostaleros}</p>
-                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Cuadrilla</p>
-                            <p className="text-[9px] text-primary font-black uppercase">Hermandad</p>
+                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Miembros en Cuadrilla</p>
+                            <p className="text-[9px] text-primary font-black uppercase tracking-widest">Gestión Activa</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+        </div >
     );
 }

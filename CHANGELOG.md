@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.0.28 (13/01/2026)
+
+- **Corrección Horaria Crítica**: Solucionado el desfase de 1 hora al guardar eventos. Ahora se utiliza UTC ISO de forma estricta.
+- **Dashboard Real**: Activada la sección de "Próximo Evento" con datos reales de la base de datos y estadísticas actualizadas.
+- **Refuerzo de Color**: Intensificados los tonos pastel en las tarjetas de eventos para mejorar la visibilidad y el contraste.
+
 ## v1.0.27 (13/01/2026)
 
 - **Estados Dinámicos Automáticos**: Los eventos cambian de estado (`Pendiente`, `En Curso`, `Finalizado`) automáticamente basándose en la hora actual.

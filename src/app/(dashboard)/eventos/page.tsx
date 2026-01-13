@@ -54,17 +54,17 @@ export default function AgendaEventos() {
 
     const getStatusStyle = (estado: string) => {
         switch (estado) {
-            case 'en-curso': return 'bg-emerald-100/50 border-emerald-200 text-emerald-700';
-            case 'finalizado': return 'bg-red-100/50 border-red-200 text-red-700';
-            default: return 'bg-orange-100/50 border-orange-200 text-orange-700';
+            case 'en-curso': return 'bg-emerald-200/80 border-emerald-300 text-emerald-900';
+            case 'finalizado': return 'bg-red-200/80 border-red-300 text-red-900';
+            default: return 'bg-orange-200/80 border-orange-300 text-orange-900';
         }
     };
 
     const getCardStyle = (estado: string) => {
         switch (estado) {
-            case 'en-curso': return 'bg-emerald-50/40 border-emerald-100/50';
-            case 'finalizado': return 'bg-red-50/40 border-red-100/50';
-            default: return 'bg-orange-50/40 border-orange-100/50';
+            case 'en-curso': return 'bg-emerald-100/60 border-emerald-200 shadow-emerald-100/20';
+            case 'finalizado': return 'bg-red-100/60 border-red-200 shadow-red-100/20';
+            default: return 'bg-orange-100/60 border-orange-200 shadow-orange-100/20';
         }
     };
 

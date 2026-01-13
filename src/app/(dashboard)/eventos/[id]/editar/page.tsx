@@ -71,8 +71,15 @@ export default function EditarEvento() {
         setSaving(true);
 
         try {
-            const fechaInicio = `${form.fecha}T${form.hora_inicio}:00`;
-            const fechaFin = form.hora_fin ? `${form.fecha}T${form.hora_fin}:00` : null;
+            // Crear objeto Date local y convertir a ISO (UTC) para Supabase
+            const localInicio = new Date(`${form.fecha}T${form.hora_inicio}:00`);
+            const fechaInicio = localInicio.toISOString();
+
+            let fechaFin = null;
+            if (form.hora_fin) {
+                const localFin = new Date(`${form.fecha}T${form.hora_fin}:00`);
+                fechaFin = localFin.toISOString();
+            }
 
             const { error } = await supabase
                 .from("eventos")
