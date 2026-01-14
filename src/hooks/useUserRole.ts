@@ -19,6 +19,14 @@ export function useUserRole() {
 
                 setUserId(user.id);
 
+                // SUPERADMIN OVERRIDE
+                // "proyectoszipi@gmail.com" debe tener acceso total siempre.
+                // En este hook, isCostalero = false implica acceso de Admin/Capataz.
+                if (user.email === 'proyectoszipi@gmail.com') {
+                    setIsCostalero(false);
+                    return;
+                }
+
                 // Comprobar si el ID del usuario existe en la tabla de costaleros
                 // Asumimos que si está en la tabla costaleros, es un costalero
                 // Si tienes un campo específico 'rol' en public.users o similar, úsalo aquí.

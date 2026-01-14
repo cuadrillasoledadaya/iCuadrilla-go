@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.29 (14/01/2026)
+
+- **Hotfix de Permisos**: Restaurado el acceso total de Superadmin para la cuenta principal (`proyectoszipi@gmail.com`), asegurando que siempre tenga rol de gestión independientemente de si está vinculado a un costalero.
+
 ## v1.1.28 (14/01/2026)
 
 - **Corrección de Enlaces de Email**: Los correos de autenticación ahora usarán siempre el dominio de producción si está configurado, evitando enlaces a `localhost` que fallan al abrirse desde dispositivos móviles.
