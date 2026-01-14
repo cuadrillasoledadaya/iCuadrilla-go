@@ -12,4 +12,3 @@ Este workflow automatiza el despliegue a GitHub y fuerza el redeploy en Vercel.
 3. git pull --rebase
 4. git push
 5. $version = (Get-Content package.json | ConvertFrom-Json).version; git tag "v$version"; git push origin "v$version"
-6. git commit --allow-empty -m "chore: trigger Vercel redeploy"; git push origin main

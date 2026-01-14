@@ -31,7 +31,9 @@ export default function CuadrillaList() {
 
     useEffect(() => {
         const fetchCuadrilla = async () => {
-            const { data } = await supabase.from("costaleros").select("*").order("apellidos");
+            const { data } = await supabase.from("costaleros").select("*")
+                .order("trabajadera", { ascending: true })
+                .order("apellidos", { ascending: true });
             if (data) setCostaleros(data);
             setLoading(false);
         };

@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.30 (14/01/2026)
+
+- **Mejora en Listado Cuadrilla**: La lista de hermanos costaleros ahora se ordena automáticamente por número de trabajadera y luego por apellido, facilitando la visualización por palos.
+
 ## v1.1.29 (14/01/2026)
 
 - **Hotfix de Permisos**: Restaurado el acceso total de Superadmin para la cuenta principal (`proyectoszipi@gmail.com`), asegurando que siempre tenga rol de gestión independientemente de si está vinculado a un costalero.
