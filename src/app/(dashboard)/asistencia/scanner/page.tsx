@@ -91,6 +91,25 @@ function ScannerContent() {
             return;
         }
 
+        // 1. Verificar si ya existe un registro para este evento
+        const { data: existing, error: checkError } = await supabase
+            .from("asistencias")
+            .select("estado")
+            .eq("costalero_id", costalero.id)
+            .eq("evento_id", eventoId)
+            .maybeSingle();
+
+        if (checkError) {
+            console.error("Error checking existence:", checkError);
+        }
+
+        if (existing) {
+            setMessage(`Info: ${costalero.nombre} ya estaba registrado en este evento (Estado: ${existing.estado?.toUpperCase()}).`);
+            setLoading(false);
+            return;
+        }
+
+        // 2. Si no existe, registrar
         const { error: insertError } = await supabase
             .from("asistencias")
             .insert([{
@@ -102,7 +121,7 @@ function ScannerContent() {
 
         if (insertError) {
             if (insertError.code === '23505') {
-                setMessage(`Info: ${costalero.nombre} ya estaba registrado en este evento.`);
+                setMessage(`Info: ${costalero.nombre} ya estaba registrado.`);
             } else {
                 setMessage(`Error al registrar: ${insertError.message}`);
             }
@@ -140,7 +159,9 @@ function ScannerContent() {
                     "p-4 rounded-xl text-center font-bold text-sm animate-in fade-in slide-in-from-bottom-4 transition-all",
                     message.includes("Error") || message.includes("no reconocido")
                         ? "bg-red-50 text-red-600 border border-red-100"
-                        : "bg-green-50 text-green-700 border border-green-100"
+                        : message.includes("Info")
+                            ? "bg-blue-50 text-blue-700 border border-blue-100"
+                            : "bg-green-50 text-green-700 border border-green-100"
                 )}>
                     {message}
                 </div>

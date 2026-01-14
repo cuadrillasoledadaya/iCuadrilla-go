@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.17 (14/01/2026)
+
+- **Prevención de Duplicados en QR**: El escáner ahora comprueba si un costalero ya ha sido registrado antes de intentar guardarlo.
+- **Feedback Mejorado**: Mostrará un mensaje informativo azul indicando el estado actual (ej: "Ya registrado - Estado: PRESENTE") en lugar de dar un error genérico.
+
 ## v1.1.16 (14/01/2026)
 
 - **Sincronización Definitiva (v1.0.21 Legacy)**:
