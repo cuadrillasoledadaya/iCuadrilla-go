@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUserRole } from "@/hooks/useUserRole";
 import { User, Ruler, MapPin, BadgeCheck, Mail } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function PerfilPage() {
     const { userId, isCostalero } = useUserRole();
@@ -102,6 +103,28 @@ export default function PerfilPage() {
                                 <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Trabajadera</span>
                             </div>
                         </div>
+                    </div>
+
+                    {/* QR Code Section */}
+                    <div className="pt-6 w-full flex flex-col items-center gap-4">
+                        <div className="bg-white p-4 rounded-2xl border-2 border-black/5 shadow-sm">
+                            {profile.qr_code ? (
+                                <QRCodeSVG
+                                    value={profile.qr_code}
+                                    size={180}
+                                    level="H"
+                                    includeMargin
+                                    className="rounded-lg"
+                                />
+                            ) : (
+                                <div className="w-[180px] h-[180px] bg-neutral-100 rounded-lg flex items-center justify-center text-center p-4">
+                                    <span className="text-xs text-neutral-400 font-bold">Código QR no disponible</span>
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest text-center w-2/3">
+                            Muestra este código al capataz para registrar tu asistencia
+                        </p>
                     </div>
                 </div>
             </div>
