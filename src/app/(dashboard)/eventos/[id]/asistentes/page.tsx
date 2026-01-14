@@ -40,13 +40,10 @@ export default function AsistentesPage() {
             if (!eventData) return;
             setEvento(eventData);
 
-            const dateObj = new Date(eventData.fecha_inicio);
-            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-
             // 2. Fetch Costaleros & Asistencias
             const [costalerosRes, asistenciasRes] = await Promise.all([
                 supabase.from("costaleros").select("*").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
-                supabase.from("asistencias").select("*").eq("fecha", eventDate)
+                supabase.from("asistencias").select("*").eq("evento_id", params.id)
             ]);
 
             const allCostaleros = costalerosRes.data || [];
@@ -99,7 +96,7 @@ export default function AsistentesPage() {
                     alert("Error al limpiar: " + deleteError.message);
                 }
             } else {
-                const { error: deleteError } = await query.eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
+                const { error: deleteError } = await query.eq("costalero_id", selectedCostalero.id).eq("evento_id", params.id);
                 if (deleteError) {
                     console.error("Delete Error by Filter:", deleteError);
                     alert("Error al limpiar: " + deleteError.message);
@@ -112,10 +109,10 @@ export default function AsistentesPage() {
                 .from("asistencias")
                 .upsert({
                     costalero_id: selectedCostalero.id,
-                    fecha: eventDate,
+                    evento_id: params.id,
                     estado: dbStatus
                 }, {
-                    onConflict: 'costalero_id,fecha'
+                    onConflict: 'costalero_id,evento_id'
                 });
 
             if (error) {

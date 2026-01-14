@@ -6,7 +6,11 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { useSearchParams } from "next/navigation";
+
 export default function AsistenciaScanner() {
+    const searchParams = useSearchParams();
+    const eventoId = searchParams.get("evento");
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -95,18 +99,25 @@ export default function AsistenciaScanner() {
             return;
         }
 
+        if (!eventoId) {
+            setMessage("Error: No se ha especificado el evento.");
+            setLoading(false);
+            return;
+        }
+
         // 2. Registrar asistencia
         const { error: insertError } = await supabase
             .from("asistencias")
             .insert([{
                 costalero_id: costalero.id,
+                evento_id: eventoId,
                 estado: "presente",
                 fecha: new Date().toISOString().split('T')[0]
             }]);
 
         if (insertError) {
             if (insertError.code === '23505') {
-                setMessage(`Info: ${costalero.nombre} ya estaba registrado hoy.`);
+                setMessage(`Info: ${costalero.nombre} ya estaba registrado en este evento.`);
             } else {
                 setMessage(`Error al registrar: ${insertError.message}`);
             }

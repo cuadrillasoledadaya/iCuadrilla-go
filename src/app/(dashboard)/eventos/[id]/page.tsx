@@ -111,15 +111,10 @@ export default function DetalleEvento() {
 
                 setEvento(eventData);
 
-                // Obtener fecha del evento (YYYY-MM-DD)
-                // Nota: Asumimos que la fecha de inicio es la fecha de la asistencia
-                // y que se guarda en UTC/ISO.
-                const eventDate = new Date(eventData.fecha_inicio).toISOString().split('T')[0];
-
                 // Hacer consultas en paralelo para velocidad
                 const [costalerosRes, asistenciasRes] = await Promise.all([
                     supabase.from("costaleros").select("id", { count: "exact", head: true }),
-                    supabase.from("asistencias").select("estado").eq("fecha", eventDate)
+                    supabase.from("asistencias").select("estado").eq("evento_id", params.id)
                 ]);
 
                 const totalCostaleros = costalerosRes.count || 0;
