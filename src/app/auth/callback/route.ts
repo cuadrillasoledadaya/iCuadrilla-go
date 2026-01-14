@@ -42,7 +42,9 @@ export async function GET(request: Request) {
 
         if (!error) {
             console.log('Intercambio exitoso. Usuario:', data.user?.email);
-            return NextResponse.redirect(`${origin}${next}`)
+            // Handle password recovery redirect
+            const redirectPath = next.startsWith('/nueva-contrasena') ? '/nueva-contrasena' : next;
+            return NextResponse.redirect(`${origin}${redirectPath}`)
         }
 
         console.error('Error Supabase exchangeCodeForSession:', error.message, error.status);

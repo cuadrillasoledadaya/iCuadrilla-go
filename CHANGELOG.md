@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.19 (14/01/2026)
+
+- **Gestión de Contraseñas**: Nueva pantalla `/ajustes` para cambiar contraseña desde el dashboard.
+- **Recuperar Contraseña**: Flujo completo de "Olvidé mi contraseña" desde el login con email de recuperación.
+- **Nueva Contraseña**: Página para establecer nueva contraseña tras recibir el enlace de recuperación.
+- **UX Mejorada**: Enlace visible en el login para recuperación de acceso.
+
 ## v1.1.18 (14/01/2026)
 
 - **Centrado de Encabezados**: Unificación estética de todas las pantallas con títulos centrados y botones laterales equilibrados.

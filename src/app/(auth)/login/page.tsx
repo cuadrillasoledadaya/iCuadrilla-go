@@ -90,9 +90,14 @@ export default function LoginPage() {
                     </Button>
                 </form>
 
-                <p className="text-center text-sm text-neutral-400">
-                    ¿No tienes cuenta? <Link href="/registro" className="text-white hover:underline">Regístrate aquí</Link>
-                </p>
+                <div className="text-center space-y-3">
+                    <Link href="/recuperar" className="text-sm text-neutral-500 hover:text-white transition-colors">
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                    <p className="text-sm text-neutral-400">
+                        ¿No tienes cuenta? <Link href="/registro" className="text-white hover:underline">Regístrate aquí</Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
