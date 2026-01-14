@@ -14,7 +14,8 @@ import {
     Settings,
     LogOut,
     ChevronDown,
-    X
+    X,
+    Lock
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 { label: "Inicio", href: "/dashboard", icon: Home },
                 { label: "Tablón de Anuncios", href: "/anuncios", icon: Bell },
                 { label: "Calendario de Eventos", href: "/eventos", icon: Calendar },
+                { label: "Ajustes", href: "/ajustes", icon: Lock },
             ]
         },
         {

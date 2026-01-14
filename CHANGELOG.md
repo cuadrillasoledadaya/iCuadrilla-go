@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.20 (14/01/2026)
+
+- **Corrección UI**: Añadido enlace "Ajustes" (🔒) en el menú lateral para acceder a la gestión de contraseñas.
+
 ## v1.1.19 (14/01/2026)
 
 - **Gestión de Contraseñas**: Nueva pantalla `/ajustes` para cambiar contraseña desde el dashboard.
