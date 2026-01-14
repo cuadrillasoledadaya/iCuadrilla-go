@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.21 (14/01/2026)
+
+- **Rediseño de Login**: Nueva pantalla de acceso estilo "Dark Mode" corporativo.
+  - Escudo de la Hermandad integrado.
+  - Colores corporativos (Verde Esmeralda/Negro).
+  - UI modernizada con inputs oscuros y tipografía serif.
+
 ## v1.1.20 (14/01/2026)
 
 - **Corrección UI**: Añadido enlace "Ajustes" (🔒) en el menú lateral para acceder a la gestión de contraseñas.
