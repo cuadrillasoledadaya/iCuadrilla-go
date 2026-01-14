@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
 import { useSearchParams } from "next/navigation";
 
-export default function AsistenciaScanner() {
+// Sub-componente que usa useSearchParams
+function ScannerContent() {
     const searchParams = useSearchParams();
     const eventoId = searchParams.get("evento");
     const [scanResult, setScanResult] = useState<string | null>(null);
@@ -22,27 +22,18 @@ export default function AsistenciaScanner() {
         mountedRef.current = true;
 
         const initializeScanner = async () => {
-            // Prevenir doble inicialización
             if (scannerRef.current) return;
-
             try {
-                // Crear instancia
                 const html5QrCode = new Html5Qrcode("reader");
                 scannerRef.current = html5QrCode;
-
-                // Configuración de arranque
                 const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-                // Iniciar cámara trasera explícitamente
                 await html5QrCode.start(
                     { facingMode: "environment" },
                     config,
                     onScanSuccess,
                     onScanError
                 );
-
                 if (mountedRef.current) setHasPermission(true);
-
             } catch (err) {
                 console.error("Error starting scanner:", err);
                 if (mountedRef.current) {
@@ -52,7 +43,6 @@ export default function AsistenciaScanner() {
             }
         };
 
-        // Pequeño delay para asegurar que el DOM está listo
         const timer = setTimeout(() => {
             initializeScanner();
         }, 500);
@@ -70,7 +60,6 @@ export default function AsistenciaScanner() {
     }, []);
 
     const onScanSuccess = (decodedText: string) => {
-        // Pausar escaneo al detectar éxito
         if (scannerRef.current) {
             scannerRef.current.pause();
         }
@@ -78,15 +67,12 @@ export default function AsistenciaScanner() {
         registrarAsistencia(decodedText);
     };
 
-    const onScanError = (errorMessage: string) => {
-        // Ignorar errores de "no QR found"
-    };
+    const onScanError = (errorMessage: string) => { };
 
     const registrarAsistencia = async (qrCode: string) => {
         setLoading(true);
         setMessage("Buscando costalero...");
 
-        // 1. Buscar costalero por QR
         const { data: costalero, error: searchError } = await supabase
             .from("costaleros")
             .select("id, nombre, apellidos")
@@ -105,7 +91,6 @@ export default function AsistenciaScanner() {
             return;
         }
 
-        // 2. Registrar asistencia
         const { error: insertError } = await supabase
             .from("asistencias")
             .insert([{
@@ -138,14 +123,13 @@ export default function AsistenciaScanner() {
 
     return (
         <div className="max-w-md mx-auto p-4 space-y-6">
-            <h2 className="text-xl font-bold text-center text-primary">Escáner de Asistencia</h2>
+            <h2 className="text-xl font-bold text-center text-primary uppercase tracking-tight">Escáner de Asistencia</h2>
 
-            {/* Contenedor del scanner */}
             <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 relative min-h-[300px] flex flex-col justify-center">
                 {!hasPermission && hasPermission !== null && (
                     <div className="text-white text-center p-4">
-                        <p className="mb-2">⚠️</p>
-                        <p>Se requiere permiso de cámara</p>
+                        <p className="mb-2 text-2xl">⚠️</p>
+                        <p className="font-bold">Se requiere permiso de cámara</p>
                     </div>
                 )}
                 <div id="reader" className="w-full h-full"></div>
@@ -165,16 +149,29 @@ export default function AsistenciaScanner() {
             {scanResult && (
                 <Button
                     onClick={handleReset}
-                    className="w-full h-12 rounded-xl text-md font-bold shadow-lg"
+                    className="w-full h-14 rounded-2xl text-md font-black shadow-lg uppercase"
                 >
                     Escanear Siguiente
                 </Button>
             )}
             {!scanResult && !loading && (
-                <p className="text-center text-xs text-neutral-400 uppercase tracking-widest mt-4">
-                    Enfoca el código QR
+                <p className="text-center text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em] mt-4">
+                    Enfoca el código QR del costalero
                 </p>
             )}
         </div>
+    );
+}
+
+// Página principal envuelta en Suspense
+export default function AsistenciaScanner() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+            </div>
+        }>
+            <ScannerContent />
+        </Suspense>
     );
 }
