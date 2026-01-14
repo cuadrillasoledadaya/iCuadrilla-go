@@ -9,7 +9,6 @@ import { useLayout } from "./layout-context";
 const navItems = [
     { label: "Inicio", href: "/dashboard", icon: Home },
     { label: "Eventos", href: "/eventos", icon: Calendar },
-    { label: "Relevos", href: "/relevos", icon: Repeat },
     { label: "Cuadrilla", href: "/cuadrilla", icon: Users },
     { label: "Temporadas", href: "/temporadas", icon: BarChart },
 ];
@@ -26,7 +25,7 @@ export function Navbar() {
             "fixed bottom-6 left-1/2 -translate-x-1/2 w-[94%] max-w-md h-20 z-[100] glass-card rounded-[2.5rem] px-2 shadow-[0_12px_40px_rgba(0,0,0,0.15)] border border-white/50 transition-all duration-300 ease-in-out",
             isSidebarOpen ? "translate-y-[200%] opacity-0" : "translate-y-0 opacity-100"
         )}>
-            <div className="grid grid-cols-5 h-full items-center">
+            <div className="grid grid-cols-4 h-full items-center">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     // El inicio se marca activo tanto en / como en /dashboard
