@@ -30,7 +30,17 @@ export default function RecuperarPage() {
             return;
         }
 
-        // 2. Si existe, enviar correo de recuperación
+        // 2. Verificar si el hermano ya se ha registrado (tiene cuenta activa)
+        const { data: isRegistered, error: regError } = await supabase
+            .rpc("es_email_registrado", { email_input: cleanEmail });
+
+        if (regError || !isRegistered) {
+            setError("Este email está autorizado pero aún NO has creado tu cuenta. Por favor, regístrate primero.");
+            setLoading(false);
+            return;
+        }
+
+        // 3. Si existe y está registrado, enviar correo de recuperación
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(
             cleanEmail,
             {

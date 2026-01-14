@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -38,16 +39,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         getUser();
     }, []);
 
+    const { isCostalero, loading } = useUserRole();
+
     const menuGroups = [
         {
             items: [
                 { label: "Inicio", href: "/dashboard", icon: Home },
+                // Mostrar "Mi Perfil" solo para costaleros
+                ...(isCostalero ? [{ label: "Mi Perfil", href: "/perfil", icon: Users }] : []),
                 { label: "Tablón de Anuncios", href: "/anuncios", icon: Bell },
                 { label: "Calendario de Eventos", href: "/eventos", icon: Calendar },
-                { label: "Ajustes", href: "/ajustes", icon: Lock },
+                // Ocultar ajustes para costaleros por ahora si no es relevante
+                ...(!isCostalero ? [{ label: "Ajustes", href: "/ajustes", icon: Lock }] : []),
             ]
         },
-        {
+        // Ocultar grupo de gestión para costaleros
+        ...(!isCostalero ? [{
             title: "GESTIÓN",
             items: [
                 { label: "Nuevo Evento", href: "/eventos/nuevo", icon: PlusCircle },
@@ -56,7 +63,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 { label: "Exportar Datos", href: "/exportar", icon: Download },
                 { label: "Configurar Temporada", href: "/temporadas", icon: Settings },
             ]
-        }
+        }] : [])
     ];
 
     const handleSignOut = async () => {
@@ -160,7 +167,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.26</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.27</p>
                     </div>
                 </div>
             </aside>
