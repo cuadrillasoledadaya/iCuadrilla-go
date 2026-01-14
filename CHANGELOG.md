@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.26 (14/01/2026)
+
+- **Mejora UX Recuperación**: Ahora el sistema verifica si el email existe en la base de datos de la Hermandad antes de intentar enviar el correo de recuperación, dando feedback inmediato si no está registrado.
+
 ## v1.1.25 (14/01/2026)
 
 - **Corrección Crítica**: Solucionado el problema con el enlace "¿Olvidaste tu contraseña?" que redirigía al login. Se han abierto las rutas de `/recuperar` y `/auth` en el middleware.

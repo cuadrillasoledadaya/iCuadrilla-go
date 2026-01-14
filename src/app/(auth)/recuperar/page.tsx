@@ -18,8 +18,21 @@ export default function RecuperarPage() {
         setLoading(true);
         setError("");
 
+        const cleanEmail = email.trim().toLowerCase();
+
+        // 1. Verificar si el email existe en la base de datos (whitelist)
+        const { data: isAuthorized, error: rpcError } = await supabase
+            .rpc("es_email_autorizado", { email_input: cleanEmail });
+
+        if (rpcError || !isAuthorized) {
+            setError("Este email no figura en nuestra base de datos de hermanos.");
+            setLoading(false);
+            return;
+        }
+
+        // 2. Si existe, enviar correo de recuperación
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-            email.trim().toLowerCase(),
+            cleanEmail,
             {
                 redirectTo: `${window.location.origin}/auth/callback?next=/nueva-contrasena`,
             }
