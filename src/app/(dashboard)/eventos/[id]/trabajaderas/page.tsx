@@ -42,10 +42,10 @@ export default function TrabajaderasAsistencia() {
             const dateObj = new Date(evento.fecha_inicio);
             const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
-            // 2. Fetch Costaleros & Asistencias (Real Data)
+            // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
             const [costalerosRes, asistenciasRes] = await Promise.all([
                 supabase.from("costaleros").select("*").order("trabajadera").order("apellidos"),
-                supabase.from("asistencias").select("*").eq("fecha", eventDate)
+                supabase.from("asistencias").select("*").eq("evento_id", params.id)
             ]);
 
             const allCostaleros = costalerosRes.data || [];
@@ -56,24 +56,18 @@ export default function TrabajaderasAsistencia() {
                 return {
                     ...c,
                     estado: asistencia?.estado,
-                    hora: asistencia?.hora, // Si tienes columna hora
-                    asistencia_id: asistencia?.id // Map asistencia_id from the database records.
+                    hora: asistencia?.hora,
+                    asistencia_id: asistencia?.id
                 };
             }) as Costalero[]);
 
             setLoading(false);
         };
         fetchData();
-    }, [params.id]); // Removed selectedCostalero to avoid race condition
+    }, [params.id]);
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero) return;
-        // removing setLoading(true) to avoid UI flicker on optimistic update
-
-        const { data: evento } = await supabase.from("eventos").select("fecha_inicio").eq("id", params.id).single();
-        if (!evento) return;
-        const dateObj = new Date(evento.fecha_inicio);
-        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
         // Optimistic Update
         if (newStatus === 'delete') {
@@ -88,12 +82,8 @@ export default function TrabajaderasAsistencia() {
         setSelectedCostalero(null);
 
         if (newStatus === 'delete') {
-            const query = supabase.from("asistencias").delete();
-            if (selectedCostalero.asistencia_id) {
-                await query.eq("id", selectedCostalero.asistencia_id);
-            } else {
-                await query.eq("costalero_id", selectedCostalero.id).eq("fecha", eventDate);
-            }
+            const query = supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("evento_id", params.id);
+            await query;
         } else {
             const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
@@ -101,10 +91,10 @@ export default function TrabajaderasAsistencia() {
                 .from("asistencias")
                 .upsert({
                     costalero_id: selectedCostalero.id,
-                    fecha: eventDate,
+                    evento_id: params.id,
                     estado: dbStatus
                 }, {
-                    onConflict: 'costalero_id,fecha'
+                    onConflict: 'costalero_id,evento_id'
                 });
 
             if (error) {

@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.16 (14/01/2026)
+
+- **Sincronización Definitiva (v1.0.21 Legacy)**:
+  - **Base de Datos**: Eliminada restricción `unique_asistencia` que impedía múltiples registros por día.
+  - **Multi-Evento**: Ahora el sistema admite que un costalero tenga asistencias diferentes en varios eventos el mismo día.
+  - **Estandarización**: Unificada toda la lógica de `Pendientes`, `Asistentes` y `Trabajaderas` para usar exclusivamente `evento_id` y `upsert`.
+  - **Limpieza Automática**: Eliminados registros corruptos sin ID de evento.
+
 ## v1.1.03 (13/01/2026)
 
 - **Corrección de Relevos**: Restaurada la funcionalidad de intercambio (swap) entre huecos que se había bloqueado por el modal.
