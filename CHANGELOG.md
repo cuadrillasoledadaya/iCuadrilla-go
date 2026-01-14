@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.28 (14/01/2026)
+
+- **Corrección de Enlaces de Email**: Los correos de autenticación ahora usarán siempre el dominio de producción si está configurado, evitando enlaces a `localhost` que fallan al abrirse desde dispositivos móviles.
+
 ## v1.1.27 (14/01/2026)
 
 - **Mejora Recuperación**: Añadida detección detallada. El sistema diferencia entre "Email no autorizado" y "Email autorizado pero no registrado", guiando al usuario a registrarse si aún no lo ha hecho en lugar de enviar un correo fallido.

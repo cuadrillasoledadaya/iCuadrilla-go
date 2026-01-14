@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { getSiteUrl } from "@/lib/utils";
 
 export default function RegistroPage() {
     const [email, setEmail] = useState("");
@@ -38,7 +39,7 @@ export default function RegistroPage() {
             email: cleanEmail,
             password,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
+                emailRedirectTo: `${getSiteUrl()}auth/callback`,
             }
         });
 
