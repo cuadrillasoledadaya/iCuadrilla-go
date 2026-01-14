@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.25 (14/01/2026)
+
+- **Corrección Crítica**: Solucionado el problema con el enlace "¿Olvidaste tu contraseña?" que redirigía al login. Se han abierto las rutas de `/recuperar` y `/auth` en el middleware.
+
 ## v1.1.24 (14/01/2026)
 
 - **Corrección de Logo 2.0**: Eliminados los artefactos visuales (bordes blancos superiores) para un fondo negro totalmente integrado.

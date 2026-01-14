@@ -58,7 +58,9 @@ export async function middleware(request: NextRequest) {
 
     // Protección de rutas
     const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
-        request.nextUrl.pathname.startsWith('/registro')
+        request.nextUrl.pathname.startsWith('/registro') ||
+        request.nextUrl.pathname.startsWith('/recuperar') ||
+        request.nextUrl.pathname.startsWith('/auth')
     const isRootPage = request.nextUrl.pathname === '/'
 
     // Si no hay usuario y no estamos en login/registro o la raíz, redirigir a login
