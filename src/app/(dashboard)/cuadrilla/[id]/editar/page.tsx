@@ -98,16 +98,16 @@ export default function EditarCostalero() {
 
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 max-w-2xl mx-auto">
-            <header className="flex items-center gap-4">
+            <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
                     onClick={() => router.back()}
-                    className="p-3 glass rounded-2xl text-neutral-400 hover:text-white transition-colors"
+                    className="absolute left-0 p-3 bg-white/5 border border-white/10 rounded-2xl text-neutral-400 hover:text-white transition-colors"
                 >
                     <ChevronLeft size={24} />
                 </button>
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black tracking-tight uppercase">Editar Datos</h1>
-                    <p className="text-neutral-500 font-medium">Actualización de Expediente</p>
+                <div className="text-center space-y-0.5">
+                    <h1 className="text-2xl font-black tracking-tight uppercase text-white">Editar Datos</h1>
+                    <p className="text-neutral-500 text-[10px] font-black uppercase tracking-widest">Actualización de Expediente</p>
                 </div>
             </header>
 

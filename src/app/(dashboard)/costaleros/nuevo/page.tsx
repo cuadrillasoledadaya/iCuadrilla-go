@@ -54,8 +54,11 @@ export default function AltaCostalero() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-6 space-y-8 bg-neutral-950 rounded-xl border border-neutral-800">
-            <h2 className="text-2xl font-bold text-white">Alta de Costalero</h2>
+        <div className="max-w-2xl mx-auto p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
+            <header className="text-center space-y-1">
+                <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Alta de Costalero</h1>
+                <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Nuevo Expediente</p>
+            </header>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

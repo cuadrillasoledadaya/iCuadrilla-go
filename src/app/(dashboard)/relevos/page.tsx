@@ -66,15 +66,13 @@ export default function GestionRelevos() {
     };
 
     return (
-        <div className="p-4 space-y-6">
-            <header className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-white">Gestión de Relevos</h1>
-                    <p className="text-sm text-neutral-400">Selecciona dos para intercambiar</p>
-                </div>
+        <div className="p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
+            <header className="relative flex flex-col items-center justify-center min-h-[64px] text-center">
+                <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Gestión de Relevos</h1>
+                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5">Selecciona dos para intercambiar</p>
                 {selected && (
-                    <div className="bg-white text-black px-4 py-2 rounded-full text-xs font-bold animate-pulse">
-                        INTERCAMBIAR CON: {selected.nombre.toUpperCase()}
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest animate-pulse shadow-lg shadow-primary/20">
+                        Intercambiar con: {selected.nombre}
                     </div>
                 )}
             </header>

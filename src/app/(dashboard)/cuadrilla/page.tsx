@@ -51,14 +51,14 @@ export default function CuadrillaList() {
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
             {/* Header */}
-            <header className="flex justify-between items-center">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black tracking-tighter uppercase text-neutral-900 italic">La Cuadrilla</h1>
+            <header className="relative flex items-center justify-center min-h-[64px]">
+                <div className="text-center space-y-0.5">
+                    <h1 className="text-2xl font-black tracking-tighter uppercase text-neutral-900 italic">La Cuadrilla</h1>
                     <p className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">Listado de Hermanos Costaleros</p>
                 </div>
                 <button
                     onClick={() => router.push('/costaleros/nuevo')}
-                    className="p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
+                    className="absolute right-0 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
                 >
                     <UserPlus size={24} />
                 </button>

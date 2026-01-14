@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.18 (14/01/2026)
+
+- **Centrado de Encabezados**: Unificación estética de todas las pantallas con títulos centrados y botones laterales equilibrados.
+- **Consistencia Visual**: Estandarización de fondos (`#FAFAFA`) y tipografía `font-black` en toda la zona de administración.
+- **UX Optimizada**: Mejor disposición de botones de acción en Relevos y Cuadrilla para evitar solapamientos en dispositivos móviles.
+
 ## v1.1.17 (14/01/2026)
 
 - **Prevención de Duplicados en QR**: El escáner ahora comprueba si un costalero ya ha sido registrado antes de intentar guardarlo.

@@ -73,14 +73,14 @@ export default function NuevoEvento() {
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
             {/* Header */}
-            <header className="flex items-center gap-4">
+            <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
                     onClick={() => router.back()}
-                    className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
                 >
                     <ChevronLeft size={24} />
                 </button>
-                <div className="space-y-0.5">
+                <div className="text-center space-y-0.5">
                     <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Crear Evento</h1>
                     <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Nueva Convocatoria</p>
                 </div>

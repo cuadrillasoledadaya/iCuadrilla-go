@@ -130,16 +130,16 @@ export default function AgendaEventos() {
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
             {/* Header */}
-            <header className="flex items-center gap-4">
+            <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
                     onClick={() => router.back()}
-                    className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
                 >
                     <ChevronLeft size={24} />
                 </button>
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black tracking-tight uppercase text-neutral-900">Agenda de Eventos</h1>
-                    <p className="text-neutral-500 font-bold italic text-xs tracking-wide">Temporada 2025</p>
+                <div className="text-center space-y-0.5">
+                    <h1 className="text-2xl font-black tracking-tight uppercase text-neutral-900">Agenda de Eventos</h1>
+                    <p className="text-neutral-500 font-bold italic text-[10px] tracking-widest uppercase">Temporada 2025</p>
                 </div>
             </header>
 

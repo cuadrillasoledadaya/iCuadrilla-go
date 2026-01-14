@@ -172,7 +172,7 @@ export default function DetalleEvento() {
                 >
                     <ChevronLeft size={24} />
                 </button>
-                <h1 className="text-xl font-black uppercase tracking-tighter text-neutral-900 text-center px-12">
+                <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12">
                     {evento.titulo}
                 </h1>
                 <div className="absolute right-0 flex gap-2">
