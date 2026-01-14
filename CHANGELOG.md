@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.23 (14/01/2026)
+
+- **Corrección de Logo**: Actualización definitiva del escudo con fondo negro puro y eliminación de resplandores para el login.
+
 ## v1.1.22 (14/01/2026)
 
 - **Actualización de Assets**: Sustituido el logo de la Hermandad por la versión oficial con fondo negro para mejor integración en el modo oscuro.
