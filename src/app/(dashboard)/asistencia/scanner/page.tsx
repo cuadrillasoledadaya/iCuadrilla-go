@@ -5,12 +5,16 @@ import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useUserRole } from "@/hooks/useUserRole";
+import { QrCode } from "lucide-react";
 
 // Sub-componente que usa useSearchParams
 function ScannerContent() {
     const searchParams = useSearchParams();
+    const router = useRouter(); // Asegurarse de importar useRouter arriba si no existe
     const eventoId = searchParams.get("evento");
+    const { isCostalero, loading: roleLoading } = useUserRole();
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -19,8 +23,16 @@ function ScannerContent() {
     const mountedRef = useRef(false);
 
     useEffect(() => {
+        if (roleLoading) return;
+        if (isCostalero) {
+            // Redirigir o bloquear
+            // Podemos redirigir al dashboard
+            return;
+        }
+
         mountedRef.current = true;
 
+        // ... rest of init logic only if !isCostalero
         const initializeScanner = async () => {
             if (scannerRef.current) return;
             try {
@@ -139,6 +151,19 @@ function ScannerContent() {
             scannerRef.current.resume();
         }
     };
+
+    if (!roleLoading && isCostalero) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4 p-6">
+                <div className="p-4 bg-red-50 rounded-full text-red-500">
+                    <QrCode size={48} />
+                </div>
+                <h2 className="text-xl font-black text-neutral-900">Acceso Restringido</h2>
+                <p className="text-neutral-500">Lo sentimos, esta función es exclusiva para administradores y capataces.</p>
+                <Button onClick={() => router.push('/dashboard')} variant="outline">Volver al Inicio</Button>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-md mx-auto p-4 space-y-6">

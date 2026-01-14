@@ -12,6 +12,7 @@ import {
     ChevronRight,
 } from "lucide-react";
 import { useLayout } from "@/components/layout-context";
+import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
 
 interface Stats {
@@ -26,6 +27,7 @@ interface Stats {
 
 export default function DashboardPage() {
     const { setSidebarOpen } = useLayout();
+    const { isCostalero } = useUserRole();
     const [userName, setUserName] = useState("Usuario");
     const [stats, setStats] = useState<Stats>({
         totalCostaleros: 0,
@@ -118,7 +120,9 @@ export default function DashboardPage() {
                     <div className="space-y-0.5">
                         <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">SUPERADMIN</span>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                                {isCostalero ? "COSTALERO" : "SUPERADMIN"}
+                            </span>
                             <span className="text-neutral-300">•</span>
                             <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada 2025</span>
                         </div>

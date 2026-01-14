@@ -21,6 +21,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface Evento {
     id: string;
@@ -32,6 +33,7 @@ interface Evento {
 export default function DetalleEvento() {
     const params = useParams();
     const router = useRouter();
+    const { isCostalero } = useUserRole();
     const [evento, setEvento] = useState<Evento | null>(null);
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [loading, setLoading] = useState(true);
@@ -142,11 +144,17 @@ export default function DetalleEvento() {
     }, [params.id]);
 
     const actionButtons = [
-        { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` },
+        // Ocultar acciones de gestión para costaleros
+        ...(!isCostalero ? [
+            { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }
+        ] : []),
         { label: "VER POR TRABAJADERAS", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
         { label: "WHATSAPP", icon: Share2, color: "bg-green-500 shadow-green-200", href: `https://wa.me/?text=Asistencia` },
-        { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
-        { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` },
+        // Ocultar acciones de gestión para costaleros
+        ...(!isCostalero ? [
+            { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
+            { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` }
+        ] : []),
     ];
 
     if (loading) return (
@@ -175,20 +183,22 @@ export default function DetalleEvento() {
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12">
                     {evento.titulo}
                 </h1>
-                <div className="absolute right-0 flex gap-2">
-                    <button
-                        onClick={() => router.push(`/eventos/${params.id}/editar`)}
-                        className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors"
-                    >
-                        <Pencil size={20} />
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors"
-                    >
-                        <Trash2 size={20} />
-                    </button>
-                </div>
+                {!isCostalero && (
+                    <div className="absolute right-0 flex gap-2">
+                        <button
+                            onClick={() => router.push(`/eventos/${params.id}/editar`)}
+                            className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors"
+                        >
+                            <Pencil size={20} />
+                        </button>
+                        <button
+                            onClick={handleDelete}
+                            className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors"
+                        >
+                            <Trash2 size={20} />
+                        </button>
+                    </div>
+                )}
             </header>
 
             {/* Info Central */}
