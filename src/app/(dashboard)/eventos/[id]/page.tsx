@@ -165,17 +165,17 @@ export default function DetalleEvento() {
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
             {/* Header */}
-            <header className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => router.back()}
-                        className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-                    >
-                        <ChevronLeft size={24} />
-                    </button>
-                    <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">{evento.titulo}</h1>
-                </div>
-                <div className="flex gap-2">
+            <header className="relative flex items-center justify-center min-h-[64px]">
+                <button
+                    onClick={() => router.back()}
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors z-10"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <h1 className="text-xl font-black uppercase tracking-tighter text-neutral-900 text-center px-12">
+                    {evento.titulo}
+                </h1>
+                <div className="absolute right-0 flex gap-2">
                     <button
                         onClick={() => router.push(`/eventos/${params.id}/editar`)}
                         className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors"

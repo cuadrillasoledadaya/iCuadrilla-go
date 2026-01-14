@@ -107,13 +107,16 @@ export default function PendientesPage() {
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
             {/* Header */}
-            <header className="flex items-center gap-4">
-                <button onClick={() => router.back()} className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors">
+            <header className="relative flex items-center justify-center min-h-[64px]">
+                <button
+                    onClick={() => router.back()}
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors z-10"
+                >
                     <ChevronLeft size={24} />
                 </button>
-                <div>
-                    <h1 className="text-xl font-black uppercase tracking-tight text-neutral-900">Pendientes</h1>
-                    <p className="text-xs text-neutral-400 font-bold uppercase tracking-widest">{pendientes.length} POR LLEGAR</p>
+                <div className="text-center">
+                    <h1 className="text-xl font-black uppercase tracking-tighter text-neutral-900">Pendientes</h1>
+                    <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{pendientes.length} por llegar</p>
                 </div>
             </header>
 
