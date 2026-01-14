@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.24 (14/01/2026)
+
+- **Corrección de Logo 2.0**: Eliminados los artefactos visuales (bordes blancos superiores) para un fondo negro totalmente integrado.
+
 ## v1.1.23 (14/01/2026)
 
 - **Corrección de Logo**: Actualización definitiva del escudo con fondo negro puro y eliminación de resplandores para el login.
