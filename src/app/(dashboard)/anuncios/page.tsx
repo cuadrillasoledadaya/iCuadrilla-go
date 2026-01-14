@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export default function TablonAnuncios() {
     const [anuncios, setAnuncios] = useState<any[]>([]);
@@ -31,6 +32,8 @@ export default function TablonAnuncios() {
         setLoading(false);
     };
 
+    const { isCostalero } = useUserRole();
+
     return (
         <div className="p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
             <header className="text-center space-y-1">
@@ -38,25 +41,27 @@ export default function TablonAnuncios() {
                 <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Comunicados Oficiales</p>
             </header>
 
-            <form onSubmit={publicar} className="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-4">
-                <Input
-                    placeholder="Título del anuncio"
-                    value={nuevo.titulo}
-                    onChange={(e) => setNuevo({ ...nuevo, titulo: e.target.value })}
-                    className="bg-neutral-950 border-neutral-800"
-                    required
-                />
-                <textarea
-                    placeholder="Contenido..."
-                    value={nuevo.contenido}
-                    onChange={(e) => setNuevo({ ...nuevo, contenido: e.target.value })}
-                    className="w-full min-h-[100px] p-3 rounded-md bg-neutral-950 border border-neutral-800 text-sm text-white focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                    required
-                />
-                <Button disabled={loading} className="w-full bg-white text-black font-bold">
-                    {loading ? "Publicando..." : "Publicar Anuncio"}
-                </Button>
-            </form>
+            {!isCostalero && (
+                <form onSubmit={publicar} className="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-4">
+                    <Input
+                        placeholder="Título del anuncio"
+                        value={nuevo.titulo}
+                        onChange={(e) => setNuevo({ ...nuevo, titulo: e.target.value })}
+                        className="bg-neutral-950 border-neutral-800"
+                        required
+                    />
+                    <textarea
+                        placeholder="Contenido..."
+                        value={nuevo.contenido}
+                        onChange={(e) => setNuevo({ ...nuevo, contenido: e.target.value })}
+                        className="w-full min-h-[100px] p-3 rounded-md bg-neutral-950 border border-neutral-800 text-sm text-white focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                        required
+                    />
+                    <Button disabled={loading} className="w-full bg-white text-black font-bold">
+                        {loading ? "Publicando..." : "Publicar Anuncio"}
+                    </Button>
+                </form>
+            )}
 
             <div className="space-y-4">
                 {anuncios.map(a => (

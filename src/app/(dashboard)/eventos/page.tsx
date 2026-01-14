@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface Evento {
     id: string;
@@ -30,6 +31,7 @@ interface Evento {
 
 export default function AgendaEventos() {
     const router = useRouter();
+    const { isCostalero } = useUserRole();
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -220,12 +222,14 @@ export default function AgendaEventos() {
             </div>
 
             {/* FAB */}
-            <button
-                onClick={() => router.push('/eventos/nuevo')}
-                className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
-            >
-                <Plus size={32} strokeWidth={3} />
-            </button>
+            {!isCostalero && (
+                <button
+                    onClick={() => router.push('/eventos/nuevo')}
+                    className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
+                >
+                    <Plus size={32} strokeWidth={3} />
+                </button>
+            )}
         </div>
     );
 }
