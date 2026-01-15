@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.59 (15/01/2026)
+
+- **Corrección en Notificaciones**: Se ha ajustado la lógica de regeneración de avisos de aniversario para que solo se vuelvan a crear para el rol que los ha borrado, evitando interferencias entre Administradores y Costaleros.
+- **Mejora de Roles**: Perfeccionada la detección de perfiles Administrador/Capataz para usuarios que no están en la tabla de costaleros.
+- **Sincronización UI**: El borrado individual de notificaciones ahora actualiza correctamente los contadores en toda la aplicación.
+
 ## v1.1.58 (15/01/2026)
 
 - **Roles y Notificaciones**: Implementación de soporte para **Roles Duales**. Ahora los usuarios pueden ser identificados como Administradores y Costaleros simultáneamente.

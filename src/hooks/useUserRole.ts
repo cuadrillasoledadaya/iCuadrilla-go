@@ -22,30 +22,24 @@ export function useUserRole() {
 
                 setUserId(user.id);
 
-                // Admin identification
-                const isAdminEmail = user.email === 'proyectoszipi@gmail.com';
-                setIsAdmin(isAdminEmail);
+                // 1. Identificar por Email Maestro
+                const isMasterAdmin = user.email === 'proyectoszipi@gmail.com';
 
-                // Costalero identification
-                const { data, error } = await supabase
+                // 2. Buscar en tabla costaleros
+                const { data: costaleroData } = await supabase
                     .from('costaleros')
                     .select('id')
                     .eq('user_id', user.id)
                     .single();
 
-                if (data) {
+                if (costaleroData) {
                     setIsCostalero(true);
-                    setCostaleroId(data.id);
+                    setCostaleroId(costaleroData.id);
+                    // Si está en la tabla costaleros, solo es admin si es el email maestro
+                    setIsAdmin(isMasterAdmin);
                 } else {
                     setIsCostalero(false);
-                }
-
-                // If not identified by specialized admin email but not in costaleros,
-                // we might treat them as admin by default for transition or if the system allows it.
-                // However, based on requirements, we now want explicit independence.
-                // If it's not the zipi email AND they are not in costaleros, we'll assume they are an "other" admin
-                // (e.g. Capataz) unless we have a 'roles' table.
-                if (!isAdminEmail && !data) {
+                    // Si no está en la tabla costaleros, lo tratamos como Admin (Capataz)
                     setIsAdmin(true);
                 }
 

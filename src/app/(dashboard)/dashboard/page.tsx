@@ -188,8 +188,8 @@ export default function DashboardPage() {
                     }
                 }
 
-                // 2. Create/Check COSTALERO Notification (if possible)
-                if (costalero.id) {
+                // 2. Create/Check COSTALERO Notification (Only if the CURRENT user is that costalero)
+                if (isCostalero && costaleroId === costalero.id) {
                     const { data: costNotif } = await supabase
                         .from("notificaciones")
                         .select("id")
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                             .from("notificaciones")
                             .insert({
                                 titulo: notificationTitle,
-                                mensaje: `¡Enhorabuena! Este año ${currentYear} cumples 25 años como costalero de esta cuadrilla. 🎉`,
+                                mensaje: `¡Enhorabuena! Este año ${currentYear} cumples 25 años en la cuadrilla. Gracias por tu entrega y devoción.`,
                                 tipo: 'aniversario',
                                 leido: false,
                                 costalero_id: costalero.id,

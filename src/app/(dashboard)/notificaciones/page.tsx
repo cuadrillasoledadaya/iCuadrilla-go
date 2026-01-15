@@ -217,6 +217,7 @@ export default function NotificacionesPage() {
     const deleteNotification = async (id: string) => {
         setNotificaciones(prev => prev.filter(n => n.id !== id));
         await supabase.from("notificaciones").delete().eq("id", id);
+        router.refresh();
     };
 
     if (roleLoading || loading) return (
@@ -326,7 +327,7 @@ export default function NotificacionesPage() {
                                     </div>
 
                                     {/* Actions (Only for Admins/Capataces and Absence type) */}
-                                    {!isCostalero && notif.tipo === 'ausencia' && (
+                                    {isAdmin && notif.tipo === 'ausencia' && (
                                         <div className="flex flex-col gap-2 pt-2 border-t border-black/5 mt-3">
                                             <div className="flex items-center gap-2">
                                                 <button
