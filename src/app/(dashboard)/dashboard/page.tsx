@@ -220,7 +220,7 @@ export default function DashboardPage() {
                         {/* Simple Dots Indicator (Visual Only for now) */}
                         <div className="flex justify-center gap-1.5">
                             {proximosEventos.map((_: any, idx: number) => (
-                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-orange-400 w-4" : "bg-neutral-200")} />
+                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-primary w-4" : "bg-neutral-200")} />
                             ))}
                         </div>
                     </div>
@@ -269,7 +269,7 @@ export default function DashboardPage() {
                         {/* Simple Dots Indicator */}
                         <div className="flex justify-center gap-1.5">
                             {avisos.map((_: any, idx: number) => (
-                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-neutral-800 w-4" : "bg-neutral-200")} />
+                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-primary w-4" : "bg-neutral-200")} />
                             ))}
                         </div>
                     </div>

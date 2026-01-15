@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.42 (15/01/2026)
+
+- **Corrección Visual**: Actualizados los indicadores de carrusel (puntos de navegación) al color corporativo (Verde Hermandad).
+
 ## v1.1.41 (15/01/2026)
 
 - **Identidad Corporativa**: Cambio del color primario a "Verde Hermandad" para cumplir con la identidad visual corporativa (Verde/Negro).
