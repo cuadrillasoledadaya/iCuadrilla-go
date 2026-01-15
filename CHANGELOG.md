@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.36 (15/01/2026)
+
+- **Corrección de Despliegue**: Solucionado un error de compilación que impedía la correcta visualización del dashboard. Se han aplicado correcciones de tipado y estilos para los carruseles.
+
 ## v1.1.35 (15/01/2026)
 
 - **Carruseles Completos**: Implementado el diseño de carrusel horizontal también para los "Avisos Recientes". Ahora el Dashboard presenta una interfaz unificada y compacta para revisar tanto la agenda como las notificaciones.

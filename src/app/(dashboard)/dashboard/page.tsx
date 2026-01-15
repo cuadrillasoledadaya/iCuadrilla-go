@@ -34,7 +34,7 @@ export default function DashboardPage() {
         eventosPendientes: 0,
         asistencias: { total: 0, presentes: 0, porcentaje: 0 }
     });
-    const [proximoEvento, setProximoEvento] = useState<any>(null);
+    const [proximosEventos, setProximosEventos] = useState<any[]>([]);
     const [avisos, setAvisos] = useState<any[]>([]); // New State
     const [loading, setLoading] = useState(true);
 
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                         {/* Carousel Container */}
                         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar">
-                            {proximosEventos.map((evento) => (
+                            {proximosEventos.map((evento: any) => (
                                 <div
                                     key={evento.id}
                                     className="snap-center shrink-0 w-[85%] bg-orange-50/50 border border-orange-100 p-6 rounded-[32px] shadow-sm flex flex-col justify-between min-h-[160px]"
@@ -219,7 +219,7 @@ export default function DashboardPage() {
 
                         {/* Simple Dots Indicator (Visual Only for now) */}
                         <div className="flex justify-center gap-1.5">
-                            {proximosEventos.map((_, idx) => (
+                            {proximosEventos.map((_: any, idx: number) => (
                                 <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-orange-400 w-4" : "bg-neutral-200")} />
                             ))}
                         </div>
@@ -247,7 +247,7 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                         {/* Carousel Container */}
                         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar">
-                            {avisos.map((aviso) => (
+                            {avisos.map((aviso: any) => (
                                 <div
                                     key={aviso.id}
                                     className="snap-center shrink-0 w-[85%] bg-white p-6 rounded-[32px] border border-black/5 shadow-sm space-y-3 flex flex-col min-h-[140px]"
@@ -268,7 +268,7 @@ export default function DashboardPage() {
 
                         {/* Simple Dots Indicator */}
                         <div className="flex justify-center gap-1.5">
-                            {avisos.map((_, idx) => (
+                            {avisos.map((_: any, idx: number) => (
                                 <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-neutral-800 w-4" : "bg-neutral-200")} />
                             ))}
                         </div>
