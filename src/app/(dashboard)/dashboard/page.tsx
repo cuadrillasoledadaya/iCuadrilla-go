@@ -35,6 +35,7 @@ export default function DashboardPage() {
         asistencias: { total: 0, presentes: 0, porcentaje: 0 }
     });
     const [proximoEvento, setProximoEvento] = useState<any>(null);
+    const [avisos, setAvisos] = useState<any[]>([]); // New State
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -47,20 +48,25 @@ export default function DashboardPage() {
             // 1. Obtener cuadrilla
             const { count: total } = await supabase.from("costaleros").select("*", { count: 'exact', head: true });
 
-            // 2. Obtener próximo evento
+            // 2. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
-            const [eventosRes, proximosRes] = await Promise.all([
+            const [eventosRes, proximosRes, anunciosRes] = await Promise.all([
                 supabase.from("eventos").select("*").neq("estado", "finalizado"),
                 supabase.from("eventos")
                     .select("*")
                     .gte("fecha_inicio", now)
                     .order("fecha_inicio", { ascending: true })
                     .limit(1)
-                    .single()
+                    .single(),
+                supabase.from("anuncios")
+                    .select("*")
+                    .order("created_at", { ascending: false })
+                    .limit(3)
             ]);
 
             const pendientesCount = eventosRes.data?.length || 0;
             const proximo = proximosRes.data;
+            const avisosData = anunciosRes.data || [];
 
             // 3. Estadísticas de asistencia (Último evento finalizado)
             const { data: ultimoEvento } = await supabase
@@ -95,10 +101,49 @@ export default function DashboardPage() {
                 asistencias: asistenciaStats
             });
             setProximoEvento(proximo);
+            setAvisos(avisosData);
             setLoading(false);
         };
         fetchDashboardData();
     }, []);
+
+    // ... (rest of render logic remains until "Avisos Recientes" section)
+
+    {/* Avisos Recientes */ }
+    <div className="space-y-4">
+        <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">Avisos Recientes</h2>
+            {avisos.length > 0 && (
+                <a href="/anuncios" className="text-[10px] font-bold text-primary hover:underline">VER TODO</a>
+            )}
+        </div>
+
+        {avisos.length > 0 ? (
+            <div className="space-y-3">
+                {avisos.map((aviso) => (
+                    <div key={aviso.id} className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm space-y-2">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-neutral-100 rounded-full text-neutral-500">
+                                <Bell size={16} />
+                            </div>
+                            <h3 className="font-bold text-neutral-900 text-sm">{aviso.titulo}</h3>
+                        </div>
+                        <p className="text-xs text-neutral-500 line-clamp-2 pl-11">{aviso.contenido}</p>
+                        <p className="text-[9px] text-neutral-400 pl-11 font-bold uppercase tracking-wider">
+                            {new Date(aviso.created_at).toLocaleDateString()}
+                        </p>
+                    </div>
+                ))}
+            </div>
+        ) : (
+            <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                <div className="p-4 rounded-full bg-primary/5 text-primary/20">
+                    <Bell size={32} />
+                </div>
+                <p className="text-neutral-400 font-bold text-xs italic uppercase tracking-wider">Tablón de anuncios vacío</p>
+            </div>
+        )}
+    </div>
 
     if (loading) return (
         <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
@@ -180,13 +225,38 @@ export default function DashboardPage() {
 
             {/* Avisos Recientes */}
             <div className="space-y-4">
-                <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">Avisos Recientes</h2>
-                <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
-                    <div className="p-4 rounded-full bg-primary/5 text-primary/20">
-                        <Bell size={32} />
-                    </div>
-                    <p className="text-neutral-400 font-bold text-xs italic uppercase tracking-wider">Tablón de anuncios vacío</p>
+                <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">Avisos Recientes</h2>
+                    {avisos.length > 0 && (
+                        <a href="/anuncios" className="text-[10px] font-bold text-primary hover:underline">VER TODO</a>
+                    )}
                 </div>
+
+                {avisos.length > 0 ? (
+                    <div className="space-y-3">
+                        {avisos.map((aviso) => (
+                            <div key={aviso.id} className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-neutral-100 rounded-full text-neutral-500">
+                                        <Bell size={16} />
+                                    </div>
+                                    <h3 className="font-bold text-neutral-900 text-sm">{aviso.titulo}</h3>
+                                </div>
+                                <p className="text-xs text-neutral-500 line-clamp-2 pl-11">{aviso.contenido}</p>
+                                <p className="text-[9px] text-neutral-400 pl-11 font-bold uppercase tracking-wider">
+                                    {new Date(aviso.created_at).toLocaleDateString()}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="p-4 rounded-full bg-primary/5 text-primary/20">
+                            <Bell size={32} />
+                        </div>
+                        <p className="text-neutral-400 font-bold text-xs italic uppercase tracking-wider">Tablón de anuncios vacío</p>
+                    </div>
+                )}
             </div>
 
             {/* Estadísticas */}

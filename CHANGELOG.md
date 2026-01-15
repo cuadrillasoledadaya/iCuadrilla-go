@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.33 (15/01/2026)
+
+- **Dashboard Dinámico**: La sección "Avisos Recientes" ahora muestra en tiempo real los últimos 3 comunicados publicados en el Tablón, con acceso directo para leer más.
+
 ## v1.1.32 (15/01/2026)
 
 - **Corrección Visual Tablón**: Solucionado el problema de contraste en el formulario de creación de anuncios. Ahora el texto es blanco sobre el fondo oscuro, garantizando su legibilidad.
