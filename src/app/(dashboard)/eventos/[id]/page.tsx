@@ -36,7 +36,7 @@ interface Evento {
 export default function DetalleEvento() {
     const params = useParams();
     const router = useRouter();
-    const { isCostalero, userId } = useUserRole(); // userId is auth.uid
+    const { isCostalero, userId, canManageEvents } = useUserRole(); // userId is auth.uid
     const [evento, setEvento] = useState<Evento | null>(null);
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [loading, setLoading] = useState(true);
@@ -278,17 +278,17 @@ export default function DetalleEvento() {
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12">
                     {evento.titulo}
                 </h1>
-                {!isCostalero && (
-                    <div className="absolute right-0 flex gap-2">
+                {canManageEvents && (
+                    <div className="flex gap-2">
                         <button
                             onClick={() => router.push(`/eventos/${params.id}/editar`)}
-                            className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-indigo-600 shadow-sm transition-colors"
+                            className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-colors hover:border-primary/20"
                         >
                             <Pencil size={20} />
                         </button>
                         <button
                             onClick={handleDelete}
-                            className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-red-600 shadow-sm transition-colors"
+                            className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-red-500 transition-colors hover:border-red-100"
                         >
                             <Trash2 size={20} />
                         </button>

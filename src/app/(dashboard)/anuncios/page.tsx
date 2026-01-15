@@ -45,7 +45,7 @@ export default function TablonAnuncios() {
         }
     };
 
-    const { isCostalero } = useUserRole();
+    const { isCostalero, canManageAnnouncements } = useUserRole();
 
     return (
         <div className="p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
@@ -54,7 +54,7 @@ export default function TablonAnuncios() {
                 <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Comunicados Oficiales</p>
             </header>
 
-            {!isCostalero && (
+            {canManageAnnouncements && (
                 <form onSubmit={publicar} className="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-4">
                     <Input
                         placeholder="Título del anuncio"
@@ -91,7 +91,7 @@ export default function TablonAnuncios() {
                                 </p>
                             </div>
 
-                            {!isCostalero && (
+                            {canManageAnnouncements && (
                                 <div className="flex gap-2 shrink-0">
                                     <button
                                         onClick={() => router.push(`/anuncios/${a.id}/editar`)}

@@ -31,7 +31,7 @@ interface Evento {
 
 export default function AgendaEventos() {
     const router = useRouter();
-    const { isCostalero } = useUserRole();
+    const { isCostalero, canManageEvents } = useUserRole();
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -222,12 +222,13 @@ export default function AgendaEventos() {
             </div>
 
             {/* FAB */}
-            {!isCostalero && (
+            {canManageEvents && (
                 <button
-                    onClick={() => router.push('/eventos/nuevo')}
-                    className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
+                    onClick={() => router.push("/eventos/nuevo")}
+                    className="w-full h-16 bg-neutral-900 border border-neutral-800 rounded-[24px] flex items-center justify-center gap-3 text-white font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg active:scale-[0.98]"
                 >
-                    <Plus size={32} strokeWidth={3} />
+                    <Plus size={20} />
+                    Crear Nuevo Evento
                 </button>
             )}
         </div>

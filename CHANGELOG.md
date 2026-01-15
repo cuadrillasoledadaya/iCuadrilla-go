@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.63 (15/01/2026)
+
+- **Gestión de Roles**: Implementado sistema avanzado de roles (Costalero, Capataz, Auxiliar).
+- **Permisos**: Los Capataces y Auxiliares ahora pueden crear, editar y borrar eventos y anuncios.
+- **Seguridad**: La gestión de temporadas y el cambio de roles sigue siendo exclusivo del Superadmin (`proyectoszipi@gmail.com`).
+- **UI**: Añadida nueva página "Gestión de Roles" en el panel de Ajustes para el Superadmin.
+
 ## v1.1.62 (15/01/2026)
 
 - **Notificaciones**: Optimizada la carga inicial para que los avisos de aniversario aparezcan **al instante** tras el login, sin necesidad de recargar la página. Se ha reordenado la lógica de generación antes del conteo del icono de la campana.

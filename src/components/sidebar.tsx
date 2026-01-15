@@ -39,7 +39,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         getUser();
     }, []);
 
-    const { isCostalero, isAdmin, loading } = useUserRole();
+    const { isCostalero, isAdmin, canManageSeasons, canManageRoles, loading: roleLoading } = useUserRole();
 
     const menuGroups = [
         {
@@ -63,6 +63,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 { label: "Datos Palio", href: "/datos-palio", icon: Database },
                 { label: "Exportar Datos", href: "/exportar", icon: Download },
                 { label: "Configurar Temporada", href: "/temporadas", icon: Settings },
+                ...(canManageRoles ? [{ label: "Gestión de Roles", href: "/ajustes/roles", icon: Users }] : []),
             ]
         }] : [])
     ];
@@ -168,7 +169,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.62</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.63</p>
                     </div>
                 </div>
             </aside>
