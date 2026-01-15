@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.65 (15/01/2026)
+
+- **UI Eventos**: Revertido el botón de creación de eventos a su diseño original (botón flotante circular FAB).
+- **Gestión de Roles**: Añadida confirmación antes de aplicar cambios de rol para mayor seguridad.
+- **Gestión de Roles**: Refinada la interfaz para mostrar claramente el rol activo actual.
+
 ## v1.1.64 (15/01/2026)
 
 - **Seguridad**: Excluido el Superadmin (`proyectoszipi@gmail.com`) de la lista de gestión de roles para evitar cambios accidentales en la cuenta maestra.

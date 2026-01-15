@@ -53,7 +53,10 @@ export default function RolesPage() {
         setLoading(false);
     };
 
-    const handleRoleChange = async (id: string, newRole: string) => {
+    const handleRoleChange = async (id: string, newRole: string, nombre: string) => {
+        const confirmChange = window.confirm(`¿Estás seguro de que deseas cambiar el rol de ${nombre} a ${newRole.toUpperCase()}?`);
+        if (!confirmChange) return;
+
         setUpdatingId(id);
         const { error } = await supabase
             .from("costaleros")
@@ -149,7 +152,7 @@ export default function RolesPage() {
                             <div className="flex items-center gap-2 pt-2">
                                 <button
                                     disabled={updatingId === costalero.id}
-                                    onClick={() => handleRoleChange(costalero.id, 'costalero')}
+                                    onClick={() => handleRoleChange(costalero.id, 'costalero', `${costalero.nombre} ${costalero.apellidos}`)}
                                     className={cn(
                                         "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                                         costalero.rol === 'costalero'
@@ -161,7 +164,7 @@ export default function RolesPage() {
                                 </button>
                                 <button
                                     disabled={updatingId === costalero.id}
-                                    onClick={() => handleRoleChange(costalero.id, 'auxiliar')}
+                                    onClick={() => handleRoleChange(costalero.id, 'auxiliar', `${costalero.nombre} ${costalero.apellidos}`)}
                                     className={cn(
                                         "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                                         costalero.rol === 'auxiliar'
@@ -173,7 +176,7 @@ export default function RolesPage() {
                                 </button>
                                 <button
                                     disabled={updatingId === costalero.id}
-                                    onClick={() => handleRoleChange(costalero.id, 'capataz')}
+                                    onClick={() => handleRoleChange(costalero.id, 'capataz', `${costalero.nombre} ${costalero.apellidos}`)}
                                     className={cn(
                                         "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                                         costalero.rol === 'capataz'
