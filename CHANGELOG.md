@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.39 (15/01/2026)
+
+- **Mejora de UX**: Campos "Trabajadera" y "Puesto" convertidos a desplegables para evitar errores de escritura.
+- **Corrección Visual**: Ajuste de colores en los desplegables para asegurar legibilidad en modo oscuro.
+
 ## v1.1.38 (15/01/2026)
 
 - **Corrección Visual**: Solucionado error de visibilidad en el formulario de editar costalero (texto oscuro sobre fondo oscuro).

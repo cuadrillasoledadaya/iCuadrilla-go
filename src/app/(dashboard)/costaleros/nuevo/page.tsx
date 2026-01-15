@@ -86,21 +86,35 @@ export default function AltaCostalero() {
                         <Input {...register("altura")} type="number" step="0.01" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-neutral-400">Trabajadera (1-7)</label>
-                        <Input {...register("trabajadera")} type="number" min="1" max="7" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Trabajadera (1-7)</label>
+                        <select {...register("trabajadera")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 appearance-none">
+                            <option value="" className="text-black bg-white">Selecciona...</option>
+                            {Array.from({ length: 7 }, (_, i) => i + 1).map((val) => (
+                                <option key={val} value={val} className="text-black bg-white">Trabajadera {val}</option>
+                            ))}
+                        </select>
                         {errors.trabajadera && <p className="text-xs text-red-500">{errors.trabajadera.message}</p>}
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-neutral-400">Puesto</label>
-                        <Input {...register("puesto")} placeholder="Patero, Costero..." className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Puesto</label>
+                        <select {...register("puesto")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 appearance-none">
+                            <option value="" className="text-black bg-white">Selecciona...</option>
+                            <option value="Patero Izq" className="text-black bg-white">Patero Izq</option>
+                            <option value="Patero Der" className="text-black bg-white">Patero Der</option>
+                            <option value="Fijador Izq" className="text-black bg-white">Fijador Izq</option>
+                            <option value="Fijador Der" className="text-black bg-white">Fijador Der</option>
+                            <option value="Costero Izq" className="text-black bg-white">Costero Izq</option>
+                            <option value="Costero Der" className="text-black bg-white">Costero Der</option>
+                            <option value="Corriente" className="text-black bg-white">Corriente</option>
+                        </select>
                         {errors.puesto && <p className="text-xs text-red-500">{errors.puesto.message}</p>}
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-neutral-400">Suplemento (cm)</label>
-                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-10 rounded-md px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-neutral-700">
-                            <option value="" className="text-black">Sin suplemento</option>
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Suplemento (cm)</label>
+                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 appearance-none">
+                            <option value="" className="text-black bg-white">Sin suplemento</option>
                             {Array.from({ length: 12 }, (_, i) => (0.5 * (i + 1)).toFixed(1)).map((val) => (
-                                <option key={val} value={val} className="text-black">{val} cm</option>
+                                <option key={val} value={val} className="text-black bg-white">{val} cm</option>
                             ))}
                         </select>
                     </div>
