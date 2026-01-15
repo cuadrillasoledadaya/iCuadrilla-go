@@ -125,7 +125,19 @@ export default function DashboardPage() {
         };
 
         const checkAnniversaryNotifications = async () => {
-            const currentYear = new Date().getFullYear();
+            const now = new Date();
+            const currentMonth = now.getMonth(); // Jan is 0
+            const currentDay = now.getDate();
+
+            // Only notify between Jan 2nd (0/2) and May 1st (4/1)
+            const isWithinRange =
+                (currentMonth === 0 && currentDay >= 2) || // Jan 2+
+                (currentMonth > 0 && currentMonth < 4) ||  // Feb, Mar, Apr
+                (currentMonth === 4 && currentDay === 1);   // May 1
+
+            if (!isWithinRange) return;
+
+            const currentYear = now.getFullYear();
             // Formula: ano_ingreso + 24 = currentYear (porque el año de ingreso cuenta como año 1)
             const targetYear = currentYear - 24;
 

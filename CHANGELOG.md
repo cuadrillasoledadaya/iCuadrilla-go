@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.56 (15/01/2026)
+
+- **Lógica de Aniversarios**: Se ha restringido la generación automática de notificaciones de 25 años al periodo comprendido entre el 2 de enero y el 1 de mayo de cada año. Si se borra la notificación fuera de este periodo, no se volverá a generar hasta el año siguiente.
+
 ## v1.1.55 (15/01/2026)
 
 - **Corrección de Errores**:
