@@ -50,8 +50,10 @@ export default function DashboardPage() {
                 setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario");
             }
 
-            // 1. Obtener cuadrilla
-            const { count: total } = await supabase.from("costaleros").select("*", { count: 'exact', head: true });
+            // 1. Obtener cuadrilla (Solo costaleros activos, excluyendo staff)
+            const { count: total } = await supabase.from("costaleros")
+                .select("*", { count: 'exact', head: true })
+                .eq("rol", "costalero");
 
             // 2. Check for 25-year anniversary costaleros (Important: Before notification count query)
             await checkAnniversaryNotifications();

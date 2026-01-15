@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.69 (16/01/2026)
+
+- **Gestión**: Separación lógica de Staff y Cuadrilla activa.
+- **UI Cuadrilla**: El listado de "La Cuadrilla" ahora solo muestra a los miembros con el rol de Costalero.
+- **Dashboard**: El contador de "Total Costaleros" se ha ajustado para reflejar únicamente a los costaleros de a pie, excluyendo al Staff (superadmin, capataces y auxiliares).
+
 ## v1.1.68 (16/01/2026)
 
 - **UI Diseño**: Rediseño premium de los botones de retroceso (Back Buttons).
