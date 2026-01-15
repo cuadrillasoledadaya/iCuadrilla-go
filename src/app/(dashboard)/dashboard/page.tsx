@@ -279,10 +279,12 @@ export default function DashboardPage() {
                     <div className="space-y-0.5">
                         <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
                         <div className="flex items-center gap-2">
-                            {isMaster ? "SUPERADMIN" :
-                                rol === 'capataz' ? "CAPATAZ" :
-                                    rol === 'auxiliar' ? "AUXILIAR" :
-                                        (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
+                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                                {isMaster ? "SUPERADMIN" :
+                                    rol === 'capataz' ? "CAPATAZ" :
+                                        rol === 'auxiliar' ? "AUXILIAR" :
+                                            (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
+                            </span>
                             <span className="text-neutral-300">•</span>
                             <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada 2025</span>
                         </div>

@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.67 (15/01/2026)
+
+- **UI Dashboard**: Homogeneizado el estilo de las etiquetas de rol (Superadmin, Capataz, Auxiliar) para que todas usen el mismo diseño premium de la aplicación.
+
 ## v1.1.66 (15/01/2026)
 
 - **UI Dashboard**: Actualizada la etiqueta de rol para mostrar específicamente "CAPATAZ" o "AUXILIAR" cuando corresponda, eliminando la etiqueta genérica de "ADMIN + COSTALERO" para estos casos.
