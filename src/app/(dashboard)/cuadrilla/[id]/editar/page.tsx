@@ -121,43 +121,43 @@ export default function EditarCostalero() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Nombre</label>
-                        <Input {...register("nombre")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                        <Input {...register("nombre")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" />
                         {errors.nombre && <p className="text-xs text-red-500">{errors.nombre.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Apellidos</label>
-                        <Input {...register("apellidos")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                        <Input {...register("apellidos")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" />
                         {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Email</label>
-                        <Input {...register("email")} type="email" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                        <Input {...register("email")} type="email" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Altura (m)</label>
-                        <Input {...register("altura")} type="number" step="0.01" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                        <Input {...register("altura")} type="number" step="0.01" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Trabajadera (1-7)</label>
-                        <Input {...register("trabajadera")} type="number" min="1" max="7" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                        <Input {...register("trabajadera")} type="number" min="1" max="7" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Puesto</label>
-                        <Input {...register("puesto")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                        <Input {...register("puesto")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Suplemento (cm)</label>
-                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm">
-                            <option value="">Sin suplemento</option>
+                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50">
+                            <option value="" className="text-black">Sin suplemento</option>
                             {Array.from({ length: 12 }, (_, i) => (0.5 * (i + 1)).toFixed(1)).map((val) => (
-                                <option key={val} value={val}>{val} cm</option>
+                                <option key={val} value={val} className="text-black">{val} cm</option>
                             ))}
                         </select>
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Año de Ingreso</label>
-                        <Input {...register("ano_ingreso")} type="number" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" placeholder="Ej. 2018" />
+                        <Input {...register("ano_ingreso")} type="number" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl text-white placeholder:text-neutral-500" placeholder="Ej. 2018" />
                     </div>
                 </div>
 

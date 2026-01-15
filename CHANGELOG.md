@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.38 (15/01/2026)
+
+- **Corrección Visual**: Solucionado error de visibilidad en el formulario de editar costalero (texto oscuro sobre fondo oscuro).
+- **Mejoras Generales**: Revisión de contrastes en formularios con tema oscuro.
+
 ## v1.1.37 (15/01/2026)
 
 - **Datos de Costalero**: Añadidos campos "Suplemento" (0.5cm - 6.0cm) y "Año de Ingreso" en la ficha del costalero.
