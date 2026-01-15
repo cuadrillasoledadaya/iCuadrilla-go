@@ -220,7 +220,7 @@ export default function NotificacionesPage() {
 
                                     {/* Action Footer */}
                                     <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-dashed border-neutral-100 pl-12">
-                                        {!notif.leido && notif.tipo === 'ausencia' && notif.evento_id && notif.costalero_id && (
+                                        {notif.tipo === 'ausencia' && notif.evento_id && notif.costalero_id && (
                                             <>
                                                 <button
                                                     onClick={() => handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)}

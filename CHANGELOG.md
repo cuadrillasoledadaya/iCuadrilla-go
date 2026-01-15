@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.48 (15/01/2026)
+
+- **Corrección Crítica en Notificaciones**: Se garantiza que los botones de "Justificar" y "Marcar Ausente" sean siempre visibles, independientemente del estado de lectura de la notificación.
+
 ## v1.1.47 (15/01/2026)
 
 - **Corrección en Notificaciones**:
