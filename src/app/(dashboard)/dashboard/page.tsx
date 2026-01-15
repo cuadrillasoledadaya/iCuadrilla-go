@@ -14,6 +14,7 @@ import {
 import { useLayout } from "@/components/layout-context";
 import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface Stats {
     totalCostaleros: number;
@@ -26,6 +27,7 @@ interface Stats {
 }
 
 export default function DashboardPage() {
+    const router = useRouter();
     const { setSidebarOpen } = useLayout();
     const { isCostalero } = useUserRole();
     const [userName, setUserName] = useState("Usuario");
@@ -36,6 +38,7 @@ export default function DashboardPage() {
     });
     const [proximosEventos, setProximosEventos] = useState<any[]>([]);
     const [avisos, setAvisos] = useState<any[]>([]); // New State
+    const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -50,22 +53,30 @@ export default function DashboardPage() {
 
             // 2. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
-            const [eventosRes, proximosRes, anunciosRes] = await Promise.all([
+            const [eventosRes, proximosRes, anunciosRes, notifRes] = await Promise.all([
                 supabase.from("eventos").select("*").neq("estado", "finalizado"),
                 supabase.from("eventos")
                     .select("*")
                     .gte("fecha_inicio", now)
                     .order("fecha_inicio", { ascending: true })
-                    .limit(5), // Fetch 5 instead of 1
+                    .limit(5),
                 supabase.from("anuncios")
                     .select("*")
                     .order("created_at", { ascending: false })
-                    .limit(5)
+                    .limit(5),
+                // Fetch unread notifications count (only meaningful if admin, but harmless if 0)
+                // Assuming RLS allows admins to see everything.
+                supabase.from("notificaciones")
+                    .select("id", { count: "exact" })
+                    .eq("leido", false)
             ]);
 
             const pendientesCount = eventosRes.data?.length || 0;
-            const eventosProximos = proximosRes.data || []; // Array now
+            const eventosProximos = proximosRes.data || [];
             const avisosData = anunciosRes.data || [];
+            const unread = notifRes.count || 0;
+
+            setUnreadCount(unread);
 
             // 3. Estadísticas de asistencia (Último evento finalizado)
             const { data: ultimoEvento } = await supabase
@@ -172,9 +183,16 @@ export default function DashboardPage() {
                         </div>
                     </div>
                 </div>
-                <button className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors relative">
+                <button
+                    onClick={() => router.push('/notificaciones')}
+                    className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors relative"
+                >
                     <Bell size={24} />
-                    <span className="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full border-2 border-white" />
+                    {unreadCount > 0 && (
+                        <span className="absolute top-3 right-3 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-white">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
                 </button>
             </header>
 

@@ -17,6 +17,9 @@ import {
     Activity,
     CheckCircle2,
     Timer,
+    AlertCircle,
+    X,
+    Send
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -33,10 +36,16 @@ interface Evento {
 export default function DetalleEvento() {
     const params = useParams();
     const router = useRouter();
-    const { isCostalero } = useUserRole();
+    const { isCostalero, userId } = useUserRole(); // userId is auth.uid
     const [evento, setEvento] = useState<Evento | null>(null);
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [loading, setLoading] = useState(true);
+
+    // Notification Logic State
+    const [showAbsenceModal, setShowAbsenceModal] = useState(false);
+    const [absenceReason, setAbsenceReason] = useState("");
+    const [costaleroId, setCostaleroId] = useState<string | null>(null);
+    const [alreadyNotified, setAlreadyNotified] = useState(false);
 
     const handleDelete = async () => {
         if (!evento) return;
@@ -116,7 +125,7 @@ export default function DetalleEvento() {
                 // Hacer consultas en paralelo para velocidad
                 const [costalerosRes, asistenciasRes] = await Promise.all([
                     supabase.from("costaleros").select("id", { count: "exact", head: true }),
-                    supabase.from("asistencias").select("estado").eq("evento_id", params.id)
+                    supabase.from("asistencias").select("estado, costalero_id").eq("evento_id", params.id)
                 ]);
 
                 const totalCostaleros = costalerosRes.count || 0;
@@ -143,6 +152,87 @@ export default function DetalleEvento() {
         fetchData();
     }, [params.id]);
 
+    // Fetch Current Costalero ID and Status
+    useEffect(() => {
+        const fetchCostaleroInfo = async () => {
+            if (isCostalero && userId && evento) {
+                // 1. Get Costalero ID
+                const { data: costaleroData } = await supabase
+                    .from("costaleros")
+                    .select("id")
+                    .eq("user_id", userId)
+                    .single();
+
+                if (costaleroData) {
+                    setCostaleroId(costaleroData.id);
+
+                    // 2. Check if already notified/attendance exists
+                    const { data: asistenciaData } = await supabase
+                        .from("asistencias")
+                        .select("estado")
+                        .eq("evento_id", evento.id)
+                        .eq("costalero_id", costaleroData.id)
+                        .single();
+
+                    if (asistenciaData) {
+                        setAlreadyNotified(true);
+                    }
+                }
+            }
+        };
+        fetchCostaleroInfo();
+    }, [isCostalero, userId, evento]);
+
+
+    const handleConfirmAbsence = async () => {
+        if (!costaleroId || !evento || !absenceReason.trim()) return;
+        setLoading(true);
+
+        try {
+            const dateObj = new Date(evento.fecha_inicio);
+            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+
+            // 1. Create/Update Asistencia As Ausente w/ Motivo
+            const { error: asistError } = await supabase
+                .from("asistencias")
+                .upsert({
+                    evento_id: evento.id,
+                    costalero_id: costaleroId,
+                    fecha: eventDate,
+                    estado: 'ausente', // Or 'justificado' depending on semantics, stick to 'ausente' with reason usually
+                    motivo_ausencia: absenceReason,
+                    validada_por_capataz: false
+                });
+
+            if (asistError) throw asistError;
+
+            // 2. Create Notification
+            const { error: notifError } = await supabase
+                .from("notificaciones")
+                .insert({
+                    titulo: `Ausencia notificada: ${evento.titulo}`,
+                    mensaje: `Motivo: ${absenceReason}`,
+                    tipo: 'ausencia',
+                    evento_id: evento.id,
+                    costalero_id: costaleroId,
+                    leido: false
+                });
+
+            if (notifError) throw notifError;
+
+            alert("Ausencia notificada correctamente.");
+            setAlreadyNotified(true);
+            setShowAbsenceModal(false);
+
+        } catch (error: any) {
+            console.error("Error notificando ausencia:", error);
+            alert("Error al notificar: " + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const actionButtons = [
         // Ocultar acciones de gestión para costaleros
         ...(!isCostalero ? [
@@ -155,6 +245,10 @@ export default function DetalleEvento() {
             { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
             { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` }
         ] : []),
+        // Botón para costaleros notificar ausencia
+        ...(isCostalero && !alreadyNotified && evento?.estado === 'pendiente' ? [
+            { label: "NOTIFICAR AUSENCIA", icon: AlertCircle, color: "bg-red-500 shadow-red-200", action: () => setShowAbsenceModal(true) }
+        ] : [])
     ];
 
     if (loading) return (
@@ -171,7 +265,7 @@ export default function DetalleEvento() {
     );
 
     return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
+        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen relative">
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
@@ -222,6 +316,13 @@ export default function DetalleEvento() {
                 <p className="text-neutral-600 font-bold capitalize text-sm">
                     {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </p>
+                {/* Costalero Status Badge if already notified */}
+                {isCostalero && alreadyNotified && (
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-neutral-900 text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
+                        <CheckCircle2 size={14} className="text-emerald-400" />
+                        <span>Respuesta Enviada</span>
+                    </div>
+                )}
             </div>
 
             {/* Stats Grid */}
@@ -245,7 +346,7 @@ export default function DetalleEvento() {
                 {actionButtons.map((btn) => (
                     <button
                         key={btn.label}
-                        onClick={() => router.push(btn.href)}
+                        onClick={'action' in btn ? btn.action : () => router.push(btn.href!)}
                         className={cn(
                             "w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-white font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition-all",
                             btn.color
@@ -257,43 +358,82 @@ export default function DetalleEvento() {
                 ))}
             </div>
 
-            {/* Listas Section */}
-            <div className="space-y-4 pt-4">
-                <h3 className="text-xl font-black text-neutral-900 tracking-tight">Listas de Asistencia</h3>
-                <div className="space-y-3">
-                    <button
-                        onClick={() => router.push(`/eventos/${params.id}/asistentes`)}
-                        className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
-                                <Users size={24} />
+            {/* Listas Section (Only if not costalero or if allowed to see lists) */}
+            {!isCostalero && (
+                <div className="space-y-4 pt-4">
+                    <h3 className="text-xl font-black text-neutral-900 tracking-tight">Listas de Asistencia</h3>
+                    <div className="space-y-3">
+                        <button
+                            onClick={() => router.push(`/eventos/${params.id}/asistentes`)}
+                            className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+                                    <Users size={24} />
+                                </div>
+                                <div className="text-left">
+                                    <p className="font-extrabold text-neutral-900 text-sm italic">Ver Asistentes</p>
+                                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.presentes + stats.justificados} registrados</p>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <p className="font-extrabold text-neutral-900 text-sm italic">Ver Asistentes</p>
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.presentes + stats.justificados} registrados</p>
-                            </div>
-                        </div>
-                        <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
-                    </button>
+                            <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
+                        </button>
 
-                    <button
-                        onClick={() => router.push(`/eventos/${params.id}/pendientes`)}
-                        className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
-                                <Hourglass size={24} />
+                        <button
+                            onClick={() => router.push(`/eventos/${params.id}/pendientes`)}
+                            className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+                                    <Hourglass size={24} />
+                                </div>
+                                <div className="text-left">
+                                    <p className="font-extrabold text-neutral-900 text-sm italic">Ver Pendientes</p>
+                                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.total - (stats.presentes + stats.justificados + stats.ausentes)} sin registrar</p>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <p className="font-extrabold text-neutral-900 text-sm italic">Ver Pendientes</p>
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.total - (stats.presentes + stats.justificados + stats.ausentes)} sin registrar</p>
-                            </div>
-                        </div>
-                        <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
-                    </button>
+                            <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {/* Absence Modal */}
+            {showAbsenceModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-white w-full max-w-md rounded-[32px] p-6 space-y-6 shadow-2xl animate-in zoom-in-95">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-black uppercase text-neutral-900">Motivo de Ausencia</h3>
+                            <button onClick={() => setShowAbsenceModal(false)} className="p-2 bg-neutral-100 rounded-full hover:bg-neutral-200">
+                                <X size={20} className="text-neutral-500" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <p className="text-sm text-neutral-500 font-medium">Por favor, indica brevemente por qué no podrás asistir a este evento. Esta información llegará al cuerpo de capataces.</p>
+                            <textarea
+                                value={absenceReason}
+                                onChange={(e) => setAbsenceReason(e.target.value)}
+                                placeholder="Escribe tu motivo aquí..."
+                                className="w-full h-32 p-4 rounded-2xl bg-neutral-50 border border-neutral-200 text-neutral-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                            />
+                        </div>
+
+                        <Button
+                            onClick={handleConfirmAbsence}
+                            disabled={!absenceReason.trim() || loading}
+                            className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2"
+                        >
+                            {loading ? "Enviando..." : (
+                                <>
+                                    <Send size={18} />
+                                    Enviar Notificación
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

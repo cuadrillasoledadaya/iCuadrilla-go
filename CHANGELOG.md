@@ -1,5 +1,15 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.45 (15/01/2026)
+
+- **Sistema de Notificaciones Internas**:
+  - **Costaleros**: Nueva función "Notificar Ausencia" en eventos pendientes. Permite enviar un motivo directamente a los capataces.
+  - **Capataces**:
+    - Nuevo contador de notificaciones no leídas en la campana del Dashboard.
+    - Nueva sección "Notificaciones" en el menú lateral.
+    - Gestión de avisos (Ver, Marcar como leída, Eliminar).
+  - **Base de Datos**: Nueva tabla `notificaciones` para gestión centralizada.
+
 ## v1.1.44 (15/01/2026)
 
 - **Corrección Visual**: La barra de navegación inferior (Navbar) ahora usa dinámicamente el color primario (Verde), eliminando valores "hardcoded" antiguos.
