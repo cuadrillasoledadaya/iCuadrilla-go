@@ -29,7 +29,7 @@ interface Stats {
 export default function DashboardPage() {
     const router = useRouter();
     const { setSidebarOpen } = useLayout();
-    const { isCostalero, isAdmin, isMaster, loading: roleLoading, userId, costaleroId } = useUserRole();
+    const { isCostalero, isAdmin, isMaster, rol, loading: roleLoading, userId, costaleroId } = useUserRole();
     const [userName, setUserName] = useState("Usuario");
     const [stats, setStats] = useState<Stats>({
         totalCostaleros: 0,
@@ -279,9 +279,10 @@ export default function DashboardPage() {
                     <div className="space-y-0.5">
                         <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                                {isMaster ? "SUPERADMIN" : (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
-                            </span>
+                            {isMaster ? "SUPERADMIN" :
+                                rol === 'capataz' ? "CAPATAZ" :
+                                    rol === 'auxiliar' ? "AUXILIAR" :
+                                        (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
                             <span className="text-neutral-300">•</span>
                             <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada 2025</span>
                         </div>

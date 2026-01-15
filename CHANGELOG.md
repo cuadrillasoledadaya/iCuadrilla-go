@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.66 (15/01/2026)
+
+- **UI Dashboard**: Actualizada la etiqueta de rol para mostrar específicamente "CAPATAZ" o "AUXILIAR" cuando corresponda, eliminando la etiqueta genérica de "ADMIN + COSTALERO" para estos casos.
+
 ## v1.1.65 (15/01/2026)
 
 - **UI Eventos**: Revertido el botón de creación de eventos a su diseño original (botón flotante circular FAB).
