@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.72 (16/01/2026)
+
+- **DB**: Actualizada la restricción de roles para incluir 'superadmin'.
+- **Gestión**: Confirmada la exclusión definitiva del Superadmin de los listados de cuadrilla y estadísticas.
+
 ## v1.1.71 (16/01/2026)
 
 - **Gestión**: Corregida exclusión del Superadmin en el listado de cuadrilla mediante actualización de rol en la base de datos.
