@@ -42,6 +42,8 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (roleLoading) return;
+
         const fetchDashboardData = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -215,7 +217,7 @@ export default function DashboardPage() {
         };
 
         fetchDashboardData();
-    }, []);
+    }, [roleLoading, isAdmin, isCostalero, costaleroId]);
 
     // ... (rest of render logic remains until "Avisos Recientes" section)
 
