@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.40 (15/01/2026)
+
+- **Rediseño Premium**: Nueva ficha de costalero con estética oscura y acentos dorados. Diseño de tarjetas más moderno y limpio.
+- **Mejora de UX**: Iconografía actualizada y mejor jerarquía visual en los datos del hermano.
+
 ## v1.1.39 (15/01/2026)
 
 - **Mejora de UX**: Campos "Trabajadera" y "Puesto" convertidos a desplegables para evitar errores de escritura.
