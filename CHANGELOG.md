@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.60 (15/01/2026)
+
+- **Roles**: Restaurada la etiqueta de **SUPERADMIN** para la cuenta maestra, asegurando que mantenga su estatus visual previo mientras conserva la nueva lógica de notificaciones independientes.
+- **Detección de Roles**: Mejorada la jerarquía de roles en el hook `useUserRole` para evitar conflictos entre perfiles de administrador y costalero.
+
 ## v1.1.59 (15/01/2026)
 
 - **Corrección en Notificaciones**: Se ha ajustado la lógica de regeneración de avisos de aniversario para que solo se vuelvan a crear para el rol que los ha borrado, evitando interferencias entre Administradores y Costaleros.

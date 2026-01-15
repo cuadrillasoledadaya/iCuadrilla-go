@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 export function useUserRole() {
     const [isCostalero, setIsCostalero] = useState<boolean | null>(null);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+    const [isMaster, setIsMaster] = useState<boolean | null>(null);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState<string | null>(null);
     const [costaleroId, setCostaleroId] = useState<string | null>(null);
@@ -16,14 +17,16 @@ export function useUserRole() {
                 if (!user) {
                     setIsCostalero(false);
                     setIsAdmin(false);
+                    setIsMaster(false);
                     setLoading(false);
                     return;
                 }
 
                 setUserId(user.id);
 
-                // 1. Identificar por Email Maestro
-                const isMasterAdmin = user.email === 'proyectoszipi@gmail.com';
+                // 1. Identificar por Email Maestro (SUPERADMIN)
+                const isMasterEmail = user.email === 'proyectoszipi@gmail.com';
+                setIsMaster(isMasterEmail);
 
                 // 2. Buscar en tabla costaleros
                 const { data: costaleroData } = await supabase
@@ -35,18 +38,23 @@ export function useUserRole() {
                 if (costaleroData) {
                     setIsCostalero(true);
                     setCostaleroId(costaleroData.id);
-                    // Si está en la tabla costaleros, solo es admin si es el email maestro
-                    setIsAdmin(isMasterAdmin);
                 } else {
                     setIsCostalero(false);
-                    // Si no está en la tabla costaleros, lo tratamos como Admin (Capataz)
+                }
+
+                // 3. Determinar permisos de Admin
+                // Siempre es Admin si es el email maestro o si no está en la tabla de costaleros
+                if (isMasterEmail || !costaleroData) {
                     setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
                 }
 
             } catch (error) {
                 console.error("Error checking role:", error);
                 setIsCostalero(false);
                 setIsAdmin(false);
+                setIsMaster(false);
             } finally {
                 setLoading(false);
             }
@@ -55,5 +63,5 @@ export function useUserRole() {
         checkRole();
     }, []);
 
-    return { isCostalero, isAdmin, loading, userId, costaleroId };
+    return { isCostalero, isAdmin, isMaster, loading, userId, costaleroId };
 }
