@@ -53,7 +53,10 @@ export default function DashboardPage() {
             // 1. Obtener cuadrilla
             const { count: total } = await supabase.from("costaleros").select("*", { count: 'exact', head: true });
 
-            // 2. Obtener próximo evento y anuncios (Parallel Fetch)
+            // 2. Check for 25-year anniversary costaleros (Important: Before notification count query)
+            await checkAnniversaryNotifications();
+
+            // 3. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
 
             // Notification query: Collect counts for all roles the user has
@@ -134,8 +137,7 @@ export default function DashboardPage() {
             setAvisos(avisosData);
             setLoading(false);
 
-            // 4. Check for 25-year anniversary costaleros (only for admins)
-            await checkAnniversaryNotifications();
+
         };
 
         const checkAnniversaryNotifications = async () => {

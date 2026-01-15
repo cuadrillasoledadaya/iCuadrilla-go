@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.62 (15/01/2026)
+
+- **Notificaciones**: Optimizada la carga inicial para que los avisos de aniversario aparezcan **al instante** tras el login, sin necesidad de recargar la página. Se ha reordenado la lógica de generación antes del conteo del icono de la campana.
+
 ## v1.1.61 (15/01/2026)
 
 - **Notificaciones**: Reparada la lógica del Dashboard que impedía la carga correcta de avisos de aniversario al inicio. Ahora el sistema espera a que los roles del usuario se resuelvan antes de procesar las notificaciones.
