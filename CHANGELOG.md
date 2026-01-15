@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.68 (16/01/2026)
+
+- **UI Diseño**: Rediseño premium de los botones de retroceso (Back Buttons).
+- **UI Diseño**: Sustituido icono de Chevron por Flecha dinámica con micro-animaciones al pasar el ratón y respuesta táctil al pulsar.
+
 ## v1.1.67 (15/01/2026)
 
 - **UI Dashboard**: Homogeneizado el estilo de las etiquetas de rol (Superadmin, Capataz, Auxiliar) para que todas usen el mismo diseño premium de la aplicación.

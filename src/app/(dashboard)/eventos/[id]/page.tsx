@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
     ChevronLeft,
+    ArrowLeft,
     Pencil,
     Trash2,
     QrCode,
@@ -271,9 +272,9 @@ export default function DetalleEvento() {
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
                     onClick={() => router.back()}
-                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors z-10"
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 group/back z-10"
                 >
-                    <ChevronLeft size={24} />
+                    <ArrowLeft size={24} className="group-hover/back:-translate-x-1 transition-transform" />
                 </button>
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12">
                     {evento.titulo}
