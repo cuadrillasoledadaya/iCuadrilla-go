@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.32 (15/01/2026)
+
+- **Corrección Visual Tablón**: Solucionado el problema de contraste en el formulario de creación de anuncios. Ahora el texto es blanco sobre el fondo oscuro, garantizando su legibilidad.
+
 ## v1.1.31 (15/01/2026)
 
 - **Gestión Avanzada de Anuncios**: Implementada la edición y borrado de anuncios en el Tablón. Ahora los administradores pueden corregir o retirar comunicados directamente desde la app.

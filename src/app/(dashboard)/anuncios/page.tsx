@@ -60,7 +60,7 @@ export default function TablonAnuncios() {
                         placeholder="Título del anuncio"
                         value={nuevo.titulo}
                         onChange={(e) => setNuevo({ ...nuevo, titulo: e.target.value })}
-                        className="bg-neutral-950 border-neutral-800"
+                        className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-400"
                         required
                     />
                     <textarea
