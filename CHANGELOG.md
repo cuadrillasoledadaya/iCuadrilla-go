@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.51 (15/01/2026)
+
+- **Corrección CRÍTICA en Notificaciones**:
+  - Añadida confirmación obligatoria al pulsar "Justificar" o "Marcar Ausente".
+  - Se muestra alerta de éxito/error tras cada acción.
+  - Añadido logging de depuración para rastrear problemas de persistencia.
+
 ## v1.1.50 (15/01/2026)
 
 - **Debug & Cache Fix**: Se ha forzado una actualización visual en los botones de "Justificar" para asegurar que la confirmación se cargue correctamente en todos los dispositivos.

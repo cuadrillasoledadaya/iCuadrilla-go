@@ -76,15 +76,34 @@ export default function NotificacionesPage() {
     };
 
     const handleJustify = async (notificationId: string, eventoId: string, costaleroId: string) => {
-        // Optimistic UI update: Mark as read
-        setNotificaciones(prev => prev.map(n => n.id === notificationId ? { ...n, leido: true } : n));
+        // Confirmation dialog
+        if (!window.confirm("¿Estás seguro de que deseas JUSTIFICAR esta ausencia?")) {
+            return;
+        }
+
+        console.log("handleJustify called with:", { notificationId, eventoId, costaleroId });
 
         // 1. Update Asistencia to 'justificado'
-        await supabase
+        const { data, error: updateError } = await supabase
             .from("asistencias")
             .update({ estado: 'justificado' })
             .eq("evento_id", eventoId)
-            .eq("costalero_id", costaleroId);
+            .eq("costalero_id", costaleroId)
+            .select();
+
+        console.log("Update result:", { data, updateError });
+
+        if (updateError) {
+            console.error("Error updating asistencia:", updateError);
+            alert("Error al justificar la asistencia: " + updateError.message);
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            console.warn("No rows updated - check IDs");
+            alert("No se encontró la asistencia para actualizar. Verifica los IDs.");
+            return;
+        }
 
         // 2. Mark notification as read
         await supabase
@@ -92,19 +111,36 @@ export default function NotificacionesPage() {
             .update({ leido: true })
             .eq("id", notificationId);
 
+        // Update UI
+        setNotificaciones(prev => prev.map(n => n.id === notificationId ? { ...n, leido: true } : n));
+
+        alert("✅ Ausencia JUSTIFICADA correctamente.");
         router.refresh();
     };
 
     const handleConfirmAbsence = async (notificationId: string, eventoId: string, costaleroId: string) => {
-        // Optimistic UI update: Mark as read
-        setNotificaciones(prev => prev.map(n => n.id === notificationId ? { ...n, leido: true } : n));
+        // Confirmation dialog
+        if (!window.confirm("¿Estás seguro de que deseas marcar como AUSENTE (no justificado)?")) {
+            return;
+        }
 
-        // 1. Ensure Asistencia is 'ausente' (it should be already, but reinforces explicit action)
-        await supabase
+        console.log("handleConfirmAbsence called with:", { notificationId, eventoId, costaleroId });
+
+        // 1. Update Asistencia to 'ausente'
+        const { data, error: updateError } = await supabase
             .from("asistencias")
             .update({ estado: 'ausente' })
             .eq("evento_id", eventoId)
-            .eq("costalero_id", costaleroId);
+            .eq("costalero_id", costaleroId)
+            .select();
+
+        console.log("Update result:", { data, updateError });
+
+        if (updateError) {
+            console.error("Error updating asistencia:", updateError);
+            alert("Error al marcar la ausencia: " + updateError.message);
+            return;
+        }
 
         // 2. Mark notification as read
         await supabase
@@ -112,6 +148,10 @@ export default function NotificacionesPage() {
             .update({ leido: true })
             .eq("id", notificationId);
 
+        // Update UI
+        setNotificaciones(prev => prev.map(n => n.id === notificationId ? { ...n, leido: true } : n));
+
+        alert("✅ Ausencia confirmada.");
         router.refresh();
     };
 
@@ -223,20 +263,14 @@ export default function NotificacionesPage() {
                                         {notif.tipo === 'ausencia' && notif.evento_id && notif.costalero_id && (
                                             <>
                                                 <button
-                                                    onClick={() => {
-                                                        console.log("Click en Justificar");
-                                                        handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)
-                                                    }}
+                                                    onClick={() => handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)}
                                                     className="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-amber-200"
                                                 >
                                                     <CheckCircle2 size={12} />
-                                                    Justificar (Confirmar)
+                                                    Justificar
                                                 </button>
                                                 <button
-                                                    onClick={() => {
-                                                        console.log("Click en Marcar Ausente");
-                                                        handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!)
-                                                    }}
+                                                    onClick={() => handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!)}
                                                     className="px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-red-200"
                                                 >
                                                     <Clock size={12} />
