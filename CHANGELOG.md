@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.70 (16/01/2026)
+
+- **Seguridad**: Corregidos permisos de acceso (RLS) para el Staff.
+- **UI Cuadrilla**: Restaurado el acceso al listado de costaleros para Capataces y Auxiliares mediante nuevas políticas de seguridad en la base de datos.
+
 ## v1.1.69 (16/01/2026)
 
 - **Gestión**: Separación lógica de Staff y Cuadrilla activa.
