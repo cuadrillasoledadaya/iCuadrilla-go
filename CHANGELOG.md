@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.58 (15/01/2026)
+
+- **Roles y Notificaciones**: Implementación de soporte para **Roles Duales**. Ahora los usuarios pueden ser identificados como Administradores y Costaleros simultáneamente.
+- **Independencia Real**: El borrado de una notificación en el perfil de costalero no afecta a su visibilidad en el perfil de administrador, permitiendo una gestión 100% independiente para usuarios con ambos roles.
+- **Mejora UI**: Añadidos indicadores en la lista de notificaciones para distinguir el destinatario (Admin/Costalero) para usuarios con roles duales.
+
 ## v1.1.57 (15/01/2026)
 
 - **Notificaciones**: Ahora el estado de "leído" y el borrado de notificaciones de aniversario es independiente para costaleros y administradores. Si un costalero la marca como leída o la borra, los administradores seguirán viéndola en su propio centro de mando hasta que ellos también la gestionen.

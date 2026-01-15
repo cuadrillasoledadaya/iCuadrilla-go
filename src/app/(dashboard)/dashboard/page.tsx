@@ -29,7 +29,7 @@ interface Stats {
 export default function DashboardPage() {
     const router = useRouter();
     const { setSidebarOpen } = useLayout();
-    const { isCostalero, costaleroId } = useUserRole();
+    const { isCostalero, isAdmin, loading: roleLoading, userId, costaleroId } = useUserRole();
     const [userName, setUserName] = useState("Usuario");
     const [stats, setStats] = useState<Stats>({
         totalCostaleros: 0,
@@ -54,18 +54,29 @@ export default function DashboardPage() {
             // 2. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
 
-            // Notification query depends on role and recipient
-            let notifQuery = supabase.from("notificaciones")
-                .select("id", { count: "exact" })
-                .eq("leido", false);
+            // Notification query: Collect counts for all roles the user has
+            const notifPromises = [];
 
-            if (isCostalero && costaleroId) {
-                notifQuery = notifQuery.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
-            } else {
-                notifQuery = notifQuery.eq("destinatario", "admin");
+            if (isAdmin) {
+                notifPromises.push(
+                    supabase.from("notificaciones")
+                        .select("id", { count: "exact" })
+                        .eq("leido", false)
+                        .eq("destinatario", "admin")
+                );
             }
 
-            const [eventosRes, proximosRes, anunciosRes, notifRes] = await Promise.all([
+            if (isCostalero && costaleroId) {
+                notifPromises.push(
+                    supabase.from("notificaciones")
+                        .select("id", { count: "exact" })
+                        .eq("leido", false)
+                        .eq("destinatario", "costalero")
+                        .eq("costalero_id", costaleroId)
+                );
+            }
+
+            const [eventosRes, proximosRes, anunciosRes, ...notifResults] = await Promise.all([
                 supabase.from("eventos").select("*").neq("estado", "finalizado"),
                 supabase.from("eventos")
                     .select("*")
@@ -76,15 +87,14 @@ export default function DashboardPage() {
                     .select("*")
                     .order("created_at", { ascending: false })
                     .limit(5),
-                notifQuery
+                ...notifPromises
             ]);
 
             const pendientesCount = eventosRes.data?.length || 0;
             const eventosProximos = proximosRes.data || [];
             const avisosData = anunciosRes.data || [];
-            const unread = notifRes.count || 0;
-
-            setUnreadCount(unread);
+            const resolvedNotifCount = notifResults.reduce((acc, res) => acc + (res.count || 0), 0);
+            setUnreadCount(resolvedNotifCount);
 
             // 3. Estadísticas de asistencia (Último evento finalizado)
             const { data: ultimoEvento } = await supabase
@@ -155,25 +165,27 @@ export default function DashboardPage() {
             for (const costalero of jubilaryCostaleros) {
                 const notificationTitle = `🎉 25 Años de Costalero: ${costalero.nombre} ${costalero.apellidos}`;
 
-                // 1. Create/Check ADMIM Notification
-                const { data: adminNotif } = await supabase
-                    .from("notificaciones")
-                    .select("id")
-                    .eq("titulo", notificationTitle)
-                    .eq("destinatario", "admin")
-                    .limit(1);
-
-                if (!adminNotif || adminNotif.length === 0) {
-                    await supabase
+                if (isAdmin) {
+                    const { data: adminNotif } = await supabase
                         .from("notificaciones")
-                        .insert({
-                            titulo: notificationTitle,
-                            mensaje: `${costalero.nombre} ${costalero.apellidos} cumple 25 años como costalero este año ${currentYear}. ¡Enhorabuena!`,
-                            tipo: 'aniversario',
-                            leido: false,
-                            costalero_id: costalero.id,
-                            destinatario: 'admin'
-                        });
+                        .select("id")
+                        .eq("titulo", notificationTitle)
+                        .eq("destinatario", "admin")
+                        .eq("costalero_id", costalero.id)
+                        .limit(1);
+
+                    if (!adminNotif || adminNotif.length === 0) {
+                        await supabase
+                            .from("notificaciones")
+                            .insert({
+                                titulo: notificationTitle,
+                                mensaje: `${costalero.nombre} ${costalero.apellidos} cumple 25 años como costalero este año ${currentYear}. ¡Enhorabuena!`,
+                                tipo: 'aniversario',
+                                leido: false,
+                                costalero_id: costalero.id,
+                                destinatario: 'admin'
+                            });
+                    }
                 }
 
                 // 2. Create/Check COSTALERO Notification (if possible)
@@ -264,7 +276,7 @@ export default function DashboardPage() {
                         <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                                {isCostalero ? "COSTALERO" : "SUPERADMIN"}
+                                {isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO"}
                             </span>
                             <span className="text-neutral-300">•</span>
                             <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada 2025</span>

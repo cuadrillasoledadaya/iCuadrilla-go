@@ -39,7 +39,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         getUser();
     }, []);
 
-    const { isCostalero, loading } = useUserRole();
+    const { isCostalero, isAdmin, loading } = useUserRole();
 
     const menuGroups = [
         {
@@ -50,12 +50,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 { label: "Tablón de Anuncios", href: "/anuncios", icon: Bell },
                 { label: "Calendario de Eventos", href: "/eventos", icon: Calendar },
                 { label: "Notificaciones", href: "/notificaciones", icon: Bell },
-                // Ocultar ajustes para costaleros por ahora si no es relevante
-                ...(!isCostalero ? [{ label: "Ajustes", href: "/ajustes", icon: Lock }] : []),
+                // Ocultar ajustes para costaleros puros
+                ...(isAdmin ? [{ label: "Ajustes", href: "/ajustes", icon: Lock }] : []),
             ]
         },
-        // Ocultar grupo de gestión para costaleros
-        ...(!isCostalero ? [{
+        // Mostrar grupo de gestión para admins
+        ...(isAdmin ? [{
             title: "GESTIÓN",
             items: [
                 { label: "Nuevo Evento", href: "/eventos/nuevo", icon: PlusCircle },
@@ -168,7 +168,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.57</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.58</p>
                     </div>
                 </div>
             </aside>

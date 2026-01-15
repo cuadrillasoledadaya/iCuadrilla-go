@@ -24,29 +24,42 @@ interface Notificacion {
     tipo: string;
     costalero_id?: string;
     evento_id?: string;
+    destinatario?: string; // Added this to handle dual roles
 }
 
 export default function NotificacionesPage() {
     const router = useRouter();
-    const { isCostalero, costaleroId, loading: roleLoading } = useUserRole();
+    const { isCostalero, isAdmin, loading: roleLoading, costaleroId } = useUserRole();
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchNotificaciones = async () => {
-        let query = supabase
-            .from("notificaciones")
-            .select("*")
-            .order("created_at", { ascending: false });
+        const queries = [];
 
-        if (isCostalero && costaleroId) {
-            query = query.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
-        } else {
-            query = query.eq("destinatario", "admin");
+        if (isAdmin) {
+            queries.push(
+                supabase.from("notificaciones")
+                    .select("*")
+                    .eq("destinatario", "admin")
+            );
         }
 
-        const { data } = await query;
+        if (isCostalero && costaleroId) {
+            queries.push(
+                supabase.from("notificaciones")
+                    .select("*")
+                    .eq("destinatario", "costalero")
+                    .eq("costalero_id", costaleroId)
+            );
+        }
 
-        if (data) setNotificaciones(data);
+        const results = await Promise.all(queries);
+        const allNotifs = results.flatMap(r => r.data || []);
+
+        // Sort by date manually since we fetched from two sources
+        allNotifs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        setNotificaciones(allNotifs);
         setLoading(false);
     };
 
@@ -54,24 +67,31 @@ export default function NotificacionesPage() {
         if (!roleLoading) {
             fetchNotificaciones();
         }
-    }, [roleLoading, isCostalero, costaleroId]);
+    }, [roleLoading, isCostalero, costaleroId, isAdmin]); // Added isAdmin to dependencies
 
     const deleteAll = async () => {
         if (!confirm("¿Estás seguro de que quieres eliminar todas las notificaciones?")) return;
 
         setNotificaciones([]);
 
-        let query = supabase
-            .from("notificaciones")
-            .delete();
-
+        const deletePromises = [];
+        if (isAdmin) {
+            deletePromises.push(
+                supabase.from("notificaciones")
+                    .delete()
+                    .eq("destinatario", "admin")
+            );
+        }
         if (isCostalero && costaleroId) {
-            query = query.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
-        } else {
-            query = query.eq("destinatario", "admin");
+            deletePromises.push(
+                supabase.from("notificaciones")
+                    .delete()
+                    .eq("destinatario", "costalero")
+                    .eq("costalero_id", costaleroId)
+            );
         }
 
-        await query;
+        await Promise.all(deletePromises);
         router.refresh();
     };
 
@@ -91,18 +111,26 @@ export default function NotificacionesPage() {
     const markAllAsRead = async () => {
         setNotificaciones(prev => prev.map(n => ({ ...n, leido: true })));
 
-        let query = supabase
-            .from("notificaciones")
-            .update({ leido: true })
-            .eq("leido", false);
-
+        const updatePromises = [];
+        if (isAdmin) {
+            updatePromises.push(
+                supabase.from("notificaciones")
+                    .update({ leido: true })
+                    .eq("leido", false)
+                    .eq("destinatario", "admin")
+            );
+        }
         if (isCostalero && costaleroId) {
-            query = query.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
-        } else {
-            query = query.eq("destinatario", "admin");
+            updatePromises.push(
+                supabase.from("notificaciones")
+                    .update({ leido: true })
+                    .eq("leido", false)
+                    .eq("destinatario", "costalero")
+                    .eq("costalero_id", costaleroId)
+            );
         }
 
-        await query;
+        await Promise.all(updatePromises);
         router.refresh();
     };
 
@@ -278,12 +306,22 @@ export default function NotificacionesPage() {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1 pl-12">
-                                        <h3 className={cn("font-bold text-neutral-900 leading-tight", notif.leido && "font-medium text-neutral-600")}>
-                                            {notif.titulo}
-                                        </h3>
-                                        <p className="text-sm text-neutral-500 leading-relaxed italic border-l-2 border-neutral-100 pl-3 py-1">
-                                            "{notif.mensaje}"
+                                    <div className="flex-1 space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className={cn("font-bold text-sm", !notif.leido ? "text-neutral-900" : "text-neutral-500")}>
+                                                {notif.titulo}
+                                            </h3>
+                                            {isAdmin && isCostalero && (
+                                                <span className={cn(
+                                                    "text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter",
+                                                    notif.destinatario === 'admin' ? "bg-primary/10 text-primary" : "bg-blue-100 text-blue-600"
+                                                )}>
+                                                    {notif.destinatario === 'admin' ? "Admin" : "Costalero"}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className={cn("text-xs leading-relaxed", !notif.leido ? "text-neutral-600" : "text-neutral-400")}>
+                                            {notif.mensaje}
                                         </p>
                                     </div>
 
