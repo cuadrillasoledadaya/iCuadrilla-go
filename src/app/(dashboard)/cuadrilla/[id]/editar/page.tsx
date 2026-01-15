@@ -17,6 +17,8 @@ const formSchema = z.object({
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
     puesto: z.string().min(2, "El puesto es obligatorio"),
+    suplemento: z.string().optional(),
+    ano_ingreso: z.string().optional(),
 });
 
 export default function EditarCostalero() {
@@ -43,6 +45,8 @@ export default function EditarCostalero() {
                     ...data,
                     altura: data.altura?.toString(),
                     trabajadera: data.trabajadera?.toString(),
+                    suplemento: data.suplemento?.toString(),
+                    ano_ingreso: data.ano_ingreso?.toString(),
                 });
             }
             setLoading(false);
@@ -60,7 +64,9 @@ export default function EditarCostalero() {
                 ...values,
                 altura: values.altura ? parseFloat(values.altura) : null,
                 trabajadera: parseInt(values.trabajadera),
-                email: values.email.toLowerCase()
+                email: values.email.toLowerCase(),
+                suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
+                ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
             })
             .eq("id", params.id);
 
@@ -139,6 +145,19 @@ export default function EditarCostalero() {
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Puesto</label>
                         <Input {...register("puesto")} className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Suplemento (cm)</label>
+                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm">
+                            <option value="">Sin suplemento</option>
+                            {Array.from({ length: 12 }, (_, i) => (0.5 * (i + 1)).toFixed(1)).map((val) => (
+                                <option key={val} value={val}>{val} cm</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Año de Ingreso</label>
+                        <Input {...register("ano_ingreso")} type="number" className="bg-neutral-900 border-neutral-800 h-12 rounded-xl" placeholder="Ej. 2018" />
                     </div>
                 </div>
 

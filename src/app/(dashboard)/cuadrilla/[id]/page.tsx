@@ -25,6 +25,8 @@ interface Costalero {
     altura: number;
     trabajadera: number;
     puesto: string;
+    suplemento?: number;
+    ano_ingreso?: number;
     qr_code: string;
 }
 
@@ -110,6 +112,14 @@ export default function FichaCostalero() {
                         <Mail className="text-neutral-500" size={18} />
                         <span className="text-xs text-neutral-500 font-bold uppercase tracking-tighter">Contacto</span>
                         <span className="text-[10px] font-bold text-neutral-300 truncate w-full">{costalero.email}</span>
+                    </div>
+                    <div className="bg-neutral-950/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center gap-2">
+                        <span className="text-neutral-500 text-[10px] font-bold">SUPLEMENTO</span>
+                        <span className="text-lg font-black text-white">{costalero.suplemento ? `${costalero.suplemento} cm` : '---'}</span>
+                    </div>
+                    <div className="bg-neutral-950/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center gap-2">
+                        <span className="text-neutral-500 text-[10px] font-bold">AÑO INGRESO</span>
+                        <span className="text-lg font-black text-white">{costalero.ano_ingreso || '---'}</span>
                     </div>
                 </div>
             </div>

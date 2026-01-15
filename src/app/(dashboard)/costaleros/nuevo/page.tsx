@@ -16,6 +16,8 @@ const formSchema = z.object({
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
     puesto: z.string().min(2, "El puesto es obligatorio"),
+    suplemento: z.string().optional(),
+    ano_ingreso: z.string().optional(),
 });
 
 export default function AltaCostalero() {
@@ -39,7 +41,9 @@ export default function AltaCostalero() {
             altura: values.altura ? parseFloat(values.altura) : null,
             trabajadera: parseInt(values.trabajadera),
             qr_code: qrCode,
-            email: values.email ? values.email.toLowerCase() : null
+            email: values.email ? values.email.toLowerCase() : null,
+            suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
+            ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
         }]);
 
         if (error) {
@@ -90,6 +94,19 @@ export default function AltaCostalero() {
                         <label className="text-sm font-medium text-neutral-400">Puesto</label>
                         <Input {...register("puesto")} placeholder="Patero, Costero..." className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
                         {errors.puesto && <p className="text-xs text-red-500">{errors.puesto.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-neutral-400">Suplemento (cm)</label>
+                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-10 rounded-md px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-neutral-700">
+                            <option value="" className="text-black">Sin suplemento</option>
+                            {Array.from({ length: 12 }, (_, i) => (0.5 * (i + 1)).toFixed(1)).map((val) => (
+                                <option key={val} value={val} className="text-black">{val} cm</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-neutral-400">Año de Ingreso</label>
+                        <Input {...register("ano_ingreso")} type="number" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" placeholder="Ej. 2024" />
                     </div>
                 </div>
 

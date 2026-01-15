@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.37 (15/01/2026)
+
+- **Datos de Costalero**: Añadidos campos "Suplemento" (0.5cm - 6.0cm) y "Año de Ingreso" en la ficha del costalero.
+- **Formularios Actualizados**: Se pueden registrar y editar estos nuevos datos desde los formularios correspondientes.
+
 ## v1.1.36 (15/01/2026)
 
 - **Corrección de Despliegue**: Solucionado un error de compilación que impedía la correcta visualización del dashboard. Se han aplicado correcciones de tipado y estilos para los carruseles.
