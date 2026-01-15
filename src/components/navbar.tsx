@@ -39,15 +39,15 @@ export function Navbar() {
                             href={item.href}
                             className={cn(
                                 "relative flex flex-col items-center justify-center h-full transition-all duration-300",
-                                isActive ? "text-[#5D0E11]" : "text-neutral-500 hover:text-black"
+                                isActive ? "text-primary" : "text-neutral-500 hover:text-black"
                             )}
                         >
                             {isActive && (
-                                <span className="absolute top-2 w-1.5 h-1.5 bg-[#5D0E11] rounded-full shadow-[0_0_8px_rgba(93,14,17,0.4)]" />
+                                <span className="absolute top-2 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.4)]" />
                             )}
                             <div className={cn(
                                 "p-2 rounded-2xl transition-all duration-300 flex items-center justify-center",
-                                isActive ? "bg-[#5D0E11]/10 scale-110" : "scale-100 opacity-70"
+                                isActive ? "bg-primary/10 scale-110" : "scale-100 opacity-70"
                             )}>
                                 <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                             </div>

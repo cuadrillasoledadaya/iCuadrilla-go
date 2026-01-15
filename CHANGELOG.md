@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.44 (15/01/2026)
+
+- **Corrección Visual**: La barra de navegación inferior (Navbar) ahora usa dinámicamente el color primario (Verde), eliminando valores "hardcoded" antiguos.
+
 ## v1.1.43 (15/01/2026)
 
 - **Corrección Visual**: La tarjeta inferior de estadísticas "Cuadrilla" ahora usa el color verde corporativo (`bg-primary/5`) en lugar de azul.
