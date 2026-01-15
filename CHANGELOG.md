@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.43 (15/01/2026)
+
+- **Corrección Visual**: La tarjeta inferior de estadísticas "Cuadrilla" ahora usa el color verde corporativo (`bg-primary/5`) en lugar de azul.
+
 ## v1.1.42 (15/01/2026)
 
 - **Corrección Visual**: Actualizados los indicadores de carrusel (puntos de navegación) al color corporativo (Verde Hermandad).

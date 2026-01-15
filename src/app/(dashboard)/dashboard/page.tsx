@@ -315,7 +315,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Cuadrilla Card */}
-                    <div className="col-span-2 bg-blue-50/50 p-7 rounded-[40px] border border-blue-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                    <div className="col-span-2 bg-primary/5 p-7 rounded-[40px] border border-primary/10 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
                         <div className="p-3 rounded-2xl bg-white shadow-sm text-primary">
                             <Users size={28} />
                         </div>
