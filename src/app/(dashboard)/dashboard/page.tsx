@@ -113,7 +113,50 @@ export default function DashboardPage() {
             setProximosEventos(eventosProximos);
             setAvisos(avisosData);
             setLoading(false);
+
+            // 4. Check for 25-year anniversary costaleros (only for admins)
+            await checkAnniversaryNotifications();
         };
+
+        const checkAnniversaryNotifications = async () => {
+            const currentYear = new Date().getFullYear();
+            // Formula: ano_ingreso + 24 = currentYear (porque el año de ingreso cuenta como año 1)
+            const targetYear = currentYear - 24;
+
+            // Find costaleros celebrating 25 years
+            const { data: jubilaryCostaleros } = await supabase
+                .from("costaleros")
+                .select("id, nombre, apellidos, ano_ingreso")
+                .eq("ano_ingreso", targetYear);
+
+            if (!jubilaryCostaleros || jubilaryCostaleros.length === 0) return;
+
+            // For each costalero, check if notification already exists for this year
+            for (const costalero of jubilaryCostaleros) {
+                const notificationTitle = `🎉 25 Años de Costalero: ${costalero.nombre} ${costalero.apellidos}`;
+
+                // Check if notification already exists
+                const { data: existingNotif } = await supabase
+                    .from("notificaciones")
+                    .select("id")
+                    .eq("titulo", notificationTitle)
+                    .limit(1);
+
+                if (existingNotif && existingNotif.length > 0) continue; // Already notified
+
+                // Create new anniversary notification
+                await supabase
+                    .from("notificaciones")
+                    .insert({
+                        titulo: notificationTitle,
+                        mensaje: `${costalero.nombre} ${costalero.apellidos} cumple 25 años como costalero este año ${currentYear}. ¡Enhorabuena!`,
+                        tipo: 'aniversario',
+                        leido: false,
+                        costalero_id: costalero.id
+                    });
+            }
+        };
+
         fetchDashboardData();
     }, []);
 

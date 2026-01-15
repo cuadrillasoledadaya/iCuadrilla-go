@@ -9,7 +9,8 @@ import {
     CheckCircle2,
     Clock,
     Trash2,
-    Check
+    Check,
+    Trophy
 } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
@@ -230,16 +231,16 @@ export default function NotificacionesPage() {
                                         <div className="flex items-center gap-3">
                                             <div className={cn(
                                                 "p-2.5 rounded-2xl",
-                                                notif.leido ? "bg-neutral-100 text-neutral-400" : "bg-primary/10 text-primary"
+                                                notif.leido ? "bg-neutral-100 text-neutral-400" : (notif.tipo === 'aniversario' ? "bg-amber-100 text-amber-600" : "bg-primary/10 text-primary")
                                             )}>
-                                                <Bell size={18} />
+                                                {notif.tipo === 'aniversario' ? <Trophy size={18} /> : <Bell size={18} />}
                                             </div>
                                             <div className="space-y-0.5">
                                                 <p className={cn(
                                                     "text-xs font-bold uppercase tracking-widest",
-                                                    notif.leido ? "text-neutral-400" : "text-primary"
+                                                    notif.leido ? "text-neutral-400" : (notif.tipo === 'aniversario' ? "text-amber-600" : "text-primary")
                                                 )}>
-                                                    Ausencia
+                                                    {notif.tipo === 'aniversario' ? 'Aniversario' : 'Ausencia'}
                                                 </p>
                                                 <p className="text-[10px] text-neutral-400 font-bold flex items-center gap-1">
                                                     <Clock size={10} />

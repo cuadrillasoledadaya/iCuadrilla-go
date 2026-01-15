@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.53 (15/01/2026)
+
+- **Nueva Función**: Notificaciones automáticas de "25 Años de Costalero".
+  - El sistema detecta automáticamente quién cumple 25 años (contando el año de ingreso como el primero).
+  - Genera una notificación especial con icono de trofeo en el panel de capataces.
+
 ## v1.1.52 (15/01/2026)
 
 - **Corrección Crítica**: Corregido el valor del estado de asistencia de 'justificado' a 'justificada' para coincidir con la restricción de la base de datos.
