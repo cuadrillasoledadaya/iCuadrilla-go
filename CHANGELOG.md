@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.50 (15/01/2026)
+
+- **Debug & Cache Fix**: Se ha forzado una actualización visual en los botones de "Justificar" para asegurar que la confirmación se cargue correctamente en todos los dispositivos.
+
 ## v1.1.49 (15/01/2026)
 
 - **Mejora en Notificaciones (Seguridad)**:

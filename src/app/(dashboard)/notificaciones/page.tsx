@@ -223,14 +223,20 @@ export default function NotificacionesPage() {
                                         {notif.tipo === 'ausencia' && notif.evento_id && notif.costalero_id && (
                                             <>
                                                 <button
-                                                    onClick={() => handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)}
+                                                    onClick={() => {
+                                                        console.log("Click en Justificar");
+                                                        handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)
+                                                    }}
                                                     className="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-amber-200"
                                                 >
                                                     <CheckCircle2 size={12} />
-                                                    Justificar
+                                                    Justificar (Confirmar)
                                                 </button>
                                                 <button
-                                                    onClick={() => handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!)}
+                                                    onClick={() => {
+                                                        console.log("Click en Marcar Ausente");
+                                                        handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!)
+                                                    }}
                                                     className="px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-red-200"
                                                 >
                                                     <Clock size={12} />
