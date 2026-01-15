@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.52 (15/01/2026)
+
+- **Corrección Crítica**: Corregido el valor del estado de asistencia de 'justificado' a 'justificada' para coincidir con la restricción de la base de datos.
+
 ## v1.1.51 (15/01/2026)
 
 - **Corrección CRÍTICA en Notificaciones**:

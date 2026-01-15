@@ -86,7 +86,7 @@ export default function NotificacionesPage() {
         // 1. Update Asistencia to 'justificado'
         const { data, error: updateError } = await supabase
             .from("asistencias")
-            .update({ estado: 'justificado' })
+            .update({ estado: 'justificada' })
             .eq("evento_id", eventoId)
             .eq("costalero_id", costaleroId)
             .select();
