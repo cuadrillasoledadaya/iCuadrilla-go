@@ -54,13 +54,15 @@ export default function DashboardPage() {
             // 2. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
 
-            // Notification query depends on role
+            // Notification query depends on role and recipient
             let notifQuery = supabase.from("notificaciones")
                 .select("id", { count: "exact" })
                 .eq("leido", false);
 
             if (isCostalero && costaleroId) {
-                notifQuery = notifQuery.eq("costalero_id", costaleroId);
+                notifQuery = notifQuery.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
+            } else {
+                notifQuery = notifQuery.eq("destinatario", "admin");
             }
 
             const [eventosRes, proximosRes, anunciosRes, notifRes] = await Promise.all([
@@ -153,25 +155,50 @@ export default function DashboardPage() {
             for (const costalero of jubilaryCostaleros) {
                 const notificationTitle = `🎉 25 Años de Costalero: ${costalero.nombre} ${costalero.apellidos}`;
 
-                // Check if notification already exists
-                const { data: existingNotif } = await supabase
+                // 1. Create/Check ADMIM Notification
+                const { data: adminNotif } = await supabase
                     .from("notificaciones")
                     .select("id")
                     .eq("titulo", notificationTitle)
+                    .eq("destinatario", "admin")
                     .limit(1);
 
-                if (existingNotif && existingNotif.length > 0) continue; // Already notified
+                if (!adminNotif || adminNotif.length === 0) {
+                    await supabase
+                        .from("notificaciones")
+                        .insert({
+                            titulo: notificationTitle,
+                            mensaje: `${costalero.nombre} ${costalero.apellidos} cumple 25 años como costalero este año ${currentYear}. ¡Enhorabuena!`,
+                            tipo: 'aniversario',
+                            leido: false,
+                            costalero_id: costalero.id,
+                            destinatario: 'admin'
+                        });
+                }
 
-                // Create new anniversary notification
-                await supabase
-                    .from("notificaciones")
-                    .insert({
-                        titulo: notificationTitle,
-                        mensaje: `${costalero.nombre} ${costalero.apellidos} cumple 25 años como costalero este año ${currentYear}. ¡Enhorabuena!`,
-                        tipo: 'aniversario',
-                        leido: false,
-                        costalero_id: costalero.id
-                    });
+                // 2. Create/Check COSTALERO Notification (if possible)
+                if (costalero.id) {
+                    const { data: costNotif } = await supabase
+                        .from("notificaciones")
+                        .select("id")
+                        .eq("titulo", notificationTitle)
+                        .eq("destinatario", "costalero")
+                        .eq("costalero_id", costalero.id)
+                        .limit(1);
+
+                    if (!costNotif || costNotif.length === 0) {
+                        await supabase
+                            .from("notificaciones")
+                            .insert({
+                                titulo: notificationTitle,
+                                mensaje: `¡Enhorabuena! Este año ${currentYear} cumples 25 años como costalero de esta cuadrilla. 🎉`,
+                                tipo: 'aniversario',
+                                leido: false,
+                                costalero_id: costalero.id,
+                                destinatario: 'costalero'
+                            });
+                    }
+                }
             }
         };
 

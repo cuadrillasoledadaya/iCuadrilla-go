@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.57 (15/01/2026)
+
+- **Notificaciones**: Ahora el estado de "leído" y el borrado de notificaciones de aniversario es independiente para costaleros y administradores. Si un costalero la marca como leída o la borra, los administradores seguirán viéndola en su propio centro de mando hasta que ellos también la gestionen.
+
 ## v1.1.56 (15/01/2026)
 
 - **Lógica de Aniversarios**: Se ha restringido la generación automática de notificaciones de 25 años al periodo comprendido entre el 2 de enero y el 1 de mayo de cada año. Si se borra la notificación fuera de este periodo, no se volverá a generar hasta el año siguiente.

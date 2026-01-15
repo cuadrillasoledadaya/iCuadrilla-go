@@ -215,7 +215,8 @@ export default function DetalleEvento() {
                     tipo: 'ausencia',
                     evento_id: evento.id,
                     costalero_id: costaleroId,
-                    leido: false
+                    leido: false,
+                    destinatario: 'admin'
                 });
 
             if (notifError) throw notifError;

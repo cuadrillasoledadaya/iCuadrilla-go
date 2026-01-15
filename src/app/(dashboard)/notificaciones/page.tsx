@@ -39,7 +39,9 @@ export default function NotificacionesPage() {
             .order("created_at", { ascending: false });
 
         if (isCostalero && costaleroId) {
-            query = query.eq("costalero_id", costaleroId);
+            query = query.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
+        } else {
+            query = query.eq("destinatario", "admin");
         }
 
         const { data } = await query;
@@ -53,6 +55,25 @@ export default function NotificacionesPage() {
             fetchNotificaciones();
         }
     }, [roleLoading, isCostalero, costaleroId]);
+
+    const deleteAll = async () => {
+        if (!confirm("¿Estás seguro de que quieres eliminar todas las notificaciones?")) return;
+
+        setNotificaciones([]);
+
+        let query = supabase
+            .from("notificaciones")
+            .delete();
+
+        if (isCostalero && costaleroId) {
+            query = query.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
+        } else {
+            query = query.eq("destinatario", "admin");
+        }
+
+        await query;
+        router.refresh();
+    };
 
     const markAsRead = async (id: string) => {
         // Optimistic update
@@ -70,11 +91,18 @@ export default function NotificacionesPage() {
     const markAllAsRead = async () => {
         setNotificaciones(prev => prev.map(n => ({ ...n, leido: true })));
 
-        await supabase
+        let query = supabase
             .from("notificaciones")
             .update({ leido: true })
             .eq("leido", false);
 
+        if (isCostalero && costaleroId) {
+            query = query.eq("costalero_id", costaleroId).eq("destinatario", "costalero");
+        } else {
+            query = query.eq("destinatario", "admin");
+        }
+
+        await query;
         router.refresh();
     };
 
