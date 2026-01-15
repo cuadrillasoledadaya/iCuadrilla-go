@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.41 (15/01/2026)
+
+- **Identidad Corporativa**: Cambio del color primario a "Verde Hermandad" para cumplir con la identidad visual corporativa (Verde/Negro).
+
 ## v1.1.40 (15/01/2026)
 
 - **Rediseño Premium**: Nueva ficha de costalero con estética oscura y acentos dorados. Diseño de tarjetas más moderno y limpio.

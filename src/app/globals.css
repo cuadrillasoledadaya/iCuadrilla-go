@@ -13,8 +13,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 358 74% 21%;
-    /* Burdeos: #5D0E11 */
+    --primary: 142 76% 36%;
+    /* Verde Hermandad */
     --primary-foreground: 45 61% 52%;
     /* Oro: #D4AF37 */
 
@@ -47,7 +47,7 @@
     --popover: 0 0% 5%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 358 74% 21%;
+    --primary: 142 76% 36%;
     --primary-foreground: 45 61% 80%;
 
     --secondary: 45 61% 52%;
