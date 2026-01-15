@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.49 (15/01/2026)
+
+- **Mejora en Notificaciones (Seguridad)**:
+  - Añadida **confirmación obligatoria** al Justificar o Marcar Ausencia para evitar clics accidentales.
+  - Añadidas alertas visuales de éxito/error al realizar estas acciones.
+  - Corrección de lógica para asegurar que el cambio de estado se aplique correctamente en base de datos.
+
 ## v1.1.48 (15/01/2026)
 
 - **Corrección Crítica en Notificaciones**: Se garantiza que los botones de "Justificar" y "Marcar Ausente" sean siempre visibles, independientemente del estado de lectura de la notificación.
