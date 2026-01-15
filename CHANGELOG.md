@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.71 (16/01/2026)
+
+- **Gestión**: Corregida exclusión del Superadmin en el listado de cuadrilla mediante actualización de rol en la base de datos.
+
 ## v1.1.70 (16/01/2026)
 
 - **Seguridad**: Corregidos permisos de acceso (RLS) para el Staff.
