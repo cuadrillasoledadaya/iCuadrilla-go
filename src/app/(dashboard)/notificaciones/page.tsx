@@ -169,8 +169,6 @@ export default function NotificacionesPage() {
         </div>
     );
 
-    if (isCostalero) return null; // Should redirect
-
     const unreadCount = notificaciones.filter(n => !n.leido).length;
 
     return (
@@ -261,8 +259,8 @@ export default function NotificacionesPage() {
                                         </p>
                                     </div>
 
-                                    {/* Actions (Only for Admins/Capataces) */}
-                                    {!isCostalero && (
+                                    {/* Actions (Only for Admins/Capataces and Absence type) */}
+                                    {!isCostalero && notif.tipo === 'ausencia' && (
                                         <div className="flex flex-col gap-2 pt-2 border-t border-black/5 mt-3">
                                             <div className="flex items-center gap-2">
                                                 <button

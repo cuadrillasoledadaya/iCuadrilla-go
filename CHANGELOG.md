@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.55 (15/01/2026)
+
+- **Corrección de Errores**:
+  - Corregido error que causaba pantalla en blanco para costaleros en notificaciones.
+  - Corregido error visual que mostraba botones de acción en notificaciones de aniversario.
+
 ## v1.1.54 (15/01/2026)
 
 - **Mejora de Notificaciones**: Los costaleros ahora pueden ver sus propias notificaciones (ej. 25 aniversario).
