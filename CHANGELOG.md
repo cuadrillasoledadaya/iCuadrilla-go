@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.47 (15/01/2026)
+
+- **Corrección en Notificaciones**:
+  - Las acciones rápida (Justificar / Ausente) ahora permanecen visibles incluso si la notificación ya fue marcada como leída, permitiendo correcciones posteriores.
+  - Mejorado el manejo de errores al actualizar la asistencia.
+
 ## v1.1.46 (15/01/2026)
 
 - **Mejora en Notificaciones**: Añadidas acciones rápidas en las notificaciones para Admin/Capataces:
