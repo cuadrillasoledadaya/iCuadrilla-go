@@ -56,16 +56,15 @@ export default function DashboardPage() {
                     .select("*")
                     .gte("fecha_inicio", now)
                     .order("fecha_inicio", { ascending: true })
-                    .limit(1)
-                    .single(),
+                    .limit(5), // Fetch 5 instead of 1
                 supabase.from("anuncios")
                     .select("*")
                     .order("created_at", { ascending: false })
-                    .limit(3)
+                    .limit(5)
             ]);
 
             const pendientesCount = eventosRes.data?.length || 0;
-            const proximo = proximosRes.data;
+            const eventosProximos = proximosRes.data || []; // Array now
             const avisosData = anunciosRes.data || [];
 
             // 3. Estadísticas de asistencia (Último evento finalizado)
@@ -100,7 +99,7 @@ export default function DashboardPage() {
                 eventosPendientes: pendientesCount,
                 asistencias: asistenciaStats
             });
-            setProximoEvento(proximo);
+            setProximosEventos(eventosProximos);
             setAvisos(avisosData);
             setLoading(false);
         };
@@ -179,38 +178,50 @@ export default function DashboardPage() {
                 </button>
             </header>
 
-            {/* Próximo Evento */}
+            {/* Próximos Eventos (Carrusel) */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
                     <Calendar size={18} className="text-neutral-400" />
-                    <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">PRÓXIMO EVENTO</h2>
+                    <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">PRÓXIMOS EVENTOS</h2>
                 </div>
 
-                {proximoEvento ? (
-                    <div className="bg-orange-50/50 border border-orange-100 p-8 rounded-[40px] shadow-sm flex flex-col space-y-4">
-                        <div className="flex justify-between items-start">
-                            <div className="space-y-1">
-                                <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight leading-none">{proximoEvento.titulo}</h3>
-                                <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest">{proximoEvento.tipo}</p>
-                            </div>
-                            <div className="p-3 bg-white/80 rounded-2xl text-orange-600 shadow-sm border border-orange-100">
-                                <Clock size={24} />
-                            </div>
+                {proximosEventos.length > 0 ? (
+                    <div className="space-y-4">
+                        {/* Carousel Container */}
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar">
+                            {proximosEventos.map((evento) => (
+                                <div
+                                    key={evento.id}
+                                    className="snap-center shrink-0 w-[85%] bg-orange-50/50 border border-orange-100 p-6 rounded-[32px] shadow-sm flex flex-col justify-between min-h-[160px]"
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-1">
+                                            <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight leading-none line-clamp-2">{evento.titulo}</h3>
+                                            <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest">{evento.tipo}</p>
+                                        </div>
+                                        <div className="p-2 bg-white/80 rounded-xl text-orange-600 shadow-sm border border-orange-100 shrink-0">
+                                            <Clock size={20} />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 pt-4 border-t border-orange-200/50 mt-4">
+                                        <span className="text-neutral-600 font-bold text-xs">
+                                            {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                        </span>
+                                        <div className="h-3 w-[1px] bg-neutral-300" />
+                                        <span className="text-neutral-900 font-black text-sm">
+                                            {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
 
-                        <div className="flex items-center gap-6 pt-2">
-                            <div className="flex items-center gap-2">
-                                <span className="text-neutral-500 font-bold text-xs">
-                                    {new Date(proximoEvento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
-                                </span>
-                            </div>
-                            <div className="h-4 w-[1px] bg-neutral-200" />
-                            <div className="flex items-center gap-2">
-                                <span className="text-neutral-900 font-black text-sm">
-                                    {new Date(proximoEvento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                    {proximoEvento.fecha_fin && ` - ${new Date(proximoEvento.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`}
-                                </span>
-                            </div>
+                        {/* Simple Dots Indicator (Visual Only for now) */}
+                        <div className="flex justify-center gap-1.5">
+                            {proximosEventos.map((_, idx) => (
+                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-orange-400 w-4" : "bg-neutral-200")} />
+                            ))}
                         </div>
                     </div>
                 ) : (
@@ -233,21 +244,34 @@ export default function DashboardPage() {
                 </div>
 
                 {avisos.length > 0 ? (
-                    <div className="space-y-3">
-                        {avisos.map((aviso) => (
-                            <div key={aviso.id} className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm space-y-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-neutral-100 rounded-full text-neutral-500">
-                                        <Bell size={16} />
+                    <div className="space-y-4">
+                        {/* Carousel Container */}
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar">
+                            {avisos.map((aviso) => (
+                                <div
+                                    key={aviso.id}
+                                    className="snap-center shrink-0 w-[85%] bg-white p-6 rounded-[32px] border border-black/5 shadow-sm space-y-3 flex flex-col min-h-[140px]"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-neutral-100 rounded-full text-neutral-500 shrink-0">
+                                            <Bell size={16} />
+                                        </div>
+                                        <h3 className="font-bold text-neutral-900 text-sm line-clamp-1">{aviso.titulo}</h3>
                                     </div>
-                                    <h3 className="font-bold text-neutral-900 text-sm">{aviso.titulo}</h3>
+                                    <p className="text-xs text-neutral-500 line-clamp-3 leading-relaxed">{aviso.contenido}</p>
+                                    <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider pt-2 border-t border-neutral-100">
+                                        {new Date(aviso.created_at).toLocaleDateString()}
+                                    </p>
                                 </div>
-                                <p className="text-xs text-neutral-500 line-clamp-2 pl-11">{aviso.contenido}</p>
-                                <p className="text-[9px] text-neutral-400 pl-11 font-bold uppercase tracking-wider">
-                                    {new Date(aviso.created_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+
+                        {/* Simple Dots Indicator */}
+                        <div className="flex justify-center gap-1.5">
+                            {avisos.map((_, idx) => (
+                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-neutral-800 w-4" : "bg-neutral-200")} />
+                            ))}
+                        </div>
                     </div>
                 ) : (
                     <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">

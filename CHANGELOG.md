@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.35 (15/01/2026)
+
+- **Carruseles Completos**: Implementado el diseño de carrusel horizontal también para los "Avisos Recientes". Ahora el Dashboard presenta una interfaz unificada y compacta para revisar tanto la agenda como las notificaciones.
+
+## v1.1.34 (15/01/2026)
+
+- **Carrusel de Eventos**: Transformada la vista de "Próximo Evento" en un carrusel horizontal deslizante con indicadores. Ahora puedes ver de un vistazo los próximos 5 eventos de la agenda sin ocupar toda la pantalla.
+
 ## v1.1.33 (15/01/2026)
 
 - **Dashboard Dinámico**: La sección "Avisos Recientes" ahora muestra en tiempo real los últimos 3 comunicados publicados en el Tablón, con acceso directo para leer más.
