@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.54 (15/01/2026)
+
+- **Mejora de Notificaciones**: Los costaleros ahora pueden ver sus propias notificaciones (ej. 25 aniversario).
+  - El contador de notificaciones del dashboard se filtra por usuario.
+  - El centro de notificaciones ahora es accesible para todos, mostrando solo los avisos pertinentes a cada rol.
+  - Las acciones administrativas (Justificar/Ausente) se ocultan automáticamente para los costaleros.
+
 ## v1.1.53 (15/01/2026)
 
 - **Nueva Función**: Notificaciones automáticas de "25 Años de Costalero".

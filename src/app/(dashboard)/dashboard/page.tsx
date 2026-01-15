@@ -29,7 +29,7 @@ interface Stats {
 export default function DashboardPage() {
     const router = useRouter();
     const { setSidebarOpen } = useLayout();
-    const { isCostalero } = useUserRole();
+    const { isCostalero, costaleroId } = useUserRole();
     const [userName, setUserName] = useState("Usuario");
     const [stats, setStats] = useState<Stats>({
         totalCostaleros: 0,
@@ -53,6 +53,16 @@ export default function DashboardPage() {
 
             // 2. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
+
+            // Notification query depends on role
+            let notifQuery = supabase.from("notificaciones")
+                .select("id", { count: "exact" })
+                .eq("leido", false);
+
+            if (isCostalero && costaleroId) {
+                notifQuery = notifQuery.eq("costalero_id", costaleroId);
+            }
+
             const [eventosRes, proximosRes, anunciosRes, notifRes] = await Promise.all([
                 supabase.from("eventos").select("*").neq("estado", "finalizado"),
                 supabase.from("eventos")
@@ -64,11 +74,7 @@ export default function DashboardPage() {
                     .select("*")
                     .order("created_at", { ascending: false })
                     .limit(5),
-                // Fetch unread notifications count (only meaningful if admin, but harmless if 0)
-                // Assuming RLS allows admins to see everything.
-                supabase.from("notificaciones")
-                    .select("id", { count: "exact" })
-                    .eq("leido", false)
+                notifQuery
             ]);
 
             const pendientesCount = eventosRes.data?.length || 0;

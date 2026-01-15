@@ -49,8 +49,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 ...(isCostalero ? [{ label: "Mi Perfil", href: "/perfil", icon: Users }] : []),
                 { label: "Tablón de Anuncios", href: "/anuncios", icon: Bell },
                 { label: "Calendario de Eventos", href: "/eventos", icon: Calendar },
-                // Mostrar Notificaciones para Admins/Capataces
-                ...(!isCostalero ? [{ label: "Notificaciones", href: "/notificaciones", icon: Bell }] : []),
+                { label: "Notificaciones", href: "/notificaciones", icon: Bell },
                 // Ocultar ajustes para costaleros por ahora si no es relevante
                 ...(!isCostalero ? [{ label: "Ajustes", href: "/ajustes", icon: Lock }] : []),
             ]
@@ -169,7 +168,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.53</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.1.54</p>
                     </div>
                 </div>
             </aside>

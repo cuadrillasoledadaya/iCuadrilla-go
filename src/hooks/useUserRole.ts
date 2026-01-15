@@ -5,6 +5,7 @@ export function useUserRole() {
     const [isCostalero, setIsCostalero] = useState<boolean | null>(null);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState<string | null>(null);
+    const [costaleroId, setCostaleroId] = useState<string | null>(null);
 
     useEffect(() => {
         const checkRole = async () => {
@@ -42,6 +43,7 @@ export function useUserRole() {
 
                 if (data) {
                     setIsCostalero(true);
+                    setCostaleroId(data.id);
                 } else {
                     // Si no encuentra por user_id, intentamos por email para enlazar (o simplemente asumimos que no es costalero asignado aún)
                     // Por seguridad, para esta visualización, si no tiene user_id en costaleros, no lo tratamos como costalero "activo" con perfil.
@@ -68,5 +70,5 @@ export function useUserRole() {
         checkRole();
     }, []);
 
-    return { isCostalero, loading, userId };
+    return { isCostalero, loading, userId, costaleroId };
 }

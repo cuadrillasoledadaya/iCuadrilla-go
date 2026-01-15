@@ -28,29 +28,31 @@ interface Notificacion {
 
 export default function NotificacionesPage() {
     const router = useRouter();
-    const { isCostalero, loading: roleLoading } = useUserRole();
+    const { isCostalero, costaleroId, loading: roleLoading } = useUserRole();
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!roleLoading && isCostalero) {
-            router.push("/dashboard"); // Redirect if not admin
-        }
-    }, [isCostalero, roleLoading, router]);
-
     const fetchNotificaciones = async () => {
-        const { data } = await supabase
+        let query = supabase
             .from("notificaciones")
             .select("*")
             .order("created_at", { ascending: false });
+
+        if (isCostalero && costaleroId) {
+            query = query.eq("costalero_id", costaleroId);
+        }
+
+        const { data } = await query;
 
         if (data) setNotificaciones(data);
         setLoading(false);
     };
 
     useEffect(() => {
-        fetchNotificaciones();
-    }, []);
+        if (!roleLoading) {
+            fetchNotificaciones();
+        }
+    }, [roleLoading, isCostalero, costaleroId]);
 
     const markAsRead = async (id: string) => {
         // Optimistic update
@@ -259,43 +261,60 @@ export default function NotificacionesPage() {
                                         </p>
                                     </div>
 
-                                    {/* Action Footer */}
-                                    <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-dashed border-neutral-100 pl-12">
-                                        {notif.tipo === 'ausencia' && notif.evento_id && notif.costalero_id && (
-                                            <>
+                                    {/* Actions (Only for Admins/Capataces) */}
+                                    {!isCostalero && (
+                                        <div className="flex flex-col gap-2 pt-2 border-t border-black/5 mt-3">
+                                            <div className="flex items-center gap-2">
                                                 <button
-                                                    onClick={() => handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)}
-                                                    className="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-amber-200"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleJustify(notif.id, notif.evento_id!, notif.costalero_id!);
+                                                    }}
+                                                    className="flex-1 py-2.5 px-4 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
                                                 >
-                                                    <CheckCircle2 size={12} />
                                                     Justificar
                                                 </button>
                                                 <button
-                                                    onClick={() => handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!)}
-                                                    className="px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-red-200"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!);
+                                                    }}
+                                                    className="flex-1 py-2.5 px-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors border border-red-100"
                                                 >
-                                                    <Clock size={12} />
                                                     Marcar Ausente
                                                 </button>
-                                                <div className="h-4 w-[1px] bg-neutral-200 mx-1" />
-                                            </>
-                                        )}
-
-                                        {!notif.leido && (
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* Action Footer */}
+                                    <div className="flex flex-wrap items-center justify-between pt-3 border-t border-dashed border-neutral-100 pl-12 mt-2">
+                                        <div className="flex items-center gap-3">
                                             <button
-                                                onClick={() => markAsRead(notif.id)}
-                                                className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline flex items-center gap-1"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    markAsRead(notif.id);
+                                                }}
+                                                disabled={notif.leido}
+                                                className={cn(
+                                                    "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors",
+                                                    notif.leido ? "bg-neutral-50 text-neutral-300 cursor-not-allowed" : "bg-neutral-50 text-neutral-500 hover:bg-neutral-100 border border-neutral-200"
+                                                )}
                                             >
-                                                <Check size={12} />
-                                                Marcar Leído
+                                                {notif.leido ? <Check size={12} /> : <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                                                {notif.leido ? "Leída" : "Marcar leída"}
                                             </button>
-                                        )}
+                                        </div>
+
                                         <button
-                                            onClick={() => deleteNotification(notif.id)}
-                                            className="text-[10px] font-black uppercase tracking-widest text-neutral-300 hover:text-red-500 flex items-center gap-1 transition-colors ml-auto"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (window.confirm("¿Seguro que quieres eliminar esta notificación?")) {
+                                                    deleteNotification(notif.id);
+                                                }
+                                            }}
+                                            className="p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors ml-auto"
                                         >
-                                            <Trash2 size={12} />
-                                            Eliminar
+                                            <Trash2 size={14} />
                                         </button>
                                     </div>
                                 </div>
