@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.31 (15/01/2026)
+
+- **Gestión Avanzada de Anuncios**: Implementada la edición y borrado de anuncios en el Tablón. Ahora los administradores pueden corregir o retirar comunicados directamente desde la app.
+
 ## v1.1.30 (14/01/2026)
 
 - **Mejora en Listado Cuadrilla**: La lista de hermanos costaleros ahora se ordena automáticamente por número de trabajadera y luego por apellido, facilitando la visualización por palos.
