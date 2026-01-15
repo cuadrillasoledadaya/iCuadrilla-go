@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.64 (15/01/2026)
+
+- **Seguridad**: Excluido el Superadmin (`proyectoszipi@gmail.com`) de la lista de gestión de roles para evitar cambios accidentales en la cuenta maestra.
+
 ## v1.1.63 (15/01/2026)
 
 - **Gestión de Roles**: Implementado sistema avanzado de roles (Costalero, Capataz, Auxiliar).

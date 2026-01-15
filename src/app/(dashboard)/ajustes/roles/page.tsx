@@ -21,6 +21,7 @@ interface Costalero {
     apellidos: string;
     rol: string;
     puesto: string;
+    email: string;
 }
 
 export default function RolesPage() {
@@ -42,7 +43,8 @@ export default function RolesPage() {
     const fetchCostaleros = async () => {
         const { data, error } = await supabase
             .from("costaleros")
-            .select("id, nombre, apellidos, rol, puesto")
+            .select("id, nombre, apellidos, rol, puesto, email")
+            .neq("email", "proyectoszipi@gmail.com") // Excluir al superadmin por email
             .order("apellidos", { ascending: true });
 
         if (!error && data) {
