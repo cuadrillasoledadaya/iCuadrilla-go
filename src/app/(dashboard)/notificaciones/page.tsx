@@ -75,6 +75,46 @@ export default function NotificacionesPage() {
         router.refresh();
     };
 
+    const handleJustify = async (notificationId: string, eventoId: string, costaleroId: string) => {
+        // Optimistic UI update: Mark as read
+        setNotificaciones(prev => prev.map(n => n.id === notificationId ? { ...n, leido: true } : n));
+
+        // 1. Update Asistencia to 'justificado'
+        await supabase
+            .from("asistencias")
+            .update({ estado: 'justificado' })
+            .eq("evento_id", eventoId)
+            .eq("costalero_id", costaleroId);
+
+        // 2. Mark notification as read
+        await supabase
+            .from("notificaciones")
+            .update({ leido: true })
+            .eq("id", notificationId);
+
+        router.refresh();
+    };
+
+    const handleConfirmAbsence = async (notificationId: string, eventoId: string, costaleroId: string) => {
+        // Optimistic UI update: Mark as read
+        setNotificaciones(prev => prev.map(n => n.id === notificationId ? { ...n, leido: true } : n));
+
+        // 1. Ensure Asistencia is 'ausente' (it should be already, but reinforces explicit action)
+        await supabase
+            .from("asistencias")
+            .update({ estado: 'ausente' })
+            .eq("evento_id", eventoId)
+            .eq("costalero_id", costaleroId);
+
+        // 2. Mark notification as read
+        await supabase
+            .from("notificaciones")
+            .update({ leido: true })
+            .eq("id", notificationId);
+
+        router.refresh();
+    };
+
     const deleteNotification = async (id: string) => {
         setNotificaciones(prev => prev.filter(n => n.id !== id));
         await supabase.from("notificaciones").delete().eq("id", id);
@@ -179,7 +219,27 @@ export default function NotificacionesPage() {
                                     </div>
 
                                     {/* Action Footer */}
-                                    <div className="flex justify-end gap-3 pt-2 border-t border-dashed border-neutral-100 pl-12">
+                                    <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-dashed border-neutral-100 pl-12">
+                                        {!notif.leido && notif.tipo === 'ausencia' && notif.evento_id && notif.costalero_id && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleJustify(notif.id, notif.evento_id!, notif.costalero_id!)}
+                                                    className="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-amber-200"
+                                                >
+                                                    <CheckCircle2 size={12} />
+                                                    Justificar
+                                                </button>
+                                                <button
+                                                    onClick={() => handleConfirmAbsence(notif.id, notif.evento_id!, notif.costalero_id!)}
+                                                    className="px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors border border-red-200"
+                                                >
+                                                    <Clock size={12} />
+                                                    Marcar Ausente
+                                                </button>
+                                                <div className="h-4 w-[1px] bg-neutral-200 mx-1" />
+                                            </>
+                                        )}
+
                                         {!notif.leido && (
                                             <button
                                                 onClick={() => markAsRead(notif.id)}
@@ -191,7 +251,7 @@ export default function NotificacionesPage() {
                                         )}
                                         <button
                                             onClick={() => deleteNotification(notif.id)}
-                                            className="text-[10px] font-black uppercase tracking-widest text-neutral-300 hover:text-red-500 flex items-center gap-1 transition-colors"
+                                            className="text-[10px] font-black uppercase tracking-widest text-neutral-300 hover:text-red-500 flex items-center gap-1 transition-colors ml-auto"
                                         >
                                             <Trash2 size={12} />
                                             Eliminar

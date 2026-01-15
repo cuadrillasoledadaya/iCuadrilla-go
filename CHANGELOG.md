@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.46 (15/01/2026)
+
+- **Mejora en Notificaciones**: Añadidas acciones rápidas en las notificaciones para Admin/Capataces:
+  - **Justificar**: Pone la falta como "Justificada" y marca la notificación como leída.
+  - **Marcar Ausente**: Confirma la falta como "Ausente" y marca la notificación como leída.
+
 ## v1.1.45 (15/01/2026)
 
 - **Sistema de Notificaciones Internas**:
