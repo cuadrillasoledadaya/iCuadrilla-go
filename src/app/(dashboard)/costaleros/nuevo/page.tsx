@@ -68,26 +68,26 @@ export default function AltaCostalero() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Nombre</label>
-                        <Input {...register("nombre")} className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
+                        <Input {...register("nombre")} className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                         {errors.nombre && <p className="text-xs text-red-500">{errors.nombre.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Apellidos</label>
-                        <Input {...register("apellidos")} className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
+                        <Input {...register("apellidos")} className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                         {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Email (Opcional)</label>
-                        <Input {...register("email")} type="email" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
+                        <Input {...register("email")} type="email" className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Altura (m)</label>
-                        <Input {...register("altura")} type="number" step="0.01" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" />
+                        <Input {...register("altura")} type="number" step="0.01" className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Trabajadera (1-7)</label>
-                        <select {...register("trabajadera")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 appearance-none">
+                        <select {...register("trabajadera")} className="w-full bg-white border border-black/10 h-12 rounded-xl px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none">
                             <option value="" className="text-black bg-white">Selecciona...</option>
                             {Array.from({ length: 7 }, (_, i) => i + 1).map((val) => (
                                 <option key={val} value={val} className="text-black bg-white">Trabajadera {val}</option>
@@ -97,7 +97,7 @@ export default function AltaCostalero() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Puesto</label>
-                        <select {...register("puesto")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 appearance-none">
+                        <select {...register("puesto")} className="w-full bg-white border border-black/10 h-12 rounded-xl px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none">
                             <option value="" className="text-black bg-white">Selecciona...</option>
                             <option value="Patero Izq" className="text-black bg-white">Patero Izq</option>
                             <option value="Patero Der" className="text-black bg-white">Patero Der</option>
@@ -111,7 +111,7 @@ export default function AltaCostalero() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Suplemento (cm)</label>
-                        <select {...register("suplemento")} className="w-full bg-neutral-900 border-neutral-800 h-12 rounded-xl px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 appearance-none">
+                        <select {...register("suplemento")} className="w-full bg-white border border-black/10 h-12 rounded-xl px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none">
                             <option value="" className="text-black bg-white">Sin suplemento</option>
                             {Array.from({ length: 12 }, (_, i) => (0.5 * (i + 1)).toFixed(1)).map((val) => (
                                 <option key={val} value={val} className="text-black bg-white">{val} cm</option>
@@ -120,12 +120,12 @@ export default function AltaCostalero() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Año de Ingreso</label>
-                        <Input {...register("ano_ingreso")} type="number" className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500" placeholder="Ej. 2024" />
+                        <Input {...register("ano_ingreso")} type="number" className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" placeholder="Ej. 2024" />
                     </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold h-12">
-                    {loading ? "Registrando..." : "Dar de Alta"}
+                <Button type="submit" disabled={loading} className="w-full bg-primary text-white font-black h-14 rounded-2xl shadow-lg shadow-primary/20 uppercase tracking-widest text-xs">
+                    {loading ? "Registrando..." : "DAR DE ALTA COSTALERO"}
                 </Button>
             </form>
 

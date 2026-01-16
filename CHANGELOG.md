@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.79 (16/01/2026)
+
+- **UI Formularios**: Invertidos los colores de los formularios de costaleros (fondo blanco, texto negro).
+- **Legibilidad**: Mejora significativa del contraste en las pantallas de Alta y Edición sobre el fondo verde pastel.
+- **Header**: Ajustados los colores de cabecera en la edición de costaleros para mayor claridad.
+
 ## v1.1.78 (16/01/2026)
 
 - **UI Global**: Cambiado el color de fondo de toda la aplicación a un verde pastel suave.
