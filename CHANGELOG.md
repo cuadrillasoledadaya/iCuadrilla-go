@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.77 (16/01/2026)
+
+- **UI Cuadrilla**: Implementados "Sticky Headers" (encabezados fijos) para cada trabajadera.
+- **Navegación**: Los costaleros ahora aparecen agrupados por trabajadera y el encabezado se mantiene fijo al hacer scroll para mejorar la usabilidad.
+
 ## v1.1.76 (16/01/2026)
 
 - **Layout**: Restaurada la barra de navegación (bocadillo) en las secciones internas de la aplicación.

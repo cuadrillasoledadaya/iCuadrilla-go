@@ -85,25 +85,56 @@ export default function CuadrillaList() {
             </div>
 
             {/* Listado */}
-            <div className="space-y-3">
-                {filtered.map((c) => (
-                    <div
-                        key={c.id}
-                        onClick={() => setSelectedCostalero(c.id)}
-                        className="bg-white p-5 rounded-[24px] flex items-center justify-between group cursor-pointer border border-black/5 shadow-sm hover:border-primary/20 transition-all active:scale-[0.98]"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="h-14 w-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary font-black text-xl italic border border-primary/10">
-                                {c.trabajadera}
+            <div className="space-y-8">
+                {Array.from({ length: 7 }, (_, i) => i + 1).map((t) => {
+                    const costalerosInTrabajadera = filtered.filter(c => c.trabajadera === t);
+                    if (costalerosInTrabajadera.length === 0) return null;
+
+                    return (
+                        <div key={t} className="space-y-4">
+                            {/* Sticky Header */}
+                            <div className="sticky top-0 z-20 py-2 -mx-6 px-6 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-black/5">
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-sm font-black tracking-widest uppercase text-primary italic">Trabajadera {t}</h2>
+                                    <div className="h-0.5 flex-1 bg-gradient-to-r from-primary/20 to-transparent rounded-full" />
+                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-tighter">
+                                        {costalerosInTrabajadera.length} {costalerosInTrabajadera.length === 1 ? 'Hermano' : 'Hermanos'}
+                                    </span>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <p className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{c.nombre} {c.apellidos}</p>
-                                <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">{c.puesto || 'Costalero'}</p>
+
+                            <div className="space-y-3">
+                                {costalerosInTrabajadera.map((c) => (
+                                    <div
+                                        key={c.id}
+                                        onClick={() => setSelectedCostalero(c.id)}
+                                        className="bg-white p-5 rounded-[24px] flex items-center justify-between group cursor-pointer border border-black/5 shadow-sm hover:border-primary/20 transition-all active:scale-[0.98]"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-14 w-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary font-black text-xl italic border border-primary/10">
+                                                {c.trabajadera}
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{c.nombre} {c.apellidos}</p>
+                                                <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">{c.puesto || 'Costalero'}</p>
+                                            </div>
+                                        </div>
+                                        <ChevronRight className="text-neutral-200 group-hover:text-primary transition-colors" size={24} />
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                        <ChevronRight className="text-neutral-200 group-hover:text-primary transition-colors" size={24} />
+                    );
+                })}
+
+                {filtered.length === 0 && (
+                    <div className="text-center py-12 space-y-4">
+                        <div className="h-20 w-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto text-neutral-300">
+                            <Users size={40} />
+                        </div>
+                        <p className="text-neutral-400 font-medium italic">No se encontraron costaleros</p>
                     </div>
-                ))}
+                )}
             </div>
 
             <Modal
