@@ -407,9 +407,16 @@ export default function GestionRelevos() {
                                     >
                                         <div className="flex justify-between items-start">
                                             <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">{huecosLabels[p - 1]}</span>
-                                            {releveData?.suplemento != null && (
-                                                <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
-                                            )}
+                                            <div className="flex flex-col items-end gap-1">
+                                                {costalero && (
+                                                    <span className="text-[7px] font-black bg-neutral-900/5 text-neutral-900 px-1.5 py-0.5 rounded-full uppercase tracking-tighter">
+                                                        {costalero.puesto}
+                                                    </span>
+                                                )}
+                                                {releveData?.suplemento != null && (
+                                                    <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
+                                                )}
+                                            </div>
                                         </div>
                                         <span className={cn(
                                             "font-extrabold text-sm italic line-clamp-2",
@@ -445,9 +452,16 @@ export default function GestionRelevos() {
                                         >
                                             <div className="flex justify-center items-center gap-2">
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">CORRIENTE</span>
-                                                {releveData?.suplemento != null && (
-                                                    <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
-                                                )}
+                                                <div className="flex flex-col items-start gap-1">
+                                                    {costaleroCorriente && (
+                                                        <span className="text-[7px] font-black bg-neutral-900/5 text-neutral-900 px-1.5 py-0.5 rounded-full uppercase tracking-tighter">
+                                                            {costaleroCorriente.puesto}
+                                                        </span>
+                                                    )}
+                                                    {releveData?.suplemento != null && (
+                                                        <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <span className={cn(
                                                 "font-extrabold text-sm italic",

@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.96 (16/01/2026)
+
+- **UI Relevos**: Restaurada la etiqueta de puesto del costalero sin el prefijo "Hab:".
+- **Mejora Visual**: Optimizada la disposición de etiquetas para mayor claridad.
+
 ## v1.1.95 (16/01/2026)
 
 - **UI Relevos**: Eliminada la etiqueta de puesto habitual ("Hab") a petición del usuario para simplificar el diseño.
