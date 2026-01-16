@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.74 (16/01/2026)
+
+- **UI Premium**: Refinado el fundido del logo en la Landing Page mediante máscara radial dinámica.
+- **Visual**: Eliminados los bordes cuadrados visibles para una integración perfecta y profesional del escudo.
+
 ## v1.1.73 (16/01/2026)
 
 - **UI Premium**: Rediseño completo de la Landing Page con estética "Dark Mode" y verde esmeralda.

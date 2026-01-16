@@ -35,7 +35,13 @@ export default async function Home() {
                 {/* Logo Section */}
                 <div className="relative group animate-in fade-in zoom-in duration-1000">
                     <div className="absolute inset-0 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all duration-700" />
-                    <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                    <div
+                        className="relative w-48 h-48 sm:w-56 sm:h-56"
+                        style={{
+                            maskImage: 'radial-gradient(circle, black 40%, transparent 80%)',
+                            WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 80%)'
+                        }}
+                    >
                         <Image
                             src="/escudo.png"
                             alt="Escudo Hermandad"
