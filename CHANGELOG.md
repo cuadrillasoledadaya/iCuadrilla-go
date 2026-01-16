@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.95 (16/01/2026)
+
+- **UI Relevos**: Eliminada la etiqueta de puesto habitual ("Hab") a petición del usuario para simplificar el diseño.
+
 ## v1.1.94 (16/01/2026)
 
 - **UI Relevos**: Añadida la visualización del puesto habitual ("Hab") del costalero en la esquina superior derecha de cada hueco.
