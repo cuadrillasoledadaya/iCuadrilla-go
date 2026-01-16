@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
+    const { isSidebarOpen, setSidebarOpen } = useLayout();
     const pathname = usePathname();
     const showNavbar = pathname !== "/" && pathname !== "/login" && pathname !== "/registro" && !pathname.includes("/relevos");
 
