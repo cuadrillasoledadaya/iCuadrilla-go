@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="es">
-            <body className={`${inter.className} pb-20`}>
+            <body className={inter.className}>
                 <LayoutProvider>
                     <LayoutWrapper>
                         {children}

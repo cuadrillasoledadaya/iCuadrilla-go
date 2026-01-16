@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.75 (16/01/2026)
+
+- **Layout**: Eliminada la barra de navegación (bocadillo) de la Landing Page.
+- **Bugfix**: Corregida la zona blanca inferior mediante la eliminación de padding estático y aplicación de fondo negro global.
+- **Optimización**: Gestión dinámica del espacio inferior según la visibilidad del menú.
+
 ## v1.1.74 (16/01/2026)
 
 - **UI Premium**: Refinado el fundido del logo en la Landing Page mediante máscara radial dinámica.

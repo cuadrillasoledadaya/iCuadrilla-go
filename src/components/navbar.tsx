@@ -17,8 +17,8 @@ export function Navbar() {
     const pathname = usePathname();
     const { isSidebarOpen } = useLayout();
 
-    // No mostrar navbar en login, registro ni en la gestión de relevos (para no tapar el banner)
-    if (pathname === "/login" || pathname === "/registro" || pathname.includes("/relevos")) return null;
+    // No mostrar navbar en landing, login, registro ni en la gestión de relevos
+    if (pathname === "/" || pathname === "/login" || pathname === "/registro" || pathname.includes("/relevos")) return null;
 
     return (
         <nav className={cn(
