@@ -369,6 +369,7 @@ export default function GestionRelevos() {
                             {[1, 2, 3, 4].map((p) => {
                                 const costalero = getCostaleroAt(t, p);
                                 const isSelected = selectedPos?.t === t && selectedPos?.p === p;
+                                const isOutOfPosition = costalero && costalero.puesto !== huecosLabels[p - 1];
                                 return (
                                     <button
                                         key={`${t}-${p}`}
@@ -376,7 +377,7 @@ export default function GestionRelevos() {
                                         className={cn(
                                             "relative p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-left",
                                             isSelected ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                                costalero ? "bg-white border-neutral-100 shadow-sm" : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                                costalero ? (isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
                                         )}
                                     >
                                         <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">{huecosLabels[p - 1]}</span>
@@ -393,25 +394,28 @@ export default function GestionRelevos() {
 
                             {/* Corriente (Position 5) */}
                             <div className="col-span-2 flex justify-center pt-2">
-                                const costaleroCorriente = getCostaleroAt(t, 5);
-                                const isCorrienteOutOfPosition = costaleroCorriente && costaleroCorriente.puesto !== "Corriente";
-                                return (
-                                <button
-                                    onClick={() => handlePosClick(t, 5)}
-                                    className={cn(
-                                        "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
-                                        selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                            costaleroCorriente ? (isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
-                                    )}
-                                >
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">CORRIENTE</span>
-                                    <span className={cn(
-                                        "font-extrabold text-sm italic",
-                                        getCostaleroAt(t, 5) ? "text-primary" : "text-neutral-300 font-medium"
-                                    )}>
-                                        {getCostaleroAt(t, 5) ? `${getCostaleroAt(t, 5)?.nombre} ${getCostaleroAt(t, 5)?.apellidos}` : 'Sin asignar'}
-                                    </span>
-                                </button>
+                                {(() => {
+                                    const costaleroCorriente = getCostaleroAt(t, 5);
+                                    const isCorrienteOutOfPosition = costaleroCorriente && costaleroCorriente.puesto !== "Corriente";
+                                    return (
+                                        <button
+                                            onClick={() => handlePosClick(t, 5)}
+                                            className={cn(
+                                                "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
+                                                selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
+                                                    costaleroCorriente ? (isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                            )}
+                                        >
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">CORRIENTE</span>
+                                            <span className={cn(
+                                                "font-extrabold text-sm italic",
+                                                costaleroCorriente ? "text-primary" : "text-neutral-300 font-medium"
+                                            )}>
+                                                {costaleroCorriente ? `${costaleroCorriente.nombre} ${costaleroCorriente.apellidos}` : 'Sin asignar'}
+                                            </span>
+                                        </button>
+                                    );
+                                })()}
                             </div>
                         </div>
                     </div>

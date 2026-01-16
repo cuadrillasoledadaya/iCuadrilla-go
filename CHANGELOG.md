@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.84 (16/01/2026)
+
+- **Bug Fix**: Corregido error de sintaxis en la página de relevos que impedía la carga correcta de la cuadrícula táctica.
+- **Gstión de Relevos**: Refinada la validación de puestos con resaltado en rojo pastel.
+
 ## v1.1.83 (16/01/2026)
 
 - **Gstión de Relevos**: Implementada validación visual de posición. Los costaleros que no estén en su puesto habitual se resaltan en rojo pastel para una gestión más intuitiva.
