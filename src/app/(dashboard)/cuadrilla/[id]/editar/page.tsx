@@ -45,7 +45,7 @@ export default function EditarCostalero() {
                     ...data,
                     altura: data.altura?.toString(),
                     trabajadera: data.trabajadera?.toString(),
-                    suplemento: data.suplemento?.toString(),
+                    suplemento: data.suplemento != null ? data.suplemento.toFixed(1) : "",
                     ano_ingreso: data.ano_ingreso?.toString(),
                 });
             }

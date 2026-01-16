@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.80 (16/01/2026)
+
+- **Bug Fix**: Corregida la visualización del suplemento en la edición del costalero. Ahora los valores numéricos se formatean correctamente para coincidir con el desplegable (ej: 3 -> "3.0").
+
 ## v1.1.79 (16/01/2026)
 
 - **UI Formularios**: Invertidos los colores de los formularios de costaleros (fondo blanco, texto negro).
