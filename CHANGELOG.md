@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.91 (16/01/2026)
+
+- **Corrección de Colores**: Asegurado el resaltado en naranja para cambios de trabajadera en todas las posiciones.
+- **Validación Flexible**: El sistema ahora reconoce correctamente los puestos (ej: "Patero" en "Patero Izq") para evitar falsos positivos en rojo.
+
 ## v1.1.90 (16/01/2026)
 
 - **Bug Fix**: Corregido error de tipos en relevos que afectaba al filtrado de costaleros.

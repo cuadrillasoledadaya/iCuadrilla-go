@@ -386,7 +386,11 @@ export default function GestionRelevos() {
                             {[1, 2, 3, 4].map((p) => {
                                 const costalero = getCostaleroAt(t, p);
                                 const isSelected = selectedPos?.t === t && selectedPos?.p === p;
-                                const isOutOfPosition = costalero && costalero.puesto !== huecosLabels[p - 1];
+                                // Comprobación flexible: "Patero Izq" incluye "Patero"
+                                const isOutOfPosition = costalero && !huecosLabels[p - 1].toLowerCase().includes(costalero.puesto.toLowerCase());
+                                const isOutOfTrabajadera = costalero && Number(costalero.trabajadera) !== Number(t);
+                                const releveData = relevos.find(r => r.trabajadera === t && r.posicion === p);
+
                                 return (
                                     <button
                                         key={`${t}-${p}`}
@@ -394,10 +398,19 @@ export default function GestionRelevos() {
                                         className={cn(
                                             "relative p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-left",
                                             isSelected ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                                costalero ? (isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                                costalero ? (
+                                                    isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
+                                                        isOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
+                                                            "bg-white border-neutral-100 shadow-sm"
+                                                ) : "bg-neutral-50/50 border-dashed border-neutral-200"
                                         )}
                                     >
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">{huecosLabels[p - 1]}</span>
+                                        <div className="flex justify-between items-start">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">{huecosLabels[p - 1]}</span>
+                                            {releveData?.suplemento != null && (
+                                                <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
+                                            )}
+                                        </div>
                                         <span className={cn(
                                             "font-extrabold text-sm italic line-clamp-2",
                                             costalero ? "text-primary" : "text-neutral-300 font-medium"
