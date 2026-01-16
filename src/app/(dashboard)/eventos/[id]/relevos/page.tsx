@@ -402,7 +402,7 @@ export default function GestionRelevos() {
                                         key={`${t}-${p}`}
                                         onClick={() => handlePosClick(t, p)}
                                         className={cn(
-                                            "relative p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-left",
+                                            "relative p-3 rounded-[20px] border-2 transition-all flex flex-col justify-between h-24 text-left",
                                             isSelected ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
                                                 costalero ? (
                                                     isOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
