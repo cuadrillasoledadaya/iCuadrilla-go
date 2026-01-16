@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.93 (16/01/2026)
+
+- **Fix Build**: Corregido error de tipos que bloqueaba el despliegue en Vercel.
+- **UI Relevos**: Garantizada la prioridad del color naranja para costaleros en trabajadera distinta.
+
 ## v1.1.92 (16/01/2026)
 
 - **Prioridad de Colores**: Reajustada la jerarquía de alertas visuales. Ahora el color naranja (cambio de trabajadera) tiene prioridad absoluta sobre el rojo para evitar confusiones.
