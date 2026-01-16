@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.73 (16/01/2026)
+
+- **UI Premium**: Rediseño completo de la Landing Page con estética "Dark Mode" y verde esmeralda.
+- **Identidad**: Incorporación del logo oficial de la hermandad con efectos de iluminación.
+- **Bugfix**: Corregida visibilidad del enlace de registro (hover invisible).
+
 ## v1.1.72 (16/01/2026)
 
 - **DB**: Actualizada la restricción de roles para incluir 'superadmin'.
