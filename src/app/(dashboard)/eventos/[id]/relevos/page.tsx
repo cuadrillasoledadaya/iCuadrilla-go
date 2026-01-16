@@ -21,8 +21,8 @@ interface Relevo {
     id: string;
     trabajadera: number;
     posicion: number;
-    costalero_id: string | null;
     muda_id: string;
+    suplemento?: number;
     costalero?: Costalero;
 }
 
@@ -47,6 +47,7 @@ export default function GestionRelevos() {
     const [editingMuda, setEditingMuda] = useState<Muda | null>(null);
     const [searchOther, setSearchOther] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [assignmentSupplement, setAssignmentSupplement] = useState("");
 
     const totalHuecos = 35; // 7 trabajaderas * 5 huecos
 
@@ -187,6 +188,8 @@ export default function GestionRelevos() {
         if (!selectedPos || !activeMudaId) return;
         setLoading(true);
 
+        const supplementVal = assignmentSupplement ? parseFloat(assignmentSupplement) : null;
+
         if (cid) {
             // Si el costalero ya estaba en otra posición EN EL MISMO RELEVO, limpiar esa posición primero
             await supabase.from("relevos").delete()
@@ -199,7 +202,8 @@ export default function GestionRelevos() {
                 trabajadera: selectedPos.t,
                 posicion: selectedPos.p,
                 costalero_id: cid,
-                muda_id: activeMudaId
+                muda_id: activeMudaId,
+                suplemento: supplementVal
             }, { onConflict: "evento_id,trabajadera,posicion,muda_id" });
         } else {
             await supabase.from("relevos").delete()
@@ -212,6 +216,7 @@ export default function GestionRelevos() {
         setShowModal(false);
         setSelectedPos(null);
         setSearchTerm("");
+        setAssignmentSupplement("");
         await fetchRelevos();
         setLoading(false);
     };
@@ -408,16 +413,28 @@ export default function GestionRelevos() {
                                 {(() => {
                                     const costaleroCorriente = getCostaleroAt(t, 5);
                                     const isCorrienteOutOfPosition = costaleroCorriente && costaleroCorriente.puesto !== "Corriente";
+                                    const isCorrienteOutOfTrabajadera = costaleroCorriente && Number(costaleroCorriente.trabajadera) !== Number(t);
+                                    const releveData = relevos.find(r => r.trabajadera === t && r.posicion === 5);
+
                                     return (
                                         <button
                                             onClick={() => handlePosClick(t, 5)}
                                             className={cn(
                                                 "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
                                                 selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                                    costaleroCorriente ? (isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                                    costaleroCorriente ? (
+                                                        isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
+                                                            isCorrienteOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
+                                                                "bg-white border-neutral-100 shadow-sm"
+                                                    ) : "bg-neutral-50/50 border-dashed border-neutral-200"
                                             )}
                                         >
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">CORRIENTE</span>
+                                            <div className="flex justify-center items-center gap-2">
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">CORRIENTE</span>
+                                                {releveData?.suplemento != null && (
+                                                    <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
+                                                )}
+                                            </div>
                                             <span className={cn(
                                                 "font-extrabold text-sm italic",
                                                 costaleroCorriente ? "text-primary" : "text-neutral-300 font-medium"
@@ -454,16 +471,30 @@ export default function GestionRelevos() {
                                 />
                             </div>
 
-                            <button
-                                onClick={() => setSearchOther(!searchOther)}
-                                className={cn(
-                                    "flex items-center justify-between p-4 rounded-2xl border transition-all",
-                                    searchOther ? "bg-primary/5 border-primary text-primary" : "bg-white border-black/5 text-neutral-900"
-                                )}
-                            >
-                                <span className="text-xs font-black uppercase tracking-widest">Buscar en otras trabajaderas</span>
-                                {searchOther ? <Check size={16} /> : <div className="w-4 h-4 border-2 border-neutral-900 rounded" />}
-                            </button>
+                            <div className="flex gap-2">
+                                <div className="flex-1 space-y-1">
+                                    <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1">Suplemento (cm)</label>
+                                    <Input
+                                        type="number"
+                                        placeholder="Ej: 2.5"
+                                        className="h-12 bg-neutral-50 border-none rounded-2xl font-bold"
+                                        value={assignmentSupplement}
+                                        onChange={e => setAssignmentSupplement(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex-[2] flex flex-col justify-end">
+                                    <button
+                                        onClick={() => setSearchOther(!searchOther)}
+                                        className={cn(
+                                            "flex items-center justify-between p-3.5 h-12 rounded-2xl border transition-all",
+                                            searchOther ? "bg-primary/5 border-primary text-primary" : "bg-white border-black/5 text-neutral-900"
+                                        )}
+                                    >
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Otras trabajaderas</span>
+                                        {searchOther ? <Check size={14} /> : <div className="w-4 h-4 border-2 border-neutral-900 rounded" />}
+                                    </button>
+                                </div>
+                            </div>
 
                             <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                                 {filteredCandidates.length === 0 ? (

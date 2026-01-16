@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.89 (16/01/2026)
+
+- **Gstión de Relevos**: Implementados suplementos específicos por asignación. Ahora se puede indicar una medida en cm al asignar un costalero.
+- **Alertas Visuales**: Añadido color naranja pastel para costaleros que trabajan en una trabajadera distinta a la suya habitual.
+- **Base de Datos**: Actualizado esquema para soportar suplementos en relevos.
+
 ## v1.1.88 (16/01/2026)
 
 - **Corrección de Búsqueda**: Reescrito el motor de filtrado de costaleros para asegurar que la búsqueda en otras trabajaderas funcione al 100%.
