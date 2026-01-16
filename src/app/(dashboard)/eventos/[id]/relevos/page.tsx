@@ -273,11 +273,14 @@ export default function GestionRelevos() {
     const occupadas = relevos.filter(r => r.costalero_id).length;
     const pct = (occupadas / totalHuecos) * 100;
 
-    const filteredCandidates = cuadrilla
-        .filter(c => c.presente) // Solo los que han venido
-        .filter(c => !relevos.some(r => r.costalero_id === c.id)) // Que no estén ya puestos
-        .filter(c => searchOther || c.trabajadera === selectedPos?.t) // Filtrar por trabajadera si no se marca buscar en otras
-        .filter(c => `${c.nombre} ${c.apellidos}`.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredCandidates = cuadrilla.filter(c => {
+        if (!c.presente) return false;
+        const isAssigned = relevos.some(r => r.costalero_id === c.id);
+        if (isAssigned) return false;
+        if (!searchOther && Number(c.trabajadera) !== Number(selectedPos?.t)) return false;
+        const fullName = `${c.nombre} ${c.apellidos}`.toLowerCase();
+        return fullName.includes(searchTerm.toLowerCase());
+    });
 
     if (loading && relevos.length === 0) return (
         <div className="flex min-h-screen items-center justify-center bg-background">
@@ -293,7 +296,7 @@ export default function GestionRelevos() {
             <div className="p-6 pb-0 space-y-6">
                 <header className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <button onClick={() => router.back()} className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors">
+                        <button onClick={() => router.back()} className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-900 hover:text-black transition-colors">
                             <ChevronLeft size={24} />
                         </button>
                         <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Gestión de Relevos</h1>
@@ -315,7 +318,7 @@ export default function GestionRelevos() {
                                 "flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center justify-center gap-2",
                                 activeMudaId === muda.id
                                     ? "bg-white text-primary shadow-sm ring-1 ring-black/5 translate-y-[-1px]"
-                                    : "bg-neutral-200/50 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-200"
+                                    : "bg-neutral-200/50 text-neutral-900 hover:bg-neutral-200"
                             )}
                         >
                             {muda.nombre}
@@ -327,7 +330,7 @@ export default function GestionRelevos() {
                                         setMudaNameInput(muda.nombre);
                                         setShowMudaModal(true);
                                     }}
-                                    className="p-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-neutral-500 transition-colors"
+                                    className="p-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-neutral-900 transition-colors"
                                 >
                                     <Settings2 size={12} />
                                 </span>

@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.87 (16/01/2026)
+
+- **Mejora de Selección**: Corregida la lógica de búsqueda en otras trabajaderas para mostrar todos los costaleros disponibles correctamente.
+- **UI Legibilidad**: Cambiados textos grises por negro/neutral-900 para mejorar el contraste y la visibilidad en toda la página de relevos.
+
 ## v1.1.86 (16/01/2026)
 
 - **Corrección de Error**: Solucionado error de validación "expected string, received null" en el campo de email al editar costaleros.
