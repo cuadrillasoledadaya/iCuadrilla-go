@@ -37,7 +37,7 @@ interface Evento {
 export default function DetalleEvento() {
     const params = useParams();
     const router = useRouter();
-    const { isCostalero, userId, canManageEvents } = useUserRole(); // userId is auth.uid
+    const { isCostalero, userId, canManageEvents, rol } = useUserRole(); // userId is auth.uid
     const [evento, setEvento] = useState<Evento | null>(null);
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [loading, setLoading] = useState(true);
@@ -236,19 +236,19 @@ export default function DetalleEvento() {
 
 
     const actionButtons = [
-        // Ocultar acciones de gestión para costaleros
-        ...(!isCostalero ? [
+        // Acciones de gestión solo para Administradores/Capataces
+        ...(canManageEvents ? [
             { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }
         ] : []),
         { label: "VER POR TRABAJADERAS", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
         { label: "WHATSAPP", icon: Share2, color: "bg-green-500 shadow-green-200", href: `https://wa.me/?text=Asistencia` },
-        // Ocultar acciones de gestión para costaleros
-        ...(!isCostalero ? [
+        // Acciones de gestión solo para Administradores/Capataces
+        ...(canManageEvents ? [
             { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
             { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` }
         ] : []),
         // Botón para costaleros notificar ausencia
-        ...(isCostalero && !alreadyNotified && evento?.estado === 'pendiente' ? [
+        ...(rol === 'costalero' && !alreadyNotified && evento?.estado === 'pendiente' ? [
             { label: "NOTIFICAR AUSENCIA", icon: AlertCircle, color: "bg-red-500 shadow-red-200", action: () => setShowAbsenceModal(true) }
         ] : [])
     ];

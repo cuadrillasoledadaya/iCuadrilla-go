@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.81 (16/01/2026)
+
+- **Corrección de Permisos**: Restaurados los botones de Gestión de Relevos, Escaneo QR y Mediciones para Superadmins, Capataces y Auxiliares.
+- **UI Eventos**: Refinada la visibilidad del botón de notificar ausencia para que solo aparezca a usuarios con rol exclusivo de costalero.
+
 ## v1.1.80 (16/01/2026)
 
 - **Bug Fix**: Corregida la visualización del suplemento en la edición del costalero. Ahora los valores numéricos se formatean correctamente para coincidir con el desplegable (ej: 3 -> "3.0").
