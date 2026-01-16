@@ -277,9 +277,17 @@ export default function GestionRelevos() {
         if (!c.presente) return false;
         const isAssigned = relevos.some(r => r.costalero_id === c.id);
         if (isAssigned) return false;
-        if (!searchOther && Number(c.trabajadera) !== Number(selectedPos?.t)) return false;
-        const fullName = `${c.nombre} ${c.apellidos}`.toLowerCase();
-        return fullName.includes(searchTerm.toLowerCase());
+
+        // Si searchOther es false, filtramos por trabajadera
+        if (!searchOther && Number(c.trabajadera) !== Number(selectedPos?.t)) {
+            return false;
+        }
+
+        if (searchTerm) {
+            const fullName = `${c.nombre} ${c.apellidos}`.toLowerCase();
+            return fullName.includes(searchTerm.toLowerCase());
+        }
+        return true;
     });
 
     if (loading && relevos.length === 0) return (
@@ -343,7 +351,7 @@ export default function GestionRelevos() {
                     <div className="flex justify-between items-end">
                         <div className="space-y-1">
                             <h3 className="text-2xl font-black text-neutral-900 tracking-tighter italic">{occupadas}/{totalHuecos} Huecos</h3>
-                            <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{mudas.find(m => m.id === activeMudaId)?.nombre || 'RELEVO'}</p>
+                            <p className="text-[10px] text-neutral-900 font-black uppercase tracking-[0.2em]">{mudas.find(m => m.id === activeMudaId)?.nombre || 'RELEVO'}</p>
                         </div>
                         <div className="px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-primary font-black text-[10px] shadow-sm">
                             {Math.round(pct)}% LLENO
@@ -364,7 +372,7 @@ export default function GestionRelevos() {
                     <div key={t} className="space-y-6">
                         <div className="flex items-center gap-3 px-2">
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
-                            <h2 className="text-xl font-black text-neutral-400 uppercase tracking-tighter italic">TRABAJADERA {t}</h2>
+                            <h2 className="text-xl font-black text-neutral-900 uppercase tracking-tighter italic">TRABAJADERA {t}</h2>
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
                         </div>
 
@@ -383,7 +391,7 @@ export default function GestionRelevos() {
                                                 costalero ? (isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
                                         )}
                                     >
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">{huecosLabels[p - 1]}</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">{huecosLabels[p - 1]}</span>
                                         <span className={cn(
                                             "font-extrabold text-sm italic line-clamp-2",
                                             costalero ? "text-primary" : "text-neutral-300 font-medium"
@@ -409,7 +417,7 @@ export default function GestionRelevos() {
                                                     costaleroCorriente ? (isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
                                             )}
                                         >
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">CORRIENTE</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">CORRIENTE</span>
                                             <span className={cn(
                                                 "font-extrabold text-sm italic",
                                                 costaleroCorriente ? "text-primary" : "text-neutral-300 font-medium"
@@ -432,12 +440,12 @@ export default function GestionRelevos() {
                         <div className="text-center space-y-2">
                             <div className="w-16 h-1 w-12 bg-neutral-100 rounded-full mx-auto mb-4" />
                             <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight italic">Hueco Disponibles</h3>
-                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Trabajadera {selectedPos?.t} • {huecosLabels[(selectedPos?.p || 1) - 1]}</p>
+                            <p className="text-[10px] font-black text-neutral-900 uppercase tracking-widest">Trabajadera {selectedPos?.t} • {huecosLabels[(selectedPos?.p || 1) - 1]}</p>
                         </div>
 
                         <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-900" size={16} />
                                 <Input
                                     placeholder="Buscar por nombre..."
                                     className="pl-10 h-12 bg-neutral-50 border-none rounded-2xl"
@@ -450,11 +458,11 @@ export default function GestionRelevos() {
                                 onClick={() => setSearchOther(!searchOther)}
                                 className={cn(
                                     "flex items-center justify-between p-4 rounded-2xl border transition-all",
-                                    searchOther ? "bg-primary/5 border-primary text-primary" : "bg-white border-black/5 text-neutral-400"
+                                    searchOther ? "bg-primary/5 border-primary text-primary" : "bg-white border-black/5 text-neutral-900"
                                 )}
                             >
                                 <span className="text-xs font-black uppercase tracking-widest">Buscar en otras trabajaderas</span>
-                                {searchOther ? <Check size={16} /> : <div className="w-4 h-4 border-2 border-neutral-100 rounded" />}
+                                {searchOther ? <Check size={16} /> : <div className="w-4 h-4 border-2 border-neutral-900 rounded" />}
                             </button>
 
                             <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
@@ -469,9 +477,9 @@ export default function GestionRelevos() {
                                         >
                                             <div className="text-left">
                                                 <p className="font-extrabold text-neutral-900 group-hover:text-primary">{c.nombre} {c.apellidos}</p>
-                                                <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">T-{c.trabajadera} • {c.puesto}</p>
+                                                <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">T-{c.trabajadera} • {c.puesto}</p>
                                             </div>
-                                            <UserPlus size={18} className="text-neutral-300 group-hover:text-primary" />
+                                            <UserPlus size={18} className="text-neutral-900 group-hover:text-primary" />
                                         </button>
                                     ))
                                 )}
@@ -497,7 +505,7 @@ export default function GestionRelevos() {
                             <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight italic">
                                 {editingMuda ? 'Editar Relevo' : 'Nuevo Relevo'}
                             </h3>
-                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Ponle un nombre para identificarlo</p>
+                            <p className="text-[10px] font-black text-neutral-900 uppercase tracking-widest">Ponle un nombre para identificarlo</p>
                         </div>
 
                         <div className="space-y-4">

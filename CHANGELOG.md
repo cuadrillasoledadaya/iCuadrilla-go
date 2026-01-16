@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.88 (16/01/2026)
+
+- **Corrección de Búsqueda**: Reescrito el motor de filtrado de costaleros para asegurar que la búsqueda en otras trabajaderas funcione al 100%.
+- **UI Legibilidad**: Completada la migración de textos grises a negro/neutral-900 para una visibilidad perfecta.
+
 ## v1.1.87 (16/01/2026)
 
 - **Mejora de Selección**: Corregida la lógica de búsqueda en otras trabajaderas para mostrar todos los costaleros disponibles correctamente.
