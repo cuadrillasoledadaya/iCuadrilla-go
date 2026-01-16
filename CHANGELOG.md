@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.94 (16/01/2026)
+
+- **UI Relevos**: Añadida la visualización del puesto habitual ("Hab") del costalero en la esquina superior derecha de cada hueco.
+- **Mejora Visual**: Ajustada la disposición de etiquetas de suplemento y puesto para mejor legibilidad.
+
 ## v1.1.93 (16/01/2026)
 
 - **Fix Build**: Corregido error de tipos que bloqueaba el despliegue en Vercel.
