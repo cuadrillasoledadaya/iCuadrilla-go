@@ -422,8 +422,8 @@ export default function GestionRelevos() {
                                             </div>
                                         </div>
                                         <span className={cn(
-                                            "font-extrabold text-sm italic line-clamp-2",
-                                            costalero ? "text-primary" : "text-neutral-300 font-medium"
+                                            "font-black text-[13px] leading-tight line-clamp-2",
+                                            costalero ? "text-neutral-900" : "text-neutral-300 font-medium"
                                         )}>
                                             {costalero ? `${costalero.nombre} ${costalero.apellidos}` : 'Asignar...'}
                                         </span>
@@ -444,7 +444,7 @@ export default function GestionRelevos() {
                                         <button
                                             onClick={() => handlePosClick(t, 5)}
                                             className={cn(
-                                                "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
+                                                "w-full max-w-[240px] p-3 rounded-[20px] border-2 transition-all flex flex-col justify-between h-24 text-center",
                                                 selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
                                                     costaleroCorriente ? (
                                                         isCorrienteOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
@@ -469,8 +469,8 @@ export default function GestionRelevos() {
                                                 </div>
                                             </div>
                                             <span className={cn(
-                                                "font-extrabold text-sm italic",
-                                                costaleroCorriente ? "text-primary" : "text-neutral-300 font-medium"
+                                                "font-black text-[13px] leading-tight min-h-[1.2em]",
+                                                costaleroCorriente ? "text-neutral-900" : "text-neutral-300 font-medium"
                                             )}>
                                                 {costaleroCorriente ? `${costaleroCorriente.nombre} ${costaleroCorriente.apellidos}` : 'Sin asignar'}
                                             </span>

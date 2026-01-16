@@ -4,6 +4,11 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.1.98 (16/01/2026)
+
+- **UI Relevos**: Corregido el problema de visibilidad de nombres. Se ha aumentado el espacio de los huecos y mejorado el contraste del texto para asegurar que los nombres sean siempre legibles.
+- **Visual Improvement**: Ajustado el tamaño y disposición de las celdas de la cuadrícula táctica.
+
 ## v1.1.96 (16/01/2026)
 
 - **UI Relevos**: Restaurada la etiqueta de puesto del costalero sin el prefijo "Hab:".
