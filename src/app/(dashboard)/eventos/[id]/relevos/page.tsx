@@ -393,12 +393,15 @@ export default function GestionRelevos() {
 
                             {/* Corriente (Position 5) */}
                             <div className="col-span-2 flex justify-center pt-2">
+                                const costaleroCorriente = getCostaleroAt(t, 5);
+                                const isCorrienteOutOfPosition = costaleroCorriente && costaleroCorriente.puesto !== "Corriente";
+                                return (
                                 <button
                                     onClick={() => handlePosClick(t, 5)}
                                     className={cn(
                                         "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
                                         selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                            getCostaleroAt(t, 5) ? "bg-white border-neutral-100 shadow-sm" : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                            costaleroCorriente ? (isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" : "bg-white border-neutral-100 shadow-sm") : "bg-neutral-50/50 border-dashed border-neutral-200"
                                     )}
                                 >
                                     <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">CORRIENTE</span>

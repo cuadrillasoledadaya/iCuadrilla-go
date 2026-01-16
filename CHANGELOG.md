@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.83 (16/01/2026)
+
+- **Gstión de Relevos**: Implementada validación visual de posición. Los costaleros que no estén en su puesto habitual se resaltan en rojo pastel para una gestión más intuitiva.
+
 ## v1.1.82 (16/01/2026)
 
 - **UI Consistencia**: Aplicado el fondo verde pastel (`bg-background`) a todas las páginas de gestión de eventos, asistentes, relevos y escaneo QR para una experiencia visual uniforme.
