@@ -97,7 +97,7 @@ export default function GestionRelevos() {
                 const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
                 const [costalerosRes, asistenciasRes] = await Promise.all([
-                    supabase.from("costaleros").select("*"),
+                    supabase.from("costaleros").select("*").eq("rol", "costalero"),
                     supabase.from("asistencias").select("*").eq("fecha", eventDate).eq("estado", "presente")
                 ]);
 

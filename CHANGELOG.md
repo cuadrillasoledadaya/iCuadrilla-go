@@ -4,6 +4,11 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.1.99 (16/01/2026)
+
+- **Corrección Crítica**: Filtrado estricto de roles en eventos. Se ha corregido el error por el cual los usuarios con rol "Auxiliar" aparecían erróneamente en los listados de costaleros, asistencias y relevos.
+- **Estadísticas**: Actualizado el cálculo de estadísticas de eventos para contar únicamente a los hermanos costaleros activos.
+
 ## v1.1.98 (16/01/2026)
 
 - **UI Relevos**: Corregido el problema de visibilidad de nombres. Se ha aumentado el espacio de los huecos y mejorado el contraste del texto para asegurar que los nombres sean siempre legibles.

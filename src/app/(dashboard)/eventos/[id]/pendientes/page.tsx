@@ -41,7 +41,7 @@ export default function PendientesPage() {
 
             // 2. Fetch Costaleros & Asistencias
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("*").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
+                supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
                 supabase.from("asistencias").select("*").eq("evento_id", params.id)
             ]);
 

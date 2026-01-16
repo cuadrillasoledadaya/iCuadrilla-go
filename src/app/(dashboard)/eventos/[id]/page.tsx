@@ -125,7 +125,7 @@ export default function DetalleEvento() {
 
                 // Hacer consultas en paralelo para velocidad
                 const [costalerosRes, asistenciasRes] = await Promise.all([
-                    supabase.from("costaleros").select("id", { count: "exact", head: true }),
+                    supabase.from("costaleros").select("id", { count: "exact", head: true }).eq("rol", "costalero"),
                     supabase.from("asistencias").select("estado, costalero_id").eq("evento_id", params.id)
                 ]);
 
