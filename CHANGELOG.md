@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.86 (16/01/2026)
+
+- **Corrección de Error**: Solucionado error de validación "expected string, received null" en el campo de email al editar costaleros.
+- **Formulario Mejorado**: El formulario ahora maneja correctamente los campos vacíos provenientes de la base de datos.
+
 ## v1.1.85 (16/01/2026)
 
 - **Corrección de Formulario**: El campo de email ahora es opcional en la edición de costaleros, permitiendo guardar cambios sin necesidad de correo electrónico.

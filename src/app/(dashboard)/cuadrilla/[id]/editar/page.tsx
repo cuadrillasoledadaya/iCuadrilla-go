@@ -13,7 +13,7 @@ import { ChevronLeft, Save, Trash2 } from "lucide-react";
 const formSchema = z.object({
     nombre: z.string().min(2, "El nombre es obligatorio"),
     apellidos: z.string().min(2, "Los apellidos son obligatorios"),
-    email: z.string().email("Email inválido").optional().or(z.literal("")),
+    email: z.string().email("Email inválido").optional().or(z.literal("")).nullable(),
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
     puesto: z.string().min(2, "El puesto es obligatorio"),
@@ -47,6 +47,7 @@ export default function EditarCostalero() {
                     trabajadera: data.trabajadera?.toString(),
                     suplemento: data.suplemento != null ? data.suplemento.toFixed(1) : "",
                     ano_ingreso: data.ano_ingreso?.toString(),
+                    email: data.email || "",
                 });
             }
             setLoading(false);
