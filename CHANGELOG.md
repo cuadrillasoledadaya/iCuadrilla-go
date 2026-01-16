@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.82 (16/01/2026)
+
+- **UI Consistencia**: Aplicado el fondo verde pastel (`bg-background`) a todas las páginas de gestión de eventos, asistentes, relevos y escaneo QR para una experiencia visual uniforme.
+
 ## v1.1.81 (16/01/2026)
 
 - **Corrección de Permisos**: Restaurados los botones de Gestión de Relevos, Escaneo QR y Mediciones para Superadmins, Capataces y Auxiliares.

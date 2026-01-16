@@ -107,13 +107,13 @@ export default function TrabajaderasAsistencia() {
     const groups = [1, 2, 3, 4, 5, 6, 7];
 
     if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+        <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
         </div>
     );
 
     return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
+        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button

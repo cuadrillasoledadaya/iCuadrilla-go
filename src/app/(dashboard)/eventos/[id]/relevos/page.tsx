@@ -280,7 +280,7 @@ export default function GestionRelevos() {
         .filter(c => `${c.nombre} ${c.apellidos}`.toLowerCase().includes(searchTerm.toLowerCase()));
 
     if (loading && relevos.length === 0) return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+        <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
         </div>
     );
@@ -288,7 +288,7 @@ export default function GestionRelevos() {
     const huecosLabels = ["Patero Izq", "Patero Der", "Fijador Izq", "Fijador Der", "Corriente"];
 
     return (
-        <div className="min-h-screen pb-32 bg-[#FAFAFA] animate-in fade-in duration-700">
+        <div className="min-h-screen pb-32 bg-background animate-in fade-in duration-700">
             {/* Top Bar */}
             <div className="p-6 pb-0 space-y-6">
                 <header className="flex items-center justify-between">

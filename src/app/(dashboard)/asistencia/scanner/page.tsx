@@ -166,7 +166,7 @@ function ScannerContent() {
     }
 
     return (
-        <div className="max-w-md mx-auto p-4 space-y-6">
+        <div className="min-h-screen bg-background p-4 space-y-6 max-w-md mx-auto">
             <h2 className="text-xl font-bold text-center text-primary uppercase tracking-tight">Escáner de Asistencia</h2>
 
             <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 relative min-h-[300px] flex flex-col justify-center">
