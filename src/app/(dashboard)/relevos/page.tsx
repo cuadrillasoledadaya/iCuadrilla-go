@@ -66,7 +66,7 @@ export default function GestionRelevos() {
     };
 
     return (
-        <div className="p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
+        <div className="p-6 space-y-8 bg-background min-h-screen pb-32">
             <header className="relative flex flex-col items-center justify-center min-h-[64px] text-center">
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Gestión de Relevos</h1>
                 <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5">Selecciona dos para intercambiar</p>

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 142 60% 97%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -81,7 +81,7 @@
 
 /* Estética Cofrade: Professional Clarity (Tema Claro) */
 body {
-  background: #FAFAFA;
+  background: hsl(var(--background));
   min-height: 100vh;
   color: #111111;
 }

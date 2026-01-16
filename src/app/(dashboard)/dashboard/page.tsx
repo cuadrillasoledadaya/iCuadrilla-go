@@ -262,13 +262,13 @@ export default function DashboardPage() {
     </div>
 
     if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+        <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
         </div>
     );
 
     return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA]">
+        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background">
             {/* Header */}
             <header className="flex justify-between items-start">
                 <div className="flex items-center gap-4">

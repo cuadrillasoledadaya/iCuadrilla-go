@@ -222,7 +222,7 @@ export default function NotificacionesPage() {
     };
 
     if (roleLoading || loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+        <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
         </div>
     );
@@ -230,7 +230,7 @@ export default function NotificacionesPage() {
     const unreadCount = notificaciones.filter(n => !n.leido).length;
 
     return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
+        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button

@@ -48,7 +48,7 @@ export default function TablonAnuncios() {
     const { isCostalero, canManageAnnouncements } = useUserRole();
 
     return (
-        <div className="p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
+        <div className="p-6 space-y-8 bg-background min-h-screen pb-32">
             <header className="text-center space-y-1">
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Tablón de Anuncios</h1>
                 <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Comunicados Oficiales</p>

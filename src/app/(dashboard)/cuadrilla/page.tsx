@@ -47,13 +47,13 @@ export default function CuadrillaList() {
     );
 
     if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
+        <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
         </div>
     );
 
     return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
+        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <div className="text-center space-y-0.5">
@@ -93,7 +93,7 @@ export default function CuadrillaList() {
                     return (
                         <div key={t} className="space-y-4">
                             {/* Sticky Header */}
-                            <div className="sticky top-0 z-20 py-2 -mx-6 px-6 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-black/5">
+                            <div className="sticky top-0 z-20 py-2 -mx-6 px-6 bg-background/80 backdrop-blur-md border-b border-black/5">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-sm font-black tracking-widest uppercase text-primary italic">Trabajadera {t}</h2>
                                     <div className="h-0.5 flex-1 bg-gradient-to-r from-primary/20 to-transparent rounded-full" />

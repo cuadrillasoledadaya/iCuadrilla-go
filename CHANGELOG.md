@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.78 (16/01/2026)
+
+- **UI Global**: Cambiado el color de fondo de toda la aplicación a un verde pastel suave.
+- **Visual**: Reemplazados los fondos blancos y grises neutros por una estética más orgánica y relajada.
+
 ## v1.1.77 (16/01/2026)
 
 - **UI Cuadrilla**: Implementados "Sticky Headers" (encabezados fijos) para cada trabajadera.

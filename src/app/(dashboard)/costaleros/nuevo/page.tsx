@@ -58,7 +58,7 @@ export default function AltaCostalero() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-6 space-y-8 bg-[#FAFAFA] min-h-screen pb-32">
+        <div className="max-w-2xl mx-auto p-6 space-y-8 bg-background min-h-screen pb-32">
             <header className="text-center space-y-1">
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Alta de Costalero</h1>
                 <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Nuevo Expediente</p>

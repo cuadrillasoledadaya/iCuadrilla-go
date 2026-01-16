@@ -72,7 +72,7 @@ export default function NuevoEvento() {
     };
 
     return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-[#FAFAFA] min-h-screen">
+        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button

@@ -12,7 +12,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const showNavbar = pathname !== "/" && pathname !== "/login" && pathname !== "/registro" && !pathname.includes("/relevos");
 
     return (
-        <div className="min-h-screen bg-black">
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
             <Sidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setSidebarOpen(false)}
