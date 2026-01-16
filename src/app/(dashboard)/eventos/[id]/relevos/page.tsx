@@ -21,6 +21,7 @@ interface Relevo {
     id: string;
     trabajadera: number;
     posicion: number;
+    costalero_id: string | null;
     muda_id: string;
     suplemento?: number;
     costalero?: Costalero;

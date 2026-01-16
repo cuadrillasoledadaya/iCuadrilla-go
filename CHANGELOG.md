@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.90 (16/01/2026)
+
+- **Bug Fix**: Corregido error de tipos en relevos que afectaba al filtrado de costaleros.
+- **Gstión de Relevos**: Activado el resaltado en naranja y visualización de suplementos para todas las posiciones de la trabajadera.
+
 ## v1.1.89 (16/01/2026)
 
 - **Gstión de Relevos**: Implementados suplementos específicos por asignación. Ahora se puede indicar una medida en cm al asignar un costalero.
