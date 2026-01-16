@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.76 (16/01/2026)
+
+- **Layout**: Restaurada la barra de navegación (bocadillo) en las secciones internas de la aplicación.
+- **Identidad**: El menú solo se mantiene oculto en la Landing Page, Login y Registro para un diseño más limpio en la entrada.
+
 ## v1.1.75 (16/01/2026)
 
 - **Layout**: Eliminada la barra de navegación (bocadillo) de la Landing Page.
