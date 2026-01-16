@@ -149,35 +149,40 @@ export default function GestionRelevos() {
             // Si el destino tiene a alguien, intercambiamos. Si no, solo movemos.
             const targetCostalero = getCostaleroAt(t, p);
 
-            const op1 = supabase.from("relevos").upsert({
+            // Operaciones atómicas
+            const ops = [];
+
+            // 1. Movemos el origen al destino
+            ops.push(supabase.from("relevos").upsert({
                 evento_id: params.id,
                 trabajadera: t,
                 posicion: p,
                 costalero_id: sourceCostalero.id,
                 muda_id: activeMudaId
-            }, { onConflict: "evento_id,trabajadera,posicion,muda_id" });
+            }, { onConflict: "evento_id,trabajadera,posicion,muda_id" }));
 
-            let op2;
             if (targetCostalero) {
-                op2 = supabase.from("relevos").upsert({
+                // 2. Si el destino tenía a alguien, lo movemos al origen
+                ops.push(supabase.from("relevos").upsert({
                     evento_id: params.id,
                     trabajadera: selectedPos.t,
                     posicion: selectedPos.p,
                     costalero_id: targetCostalero.id,
                     muda_id: activeMudaId
-                }, { onConflict: "evento_id,trabajadera,posicion,muda_id" });
+                }, { onConflict: "evento_id,trabajadera,posicion,muda_id" }));
             } else {
-                // Limpiar el origen si estaba moviendo a un hueco vacío
-                op2 = supabase.from("relevos").delete()
+                // 3. Si el destino estaba vacío, limpiamos el origen
+                ops.push(supabase.from("relevos").delete()
                     .eq("evento_id", params.id)
                     .eq("trabajadera", selectedPos.t)
                     .eq("posicion", selectedPos.p)
-                    .eq("muda_id", activeMudaId);
+                    .eq("muda_id", activeMudaId));
             }
 
-            await Promise.all([op1, op2]);
+            await Promise.all(ops);
             setSelectedPos(null);
             await fetchRelevos();
+            setLoading(false);
             return;
         }
 

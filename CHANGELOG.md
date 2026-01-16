@@ -4,6 +4,12 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.0 (16/01/2026)
+
+- **Corrección Crítica (Base de Datos)**: Eliminada una restricción de unicidad que impedía tener formaciones independientes por relevo. Ahora cada relevo ("Muda") puede tener su propio listado de costaleros sin interferir con los demás.
+- **Gestión de Relevos**: Refactorizada la lógica de intercambio y movimiento de costaleros para evitar duplicados y asegurar la sincronización en tiempo real.
+- **Estabilidad**: Corregido el error visual en la Trabajadera 7 donde los nombres "bailaban" o no se guardaban correctamente.
+
 ## v1.1.99 (16/01/2026)
 
 - **Corrección Crítica**: Filtrado estricto de roles en eventos. Se ha corregido el error por el cual los usuarios con rol "Auxiliar" aparecían erróneamente en los listados de costaleros, asistencias y relevos.
