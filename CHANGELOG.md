@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.85 (16/01/2026)
+
+- **Corrección de Formulario**: El campo de email ahora es opcional en la edición de costaleros, permitiendo guardar cambios sin necesidad de correo electrónico.
+
 ## v1.1.84 (16/01/2026)
 
 - **Bug Fix**: Corregido error de sintaxis en la página de relevos que impedía la carga correcta de la cuadrícula táctica.
