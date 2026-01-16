@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.92 (16/01/2026)
+
+- **Prioridad de Colores**: Reajustada la jerarquía de alertas visuales. Ahora el color naranja (cambio de trabajadera) tiene prioridad absoluta sobre el rojo para evitar confusiones.
+
 ## v1.1.91 (16/01/2026)
 
 - **Corrección de Colores**: Asegurado el resaltado en naranja para cambios de trabajadera en todas las posiciones.

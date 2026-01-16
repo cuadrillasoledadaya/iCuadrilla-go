@@ -399,8 +399,8 @@ export default function GestionRelevos() {
                                             "relative p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-left",
                                             isSelected ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
                                                 costalero ? (
-                                                    isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
-                                                        isOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
+                                                    isOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
+                                                        isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
                                                             "bg-white border-neutral-100 shadow-sm"
                                                 ) : "bg-neutral-50/50 border-dashed border-neutral-200"
                                         )}
@@ -437,8 +437,8 @@ export default function GestionRelevos() {
                                                 "w-full max-w-[220px] p-4 rounded-[20px] border-2 transition-all flex flex-col justify-center space-y-0.5 h-20 text-center",
                                                 selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
                                                     costaleroCorriente ? (
-                                                        isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
-                                                            isCorrienteOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
+                                                        isCorrienteOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
+                                                            isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
                                                                 "bg-white border-neutral-100 shadow-sm"
                                                     ) : "bg-neutral-50/50 border-dashed border-neutral-200"
                                             )}
