@@ -4,15 +4,15 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
-## v1.2.2 (16/01/2026)
+## v1.2.02 (16/01/2026)
 
 - **UI Relevos**: Cambiado el nombre por defecto del primer relevo generado automáticamente de "Relevo 1" a "Salida".
 
-## v1.2.1 (16/01/2026)
+## v1.2.01 (16/01/2026)
 
 - **UI Relevos**: Optimización de la visibilidad de los nombres. Se ha aumentado de nuevo la altura de los huecos y ajustado el diseño para garantizar que los nombres y los suplementos se vean sin cortes.
 
-## v1.2.0 (16/01/2026)
+## v1.2.00 (16/01/2026)
 
 - **Corrección Crítica (Base de Datos)**: Eliminada una restricción de unicidad que impedía tener formaciones independientes por relevo. Ahora cada relevo ("Muda") puede tener su propio listado de costaleros sin interferir con los demás.
 - **Gestión de Relevos**: Refactorizada la lógica de intercambio y movimiento de costaleros para evitar duplicados y asegurar la sincronización en tiempo real.
