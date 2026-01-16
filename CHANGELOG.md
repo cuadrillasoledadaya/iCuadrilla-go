@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.1.97 (16/01/2026)
+
+- **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
+
 ## v1.1.96 (16/01/2026)
 
 - **UI Relevos**: Restaurada la etiqueta de puesto del costalero sin el prefijo "Hab:".

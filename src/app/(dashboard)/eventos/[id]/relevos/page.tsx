@@ -15,6 +15,7 @@ interface Costalero {
     trabajadera: number;
     puesto: string;
     presente: boolean;
+    suplemento?: number;
 }
 
 interface Relevo {
@@ -413,8 +414,10 @@ export default function GestionRelevos() {
                                                         {costalero.puesto}
                                                     </span>
                                                 )}
-                                                {releveData?.suplemento != null && (
-                                                    <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
+                                                {(releveData?.suplemento != null || (!isOutOfTrabajadera && costalero?.suplemento != null)) && (
+                                                    <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
+                                                        +{releveData?.suplemento ?? costalero?.suplemento}cm
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
@@ -458,8 +461,10 @@ export default function GestionRelevos() {
                                                             {costaleroCorriente.puesto}
                                                         </span>
                                                     )}
-                                                    {releveData?.suplemento != null && (
-                                                        <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+{releveData.suplemento}cm</span>
+                                                    {(releveData?.suplemento != null || (!isCorrienteOutOfTrabajadera && costaleroCorriente?.suplemento != null)) && (
+                                                        <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
+                                                            +{releveData?.suplemento ?? costaleroCorriente?.suplemento}cm
+                                                        </span>
                                                     )}
                                                 </div>
                                             </div>
