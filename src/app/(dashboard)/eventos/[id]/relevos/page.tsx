@@ -76,7 +76,7 @@ export default function GestionRelevos() {
                 // Crear una muda por defecto si no hay ninguna
                 const { data: newMuda } = await supabase.from("muda_nombres").insert({
                     evento_id: params.id,
-                    nombre: "Relevo 1",
+                    nombre: "Salida",
                     orden: 1
                 }).select().single();
 
