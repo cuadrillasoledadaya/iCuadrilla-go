@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.18 (17/01/2026)
+
+- **Corrección Lógica**: Corregido el contador de asistencia por trabajadera. Ahora solo los hermanos marcados como "Presente" cuentan en el indicador numérico (ej: 5 de 7), excluyendo las ausencias justificadas del conteo de presencia real.
+
 ## v1.2.17 (17/01/2026)
 
 - **UI Estadísticas**: Implementado orden personalizado en los bocadillos de trabajadera. Ahora aparecen primero los Presentes, luego los Ausentes y por último los Justificados, manteniendo el orden alfabético dentro de cada grupo.

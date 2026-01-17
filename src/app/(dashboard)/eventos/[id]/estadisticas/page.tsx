@@ -240,7 +240,7 @@ function EstadisticasContent() {
                                 <div className="flex-1 space-y-2">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
                                         <span className="text-neutral-900 italic">Trabajadera {t.id}</span>
-                                        <span className="text-neutral-400">{t.presentes + t.justificados} de {t.total}</span>
+                                        <span className="text-neutral-400">{t.presentes} de {t.total}</span>
                                     </div>
                                     <div className="flex gap-1.5 h-3.5">
                                         {Array.from({ length: t.presentes }).map((_, i) => (
