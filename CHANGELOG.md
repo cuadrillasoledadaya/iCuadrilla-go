@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.15 (17/01/2026)
+
+- **Interactividad**: Añadida la posibilidad de expandir cada trabajadera en las estadísticas. Ahora puedes ver quién está en cada fila, su posición y su estado mediante bocadillos visuales horizontales.
+
 ## v1.2.14 (17/01/2026)
 
 - **Terminología**: Cambiado el término "Fila" por "Trabajadera" en la sección de Estadísticas Detalladas para mantener la consistencia en toda la app.

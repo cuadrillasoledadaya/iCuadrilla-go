@@ -10,11 +10,21 @@ import {
     CheckCircle2,
     AlertCircle,
     TrendingUp,
-    BarChart3
+    BarChart3,
+    ChevronDown,
+    ChevronUp
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
+
+interface CostaleroInfo {
+    id: string;
+    nombre: string;
+    apellidos: string;
+    puesto: string;
+    estado?: string;
+}
 
 interface TrabajaderaStat {
     id: number;
@@ -23,6 +33,7 @@ interface TrabajaderaStat {
     justificados: number;
     ausentes: number;
     pendientes: number;
+    costaleros: CostaleroInfo[];
 }
 
 function EstadisticasContent() {
@@ -33,6 +44,7 @@ function EstadisticasContent() {
     const [evento, setEvento] = useState<any>(null);
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
     const [trabajaderaStats, setTrabajaderaStats] = useState<TrabajaderaStat[]>([]);
+    const [expandedT, setExpandedT] = useState<number | null>(null);
 
     const fetchData = async () => {
         const { data: eventData } = await supabase
@@ -45,7 +57,7 @@ function EstadisticasContent() {
             setEvento(eventData);
 
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("id, trabajadera").eq("rol", "costalero"),
+                supabase.from("costaleros").select("id, nombre, apellidos, puesto, trabajadera").eq("rol", "costalero"),
                 supabase.from("asistencias").select("estado, costalero_id").eq("evento_id", params.id)
             ]);
 
@@ -68,20 +80,37 @@ function EstadisticasContent() {
                 presentes: 0,
                 justificados: 0,
                 ausentes: 0,
-                pendientes: 0
+                pendientes: 0,
+                costaleros: []
             }));
 
             costaleros.forEach(c => {
                 const t = c.trabajadera;
                 if (t >= 1 && t <= 7) {
                     const idx = t - 1;
-                    tStats[idx].total++;
                     const asis = asistencias.find(a => a.costalero_id === c.id);
+
+                    const cInfo: CostaleroInfo = {
+                        id: c.id,
+                        nombre: c.nombre,
+                        apellidos: c.apellidos,
+                        puesto: c.puesto,
+                        estado: asis?.estado
+                    };
+
+                    tStats[idx].total++;
+                    tStats[idx].costaleros.push(cInfo);
+
                     if (asis?.estado === 'presente') tStats[idx].presentes++;
                     else if (asis?.estado === 'justificado' || asis?.estado === 'justificada') tStats[idx].justificados++;
                     else if (asis?.estado === 'ausente') tStats[idx].ausentes++;
                     else tStats[idx].pendientes++;
                 }
+            });
+
+            // Ordenar costaleros por puesto o alfabético si se prefiere
+            tStats.forEach(ts => {
+                ts.costaleros.sort((a, b) => a.nombre.localeCompare(b.nombre));
             });
 
             setTrabajaderaStats(tStats);
@@ -107,6 +136,16 @@ function EstadisticasContent() {
         if (progress > 70) return `¡Buen ritmo! Faltan ${stats.pendientes} costaleros.`;
         if (stats.pendientes > 0) return `Todavía faltan ${stats.pendientes} costaleros por llegar.`;
         return "Iniciando control de asistencia...";
+    };
+
+    const getStatusColor = (estado?: string) => {
+        switch (estado) {
+            case 'presente': return 'bg-emerald-500 text-white';
+            case 'justificado':
+            case 'justificada': return 'bg-amber-400 text-neutral-900';
+            case 'ausente': return 'bg-red-500 text-white';
+            default: return 'bg-neutral-100 text-neutral-400 border border-neutral-200';
+        }
     };
 
     return (
@@ -137,7 +176,7 @@ function EstadisticasContent() {
                     <div className="h-4 bg-neutral-100 rounded-full overflow-hidden p-1 border shadow-inner">
                         <div
                             className={cn(
-                                "h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(var(--primary),0.3)]",
+                                "h-full rounded-full transition-all duration-1000 ease-out",
                                 progress > 80 ? "bg-emerald-500" : progress > 40 ? "bg-amber-500" : "bg-red-500"
                             )}
                             style={{ width: `${progress}%` }}
@@ -169,38 +208,68 @@ function EstadisticasContent() {
                     <LayoutGrid size={16} className="text-primary" /> Mapa por Trabajaderas
                 </h3>
 
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-4">
                     {trabajaderaStats.map((t) => (
-                        <div key={t.id} className="bg-white p-5 rounded-[32px] border border-black/5 shadow-md flex items-center gap-5 group transition-all">
-                            <div className={cn(
-                                "w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg italic shadow-inner border transition-colors",
-                                t.pendientes === 0 ? "bg-emerald-500 text-white border-emerald-400" :
-                                    t.presentes > 0 ? "bg-amber-100 text-amber-600 border-amber-200" : "bg-neutral-50 text-neutral-300 border-neutral-100"
-                            )}>
-                                {t.id}
-                            </div>
-                            <div className="flex-1 space-y-2">
-                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
-                                    <span className="text-neutral-900 italic">Trabajadera {t.id}</span>
-                                    <span className="text-neutral-400">{t.presentes + t.justificados} de {t.total}</span>
+                        <div key={t.id} className="space-y-3">
+                            <button
+                                onClick={() => setExpandedT(expandedT === t.id ? null : t.id)}
+                                className={cn(
+                                    "w-full bg-white p-5 rounded-[32px] border border-black/5 shadow-md flex items-center gap-5 group transition-all active:scale-[0.99]",
+                                    expandedT === t.id && "border-primary/30 ring-2 ring-primary/5"
+                                )}
+                            >
+                                <div className={cn(
+                                    "w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg italic shadow-inner border transition-colors",
+                                    t.pendientes === 0 ? "bg-emerald-500 text-white border-emerald-400" :
+                                        t.presentes > 0 ? "bg-amber-100 text-amber-600 border-amber-200" : "bg-neutral-50 text-neutral-300 border-neutral-100"
+                                )}>
+                                    {t.id}
                                 </div>
-                                <div className="flex gap-1.5 h-3.5">
-                                    {Array.from({ length: t.presentes }).map((_, i) => (
-                                        <div key={`p-${i}`} className="flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
-                                    ))}
-                                    {Array.from({ length: t.justificados }).map((_, i) => (
-                                        <div key={`j-${i}`} className="flex-1 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.2)]" />
-                                    ))}
-                                    {Array.from({ length: t.ausentes }).map((_, i) => (
-                                        <div key={`a-${i}`} className="flex-1 bg-red-400 rounded-full shadow-[0_0_8px_rgba(248,113,113,0.2)]" />
-                                    ))}
-                                    {Array.from({ length: t.pendientes }).map((_, i) => (
-                                        <div key={`n-${i}`} className="flex-1 bg-neutral-100 border border-neutral-200/50 rounded-full" />
-                                    ))}
+                                <div className="flex-1 space-y-2">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
+                                        <span className="text-neutral-900 italic">Trabajadera {t.id}</span>
+                                        <span className="text-neutral-400">{t.presentes + t.justificados} de {t.total}</span>
+                                    </div>
+                                    <div className="flex gap-1.5 h-3.5">
+                                        {Array.from({ length: t.presentes }).map((_, i) => (
+                                            <div key={`p-${i}`} className="flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
+                                        ))}
+                                        {Array.from({ length: t.justificados }).map((_, i) => (
+                                            <div key={`j-${i}`} className="flex-1 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.2)]" />
+                                        ))}
+                                        {Array.from({ length: t.ausentes }).map((_, i) => (
+                                            <div key={`a-${i}`} className="flex-1 bg-red-400 rounded-full shadow-[0_0_8px_rgba(248,113,113,0.2)]" />
+                                        ))}
+                                        {Array.from({ length: t.pendientes }).map((_, i) => (
+                                            <div key={`n-${i}`} className="flex-1 bg-neutral-100 border border-neutral-200/50 rounded-full" />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            {t.pendientes === 0 && <CheckCircle2 className="text-emerald-500 shrink-0" size={20} />}
-                            {t.ausentes > 0 && <AlertCircle className="text-red-500 shrink-0 animate-pulse" size={20} />}
+                                <div className="text-neutral-300">
+                                    {expandedT === t.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                </div>
+                            </button>
+
+                            {/* Desplegable Horizontal de Costaleros */}
+                            {expandedT === t.id && (
+                                <div className="flex gap-3 overflow-x-auto pb-4 px-2 no-scrollbar animate-in slide-in-from-top-2 duration-300">
+                                    {t.costaleros.map((c) => (
+                                        <div
+                                            key={c.id}
+                                            className={cn(
+                                                "min-w-[120px] p-3 rounded-2xl flex flex-col items-center justify-center text-center space-y-1 shadow-lg border border-black/5 animate-in zoom-in-95",
+                                                getStatusColor(c.estado)
+                                            )}
+                                        >
+                                            <span className="text-[10px] font-black uppercase leading-tight line-clamp-1">{c.nombre}</span>
+                                            <span className="text-[8px] font-bold opacity-70 tracking-tighter uppercase">{c.puesto || 'Costalero'}</span>
+                                        </div>
+                                    ))}
+                                    {t.costaleros.length === 0 && (
+                                        <p className="text-[10px] text-neutral-400 italic">No hay costaleros asignados.</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
