@@ -3,9 +3,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { CheckCircle2, UserPlus, ListCircle, X, ExternalLink, ArrowRight } from "lucide-react";
+import { CheckCircle2, UserPlus, List, X, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 

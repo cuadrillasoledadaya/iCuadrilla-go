@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.24 (17/01/2026)
+
+- **Hotfix**: Corregido error de compilación en Vercel causado por una referencia inexistente a un icono de Lucide ('ListCircle').
+
 ## v1.2.23 (17/01/2026)
 
 - **UI Registro**: Implementado un modal de éxito premium tras dar de alta un costalero. Incluye el código QR, opciones para realizar otra alta o navegar directamente al listado de la cuadrilla.
