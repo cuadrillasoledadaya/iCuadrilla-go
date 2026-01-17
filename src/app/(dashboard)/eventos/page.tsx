@@ -28,6 +28,7 @@ interface Evento {
     fecha_fin: string;
     ubicacion: string;
     estado: 'pendiente' | 'en-curso' | 'finalizado';
+    descripcion?: string;
 }
 
 export default function AgendaEventos() {
@@ -36,6 +37,7 @@ export default function AgendaEventos() {
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [expandedId, setExpandedId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchEventos = async () => {

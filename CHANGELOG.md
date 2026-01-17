@@ -4,6 +4,11 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.05 (17/01/2026)
+
+- **UI Agenda**: Implementada la función de acordeón en las tarjetas de eventos. Ahora se pueden ver las observaciones/descripciones directamente desde la agenda expandiendo la tarjeta.
+- **UX**: Añadido acceso directo "Entrar al Evento" dentro de la vista expandida.
+
 ## v1.2.04 (17/01/2026)
 
 - **PWA Standalone**: Restaurado el comportamiento de "App nativa". Se han añadido los meta-tags necesarios para iPhone y Android y sincronizado los colores del manifest con el nuevo verde corporativo.
