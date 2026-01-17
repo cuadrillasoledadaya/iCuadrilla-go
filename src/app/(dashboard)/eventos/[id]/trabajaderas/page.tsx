@@ -7,7 +7,8 @@ import {
     CheckCircle2,
     XCircle,
     FileText,
-    Trash2
+    Trash2,
+    AlertCircle
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -114,6 +115,31 @@ export default function TrabajaderasAsistencia() {
 
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
+            <style jsx global>{`
+                @keyframes pulse-glow {
+                    0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.1), 0 0 5px rgba(245, 158, 11, 0.05); }
+                    50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.3), 0 0 10px rgba(245, 158, 11, 0.1); }
+                }
+                @keyframes float-alert {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-4px); }
+                }
+                @keyframes pulse-text {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.6; }
+                }
+                .pending-card {
+                    animation: pulse-glow 2s infinite ease-in-out;
+                    border-color: rgba(245, 158, 11, 0.3) !important;
+                }
+                .alert-dot {
+                    animation: float-alert 1.5s infinite ease-in-out;
+                }
+                .pending-badge {
+                    animation: pulse-text 1.5s infinite ease-in-out;
+                }
+            `}</style>
+
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
@@ -151,24 +177,31 @@ export default function TrabajaderasAsistencia() {
                                         key={m.id}
                                         onClick={() => setSelectedCostalero(m)}
                                         className={cn(
-                                            "w-full bg-white p-5 rounded-[24px] flex justify-between items-center transition-all border shadow-sm active:scale-[0.98]",
-                                            m.estado === 'presente' ? "border-emerald-500/20 shadow-emerald-500/5" : "border-black/5"
+                                            "w-full bg-white p-5 rounded-[24px] flex justify-between items-center transition-all border shadow-sm active:scale-[0.98] relative overflow-hidden",
+                                            m.estado === 'presente' ? "border-emerald-500/20 shadow-emerald-500/5" :
+                                                !m.estado ? "pending-card" : "border-black/5"
                                         )}
                                     >
+                                        {!m.estado && (
+                                            <div className="absolute top-2 right-2 alert-dot">
+                                                <div className="bg-amber-500 w-2 h-2 rounded-full shadow-lg shadow-amber-500/50" />
+                                            </div>
+                                        )}
                                         <div className="space-y-3 text-left">
                                             <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{m.nombre} {m.apellidos}</h3>
 
                                             <div className={cn(
                                                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest",
-                                                m.estado === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
+                                                m.state === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
                                                 (m.estado === 'justificado' || m.estado === 'justificada') && "bg-amber-50 text-amber-600 border-amber-100",
                                                 m.estado === 'ausente' && "bg-red-50 text-red-600 border-red-100",
-                                                !m.estado && "bg-neutral-50 text-neutral-400 border-neutral-100"
+                                                !m.estado && "bg-amber-50 text-amber-600 border-amber-200 pending-badge shadow-sm"
                                             )}>
                                                 {m.estado === 'presente' && <CheckCircle2 size={10} />}
                                                 {(m.estado === 'justificado' || m.estado === 'justificada') && <FileText size={10} />}
                                                 {m.estado === 'ausente' && <XCircle size={10} />}
-                                                {m.estado || "PENDIENTE"}
+                                                {!m.estado && <AlertCircle size={10} className="animate-bounce" />}
+                                                {m.estado || "PENDIENTE REGISTRO"}
                                             </div>
                                         </div>
 

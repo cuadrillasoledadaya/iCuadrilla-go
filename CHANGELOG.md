@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.26 (17/01/2026)
+
+- **UI Registro Manual**: Implementadas alertas visuales de alta visibilidad para costaleros pendientes. Ahora las tarjetas sin registrar pulsan con un resplandor ámbar, incluyen un punto de alerta flotante y el distintivo "PENDIENTE" animado para asegurar que ningún miembro sea ignorado.
+
 ## v1.2.25 (17/01/2026)
 
 - **UI Refinamiento**: Renombrado botones en el detalle del evento para mayor claridad: "ESCANEAR NUEVOS" pasa a ser "ESCANEAR ASISTENCIA" y "VER POR TRABAJADERAS" ahora es "ASISTENCIA MANUAL".
