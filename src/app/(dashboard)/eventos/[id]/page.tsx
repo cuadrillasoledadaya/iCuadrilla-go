@@ -47,6 +47,7 @@ export default function DetalleEvento() {
     const [costaleroId, setCostaleroId] = useState<string | null>(null);
     const [costaleroNombre, setCostaleroNombre] = useState("");
     const [alreadyNotified, setAlreadyNotified] = useState(false);
+    const [isNotificationRead, setIsNotificationRead] = useState(false);
 
     const fetchData = async () => {
         const { data: eventData } = await supabase
@@ -102,7 +103,21 @@ export default function DetalleEvento() {
                     setCostaleroId(costaleroData.id);
                     setCostaleroNombre(`${costaleroData.nombre} ${costaleroData.apellidos}`);
                     const { data: asistenciaData } = await supabase.from("asistencias").select("estado").eq("evento_id", evento.id).eq("costalero_id", costaleroData.id).single();
-                    if (asistenciaData) setAlreadyNotified(true);
+                    if (asistenciaData) {
+                        setAlreadyNotified(true);
+                        // Verificar si la notificación ha sido leída
+                        const { data: notifData } = await supabase
+                            .from("notificaciones")
+                            .select("leido")
+                            .eq("evento_id", evento.id)
+                            .eq("costalero_id", costaleroData.id)
+                            .eq("tipo", "ausencia")
+                            .maybeSingle();
+
+                        if (notifData) {
+                            setIsNotificationRead(notifData.leido);
+                        }
+                    }
                 }
             }
         };
@@ -213,9 +228,12 @@ export default function DetalleEvento() {
                     {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </p>
                 {isCostalero && alreadyNotified && (
-                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-neutral-900 text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
-                        <CheckCircle2 size={14} className="text-emerald-400" />
-                        <span>Respuesta Enviada</span>
+                    <div className={cn(
+                        "mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg transition-all duration-500",
+                        isNotificationRead ? "bg-emerald-600 text-white" : "bg-neutral-900 text-white"
+                    )}>
+                        <CheckCircle2 size={14} className={cn("transition-colors", isNotificationRead ? "text-white" : "text-emerald-400")} />
+                        <span>{isNotificationRead ? "Respuesta Leída" : "Respuesta Enviada"}</span>
                     </div>
                 )}
             </div>

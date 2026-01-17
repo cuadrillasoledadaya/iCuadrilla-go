@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.20 (17/01/2026)
+
+- **Feedback de Usuario**: Ahora el costalero puede ver si su notificación de ausencia ha sido leída por el staff. El mensaje "RESPUESTA ENVIADA" cambia a "RESPUESTA LEÍDA" (en color esmeralda) una vez que se marca como leída en el centro de notificaciones.
+
 ## v1.2.19 (17/01/2026)
 
 - **Notificaciones**: Añadido el nombre del costalero al título de las notificaciones de ausencia. Ahora el equipo de staff puede identificar rápidamente quién ha enviado la falta desde la lista de notificaciones.
