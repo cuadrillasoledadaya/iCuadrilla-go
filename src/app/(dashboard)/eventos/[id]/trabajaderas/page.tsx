@@ -183,7 +183,7 @@ export default function TrabajaderasAsistencia() {
                                         )}
                                     >
                                         {!m.estado && (
-                                            <div className="absolute top-2 right-2 alert-dot">
+                                            <div className="absolute top-3.5 right-3.5 alert-dot">
                                                 <div className="bg-amber-500 w-2 h-2 rounded-full shadow-lg shadow-amber-500/50" />
                                             </div>
                                         )}
