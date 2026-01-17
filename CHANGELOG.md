@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.23 (17/01/2026)
+
+- **UI Registro**: Implementado un modal de éxito premium tras dar de alta un costalero. Incluye el código QR, opciones para realizar otra alta o navegar directamente al listado de la cuadrilla.
+
 ## v1.2.22 (17/01/2026)
 
 - **Seguridad**: Corregido error de RLS que impedía a los usuarios con rol "Auxiliar" dar de alta nuevos costaleros. Se han unificado los permisos de gestión para todo el equipo de staff (Capataces y Auxiliares).

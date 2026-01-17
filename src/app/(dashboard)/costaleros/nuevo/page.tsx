@@ -3,11 +3,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { CheckCircle2, UserPlus, ListCircle, X, ExternalLink, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     nombre: z.string().min(2, "El nombre es obligatorio"),
@@ -24,6 +24,8 @@ export default function AltaCostalero() {
     const [loading, setLoading] = useState(false);
     const [qrValue, setQrValue] = useState<string | null>(null);
     const [message, setMessage] = useState("");
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [newCostaleroName, setNewCostaleroName] = useState("");
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -51,7 +53,8 @@ export default function AltaCostalero() {
             setMessage(`Error: ${error.message}`);
         } else {
             setQrValue(qrCode);
-            setMessage("¡Costalero dado de alta con éxito!");
+            setNewCostaleroName(`${values.nombre} ${values.apellidos}`);
+            setShowSuccessModal(true);
             reset();
         }
         setLoading(false);
@@ -131,12 +134,60 @@ export default function AltaCostalero() {
 
             {message && <p className={`text-center font-medium ${message.includes("Error") ? "text-red-400" : "text-green-400"}`}>{message}</p>}
 
-            {qrValue && (
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg space-y-4">
-                    <h3 className="text-black font-bold">Código QR del Costalero</h3>
-                    <QRCodeSVG value={qrValue} size={200} />
-                    <p className="text-black text-xs font-mono">{qrValue}</p>
-                    <Button onClick={() => setQrValue(null)} className="bg-black text-white">Cerrar QR</Button>
+            {/* Modal de Éxito Premium */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white w-full max-w-sm rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
+                        <button
+                            onClick={() => setShowSuccessModal(false)}
+                            className="absolute top-6 right-6 p-2 text-neutral-300 hover:text-neutral-900 transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="p-8 pt-12 text-center space-y-6">
+                            <div className="relative inline-block">
+                                <div className="absolute inset-0 bg-emerald-500 rounded-full blur-2xl opacity-20 animate-pulse" />
+                                <div className="relative w-20 h-20 bg-emerald-500 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 rotate-3">
+                                    <CheckCircle2 size={40} className="text-white -rotate-3" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-black uppercase tracking-tight text-neutral-900">¡Alta Completada!</h3>
+                                <p className="text-sm text-neutral-500 font-medium">
+                                    <span className="text-primary font-bold">{newCostaleroName}</span> ya forma parte oficial de la cuadrilla.
+                                </p>
+                            </div>
+
+                            {qrValue && (
+                                <div className="bg-neutral-50 p-4 rounded-3xl border border-black/5 space-y-3">
+                                    <div className="bg-white p-3 rounded-2xl shadow-sm inline-block">
+                                        <QRCodeSVG value={qrValue} size={120} />
+                                    </div>
+                                    <p className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">{qrValue}</p>
+                                </div>
+                            )}
+
+                            <div className="space-y-3 pt-2">
+                                <button
+                                    onClick={() => setShowSuccessModal(false)}
+                                    className="w-full bg-primary text-white font-black h-14 rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 group transition-all active:scale-95"
+                                >
+                                    <UserPlus size={18} />
+                                    <span>DAR OTRA ALTA</span>
+                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                </button>
+
+                                <Link href="/cuadrilla" className="block w-full">
+                                    <button className="w-full bg-white border border-black/5 text-neutral-900 font-black h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-neutral-50 transition-all active:scale-95">
+                                        <ExternalLink size={18} className="text-neutral-400" />
+                                        <span>VER LISTADO</span>
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

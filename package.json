@@ -1,6 +1,6 @@
 {
   "name": "icuadrilla-pwa",
-  "version": "1.2.21",
+  "version": "1.2.23",
   "private": true,
   "scripts": {
     "dev": "next dev",
