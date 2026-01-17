@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.29 (17/01/2026)
+
+- **Nueva Funcionalidad**: Implementado el Centro de Exportación de Datos (`/exportar`). Permite descargar el listado de costaleros de la temporada activa y las estadísticas de asistencia de todos los eventos en formato CSV (compatible con Excel/Google Sheets) o PDF.
+
 ## v1.2.28 (17/01/2026)
 
 - **UI Refinamiento**: Rediseñada la alerta de costaleros pendientes con un estilo más sobrio y premium. El badge ahora usa texto blanco sobre fondo negro, y el efecto de pulsación de la tarjeta cicla entre negro y gris oscuro.
