@@ -14,7 +14,7 @@ function ScannerContent() {
     const searchParams = useSearchParams();
     const router = useRouter(); // Asegurarse de importar useRouter arriba si no existe
     const eventoId = searchParams.get("evento");
-    const { isCostalero, loading: roleLoading } = useUserRole();
+    const { isAdmin, loading: roleLoading } = useUserRole();
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,9 +24,8 @@ function ScannerContent() {
 
     useEffect(() => {
         if (roleLoading) return;
-        if (isCostalero) {
-            // Redirigir o bloquear
-            // Podemos redirigir al dashboard
+        if (!isAdmin) {
+            // Bloquear si no es admin/capataz
             return;
         }
 
@@ -152,7 +151,7 @@ function ScannerContent() {
         }
     };
 
-    if (!roleLoading && isCostalero) {
+    if (!roleLoading && !isAdmin) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4 p-6">
                 <div className="p-4 bg-red-50 rounded-full text-red-500">
