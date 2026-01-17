@@ -117,8 +117,8 @@ export default function TrabajaderasAsistencia() {
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
             <style jsx global>{`
                 @keyframes pulse-glow {
-                    0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.1), 0 0 5px rgba(245, 158, 11, 0.05); }
-                    50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.3), 0 0 10px rgba(245, 158, 11, 0.1); }
+                    0%, 100% { box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), 0 0 5px rgba(0, 0, 0, 0.1); border-color: rgba(0, 0, 0, 0.6); }
+                    50% { box-shadow: 0 0 25px rgba(64, 64, 64, 0.4), 0 0 10px rgba(64, 64, 64, 0.2); border-color: rgba(64, 64, 64, 0.8); }
                 }
                 @keyframes float-alert {
                     0%, 100% { transform: translateY(0); }
@@ -129,14 +129,14 @@ export default function TrabajaderasAsistencia() {
                     50% { opacity: 0.6; }
                 }
                 .pending-card {
-                    animation: pulse-glow 2s infinite ease-in-out;
-                    border-color: rgba(245, 158, 11, 0.3) !important;
+                    animation: pulse-glow 2.5s infinite ease-in-out;
+                    border-width: 1.5px !important;
                 }
                 .alert-dot {
-                    animation: float-alert 1.5s infinite ease-in-out;
+                    animation: float-alert 2s infinite ease-in-out;
                 }
                 .pending-badge {
-                    animation: pulse-text 1.5s infinite ease-in-out;
+                    animation: pulse-text 2s infinite ease-in-out;
                 }
             `}</style>
 
@@ -184,7 +184,7 @@ export default function TrabajaderasAsistencia() {
                                     >
                                         {!m.estado && (
                                             <div className="absolute top-3.5 right-3.5 alert-dot">
-                                                <div className="bg-amber-500 w-2 h-2 rounded-full shadow-lg shadow-amber-500/50" />
+                                                <div className="bg-neutral-900 w-2.5 h-2.5 rounded-full shadow-lg shadow-black/20" />
                                             </div>
                                         )}
                                         <div className="space-y-3 text-left">
@@ -195,7 +195,7 @@ export default function TrabajaderasAsistencia() {
                                                 m.estado === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
                                                 (m.estado === 'justificado' || m.estado === 'justificada') && "bg-amber-50 text-amber-600 border-amber-100",
                                                 m.estado === 'ausente' && "bg-red-50 text-red-600 border-red-100",
-                                                !m.estado && "bg-amber-50 text-amber-600 border-amber-200 pending-badge shadow-sm"
+                                                !m.estado && "bg-neutral-900 text-white border-black pending-badge shadow-lg"
                                             )}>
                                                 {m.estado === 'presente' && <CheckCircle2 size={10} />}
                                                 {(m.estado === 'justificado' || m.estado === 'justificada') && <FileText size={10} />}
