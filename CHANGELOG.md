@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.12 (17/01/2026)
+
+- **Nueva Función**: Dashboard Visual de Estadísticas en el detalle de eventos. Incluye barra de progreso global, mensajes predictivos de llegada ("Faltan X costaleros") y un mapa visual de asistencia por trabajaderas (las 7 filas).
+
 ## v1.2.11 (17/01/2026)
 
 - **Filtros**: Corregida la lista de Trabajaderas en eventos. Ahora se filtra correctamente al personal técnico (Capataces y Auxiliares), mostrando únicamente a los costaleros.
