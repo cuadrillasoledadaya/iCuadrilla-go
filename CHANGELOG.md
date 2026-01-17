@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.22 (17/01/2026)
+
+- **Seguridad**: Corregido error de RLS que impedía a los usuarios con rol "Auxiliar" dar de alta nuevos costaleros. Se han unificado los permisos de gestión para todo el equipo de staff (Capataces y Auxiliares).
+
 ## v1.2.21 (17/01/2026)
 
 - **Performance Estadísticas**: Implementado refresco automático de datos cada 30 segundos en el panel de estadísticas detalladas. Esto permite ver la llegada de los costaleros en tiempo real sin tener que recargar la página manualmente.
