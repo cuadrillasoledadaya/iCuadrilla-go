@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.33 (17/01/2026)
+
+- **Bugfix**: Segundo intento de correccion de encoding CSV. Ahora se usan bytes explicitos para el BOM (EF BB BF) y TextEncoder para garantizar UTF-8.
+
 ## v1.2.32 (17/01/2026)
 
 - **Bugfix**: Corregida la codificacion de caracteres especiales (tildes, Ñ) en la exportacion CSV. Ahora se utiliza UTF-8 con BOM para garantizar compatibilidad con Excel.

@@ -126,13 +126,21 @@ export default function ExportarDatos() {
 
     // --- CSV EXPORTS ---
     const downloadCSV = (content: string, filename: string) => {
-        // Add UTF-8 BOM for Excel compatibility with Spanish characters
-        const BOM = '\uFEFF';
-        const blob = new Blob([BOM + content], { type: 'text/csv;charset=utf-8;' });
+        // Manual UTF-8 BOM bytes: EF BB BF
+        const BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
+        const encoder = new TextEncoder();
+        const contentBytes = encoder.encode(content);
+
+        // Combine BOM + content
+        const combined = new Uint8Array(BOM.length + contentBytes.length);
+        combined.set(BOM, 0);
+        combined.set(contentBytes, BOM.length);
+
+        const blob = new Blob([combined], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
+        link.href = url;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
