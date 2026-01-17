@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
     ChevronLeft,
-    ArrowLeft,
     Search,
     Calendar,
     Clock,
@@ -33,7 +32,7 @@ interface Evento {
 
 export default function AgendaEventos() {
     const router = useRouter();
-    const { isCostalero, canManageEvents } = useUserRole();
+    const { canManageEvents } = useUserRole();
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -89,18 +88,16 @@ export default function AgendaEventos() {
         }
     };
 
-    // Calcular estado dinámico
     const calculateStatus = (inicio: string, fin: string | null): 'pendiente' | 'en-curso' | 'finalizado' => {
         const now = new Date();
         const start = new Date(inicio);
-        const end = fin ? new Date(fin) : new Date(start.getTime() + 3 * 60 * 60 * 1000); // Default 3h if no end time
+        const end = fin ? new Date(fin) : new Date(start.getTime() + 3 * 60 * 60 * 1000);
 
         if (now < start) return 'pendiente';
         if (now >= start && now <= end) return 'en-curso';
         return 'finalizado';
     };
 
-    // Sincronizar estados con DB periódicamente
     useEffect(() => {
         if (eventos.length === 0) return;
 
@@ -115,16 +112,15 @@ export default function AgendaEventos() {
             });
 
             const updatedEventos = await Promise.all(updates);
-            // Solo actualizamos el estado local si algo cambió para evitar loops
             if (JSON.stringify(updatedEventos) !== JSON.stringify(eventos)) {
                 setEventos(updatedEventos);
             }
         };
 
         syncStatuses();
-        const interval = setInterval(syncStatuses, 60000); // Check every minute
+        const interval = setInterval(syncStatuses, 60000);
         return () => clearInterval(interval);
-    }, [eventos.length]); // Depend on length to trigger after initial fetch
+    }, [eventos.length]);
 
     if (loading) return (
         <div className="flex min-h-screen items-center justify-center bg-background">
@@ -134,7 +130,6 @@ export default function AgendaEventos() {
 
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
-            {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
                     onClick={() => router.back()}
@@ -148,7 +143,6 @@ export default function AgendaEventos() {
                 </div>
             </header>
 
-            {/* Búsqueda */}
             <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
                 <Input
@@ -159,7 +153,6 @@ export default function AgendaEventos() {
                 />
             </div>
 
-            {/* Listado de Tarjetas */}
             <div className="grid gap-4">
                 {filtered.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-[32px] border border-black/5 shadow-sm">
@@ -189,34 +182,36 @@ export default function AgendaEventos() {
                                 </span>
                             </div>
 
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-neutral-600 font-bold">
-                                    <div className="p-1.5 rounded-lg bg-white/50 text-neutral-700">
-                                        <Calendar size={14} />
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-neutral-600 font-bold">
+                                        <div className="p-1.5 rounded-lg bg-white/50 text-neutral-700">
+                                            <Calendar size={14} />
+                                        </div>
+                                        <span className="text-xs">
+                                            {new Date(e.fecha_inicio).toLocaleDateString('es-ES')}
+                                        </span>
+                                        <span className="text-neutral-300 mx-1">•</span>
+                                        <div className="p-1.5 rounded-lg bg-white/50 text-neutral-700">
+                                            <Clock size={14} />
+                                        </div>
+                                        <span className="text-xs">
+                                            {new Date(e.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                            {e.fecha_fin && ` - ${new Date(e.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`}
+                                        </span>
                                     </div>
-                                    <span className="text-xs">
-                                        {new Date(e.fecha_inicio).toLocaleDateString('es-ES')}
-                                    </span>
-                                    <span className="text-neutral-300 mx-1">•</span>
-                                    <div className="p-1.5 rounded-lg bg-white/50 text-neutral-700">
-                                        <Clock size={14} />
+
+                                    <div className="flex items-center gap-2 text-neutral-500 font-medium italic">
+                                        <div className="p-1.5 rounded-lg bg-white/50 text-neutral-400">
+                                            <MapPin size={14} />
+                                        </div>
+                                        <span className="text-xs truncate">{e.ubicacion}</span>
                                     </div>
-                                    <span className="text-xs">
-                                        {new Date(e.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                        {e.fecha_fin && ` - ${new Date(e.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`}
-                                    </span>
                                 </div>
 
-                                <div className="flex items-center gap-2 text-neutral-500 font-medium italic">
-                                    <div className="p-1.5 rounded-lg bg-white/50 text-neutral-400">
-                                        <MapPin size={14} />
-                                    </div>
-                                    <span className="text-xs truncate">{e.ubicacion}</span>
-                                </div>
-                                {/* Accordion Content (Description) */}
                                 <div className={cn(
                                     "overflow-hidden transition-all duration-500 ease-in-out",
-                                    expandedId === e.id ? "max-h-[500px] opacity-100 pt-4" : "max-h-0 opacity-0 pt-0"
+                                    expandedId === e.id ? "max-h-[500px] opacity-100 pt-2" : "max-h-0 opacity-0 pt-0"
                                 )}>
                                     <div className="p-4 bg-white/40 rounded-2xl border border-black/5 space-y-2">
                                         <div className="flex items-center gap-2 text-neutral-400">
@@ -250,19 +245,19 @@ export default function AgendaEventos() {
                                     </div>
                                 </div>
                             </div>
-                            ))
-                )}
                         </div>
-
-            {/* FAB */ }
-            { canManageEvents && (
-                            <button
-                                onClick={() => router.push('/eventos/nuevo')}
-                                className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
-                            >
-                                <Plus size={32} strokeWidth={3} />
-                            </button>
-                        )}
+                    ))
+                )}
             </div>
-            );
+
+            {canManageEvents && (
+                <button
+                    onClick={() => router.push('/eventos/nuevo')}
+                    className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
+                >
+                    <Plus size={32} strokeWidth={3} />
+                </button>
+            )}
+        </div>
+    );
 }
