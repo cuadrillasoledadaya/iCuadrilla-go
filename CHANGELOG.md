@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.14 (17/01/2026)
+
+- **Terminología**: Cambiado el término "Fila" por "Trabajadera" en la sección de Estadísticas Detalladas para mantener la consistencia en toda la app.
+
 ## v1.2.13 (17/01/2026)
 
 - **UI/UX Refactor**: Reubicado el Dashboard de Estadísticas Visuales a una sección propia llamada "Estadísticas Detalladas" para mantener el detalle del evento organizado y limpio.
