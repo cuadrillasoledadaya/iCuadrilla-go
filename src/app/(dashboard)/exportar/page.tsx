@@ -23,10 +23,20 @@ interface EventoStats {
     id: string;
     titulo: string;
     fecha_inicio: string;
+    estado: string;
     presentes: number;
     ausentes: number;
     justificados: number;
     total: number;
+    asistencias: {
+        costalero_id: string;
+        nombre: string;
+        apellidos: string;
+        trabajadera: number;
+        puesto: string;
+        suplemento: number | null;
+        estado: string;
+    }[];
 }
 
 export default function ExportarDatos() {
@@ -61,31 +71,46 @@ export default function ExportarDatos() {
                 setCostaleros(costalerosData);
             }
 
-            // Fetch eventos with attendance stats
+            // Fetch eventos with detailed attendance stats
             const { data: eventos } = await supabase
                 .from("eventos")
                 .select("*")
                 .order("fecha_inicio", { ascending: false });
 
-            if (eventos) {
+            if (eventos && costalerosData) {
                 const statsPromises = eventos.map(async (evento) => {
                     const { data: asistencias } = await supabase
                         .from("asistencias")
-                        .select("estado")
+                        .select("costalero_id, estado")
                         .eq("evento_id", evento.id);
 
-                    const presentes = asistencias?.filter(a => a.estado === 'presente').length || 0;
-                    const ausentes = asistencias?.filter(a => a.estado === 'ausente').length || 0;
-                    const justificados = asistencias?.filter(a => a.estado === 'justificado' || a.estado === 'justificada').length || 0;
+                    const detailedAsistencias = (asistencias || []).map(a => {
+                        const costalero = costalerosData.find(c => c.id === a.costalero_id);
+                        return {
+                            costalero_id: a.costalero_id,
+                            nombre: costalero?.nombre || 'Desconocido',
+                            apellidos: costalero?.apellidos || '',
+                            trabajadera: costalero?.trabajadera || 0,
+                            puesto: costalero?.puesto || '-',
+                            suplemento: costalero?.suplemento || null,
+                            estado: a.estado
+                        };
+                    }).sort((a, b) => a.trabajadera - b.trabajadera || a.apellidos.localeCompare(b.apellidos));
+
+                    const presentes = detailedAsistencias.filter(a => a.estado === 'presente').length;
+                    const ausentes = detailedAsistencias.filter(a => a.estado === 'ausente').length;
+                    const justificados = detailedAsistencias.filter(a => a.estado === 'justificado' || a.estado === 'justificada').length;
 
                     return {
                         id: evento.id,
                         titulo: evento.titulo,
                         fecha_inicio: evento.fecha_inicio,
+                        estado: evento.estado,
                         presentes,
                         ausentes,
                         justificados,
-                        total: presentes + ausentes + justificados
+                        total: presentes + ausentes + justificados,
+                        asistencias: detailedAsistencias
                     };
                 });
 
@@ -125,24 +150,32 @@ export default function ExportarDatos() {
     };
 
     const exportEstadisticasCSV = () => {
-        const headers = ["Evento", "Fecha", "Presentes", "Ausentes", "Justificados", "Total Registrados"];
-        const rows = eventosStats.map(e => [
-            e.titulo,
-            new Date(e.fecha_inicio).toLocaleDateString('es-ES'),
-            e.presentes,
-            e.ausentes,
-            e.justificados,
-            e.total
-        ]);
+        // Header info
+        let csvContent = "data:text/csv;charset=utf-8,";
 
-        let csvContent = "data:text/csv;charset=utf-8,"
-            + headers.join(";") + "\n"
-            + rows.map(r => r.join(";")).join("\n");
+        eventosStats.forEach((evento, index) => {
+            if (index > 0) csvContent += "\n\n"; // Separator between events
+
+            // Event header
+            csvContent += `EVENTO: ${evento.titulo}\n`;
+            csvContent += `Estado: ${evento.estado}\n`;
+            csvContent += `Fecha: ${new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}\n`;
+            csvContent += `Hora: ${new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}\n`;
+            csvContent += `Presentes: ${evento.presentes}; Ausentes: ${evento.ausentes}; Justificados: ${evento.justificados}\n\n`;
+
+            // Table headers
+            csvContent += "Nombre;Apellidos;Trabajadera;Puesto;Suplemento;Estado\n";
+
+            // Rows
+            evento.asistencias.forEach(a => {
+                csvContent += `${a.nombre};${a.apellidos};${a.trabajadera};${a.puesto};${a.suplemento || '-'};${a.estado}\n`;
+            });
+        });
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `estadisticas_${temporadaActiva || 'export'}.csv`);
+        link.setAttribute("download", `estadisticas_detalladas_${temporadaActiva || 'export'}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -180,32 +213,50 @@ export default function ExportarDatos() {
 
     const exportEstadisticasPDF = () => {
         const doc = new jsPDF();
+        let yPos = 15;
 
-        doc.setFontSize(18);
-        doc.text("Estadisticas de Asistencia", 14, 20);
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text(`Temporada ${temporadaActiva || '-'} - Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+        eventosStats.forEach((evento, index) => {
+            // Check if we need a new page
+            if (yPos > 250) {
+                doc.addPage();
+                yPos = 15;
+            }
 
-        const tableRows = eventosStats.map(e => [
-            e.titulo,
-            new Date(e.fecha_inicio).toLocaleDateString('es-ES'),
-            String(e.presentes),
-            String(e.ausentes),
-            String(e.justificados),
-            String(e.total)
-        ]);
+            // Event Header Box
+            doc.setFillColor(23, 23, 23);
+            doc.rect(14, yPos, 182, 28, 'F');
 
-        autoTable(doc, {
-            head: [["Evento", "Fecha", "Pres.", "Aus.", "Just.", "Total"]],
-            body: tableRows,
-            startY: 35,
-            theme: 'grid',
-            headStyles: { fillColor: [23, 23, 23], textColor: 255 },
-            styles: { fontSize: 9 }
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text(evento.titulo.toUpperCase(), 18, yPos + 10);
+
+            doc.setFontSize(9);
+            doc.text(`Estado: ${evento.estado} | Fecha: ${new Date(evento.fecha_inicio).toLocaleDateString('es-ES')} | Hora: ${new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`, 18, yPos + 18);
+            doc.text(`Pres: ${evento.presentes} | Aus: ${evento.ausentes} | Just: ${evento.justificados}`, 18, yPos + 24);
+
+            // Table data
+            const tableRows = evento.asistencias.map(a => [
+                `${a.nombre} ${a.apellidos}`,
+                String(a.trabajadera),
+                a.puesto,
+                a.suplemento ? `${a.suplemento}cm` : '-',
+                a.estado.toUpperCase()
+            ]);
+
+            autoTable(doc, {
+                head: [["Nombre", "Trab.", "Puesto", "Supl.", "Estado"]],
+                body: tableRows,
+                startY: yPos + 32,
+                theme: 'striped',
+                headStyles: { fillColor: [0, 128, 90], textColor: 255, fontSize: 8 },
+                styles: { fontSize: 8 },
+                margin: { left: 14, right: 14 }
+            });
+
+            yPos = (doc as any).lastAutoTable.finalY + 15;
         });
 
-        doc.save(`estadisticas_${temporadaActiva || 'export'}.pdf`);
+        doc.save(`estadisticas_detalladas_${temporadaActiva || 'export'}.pdf`);
     };
 
     if (loading) return (
