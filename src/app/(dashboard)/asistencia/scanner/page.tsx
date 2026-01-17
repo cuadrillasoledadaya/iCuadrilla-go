@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUserRole } from "@/hooks/useUserRole";
-import { QrCode, RefreshCcw, Camera } from "lucide-react";
+import { QrCode, RefreshCcw, Camera, ChevronLeft } from "lucide-react";
 
 // Sub-componente que usa useSearchParams
 function ScannerContent() {
@@ -191,7 +191,15 @@ function ScannerContent() {
 
     return (
         <div className="min-h-screen bg-background p-4 space-y-6 max-w-md mx-auto">
-            <h2 className="text-xl font-bold text-center text-primary uppercase tracking-tight">Escáner de Asistencia</h2>
+            <header className="relative flex items-center justify-center min-h-[64px]">
+                <button
+                    onClick={() => router.back()}
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <h2 className="text-xl font-bold text-center text-primary uppercase tracking-tight">Escáner de Asistencia</h2>
+            </header>
 
             <div className="bg-black rounded-[32px] overflow-hidden shadow-2xl border border-neutral-800 relative min-h-[300px] flex flex-col justify-center animate-in zoom-in duration-300">
                 {isInitializing && (
