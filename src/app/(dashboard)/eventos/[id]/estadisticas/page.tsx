@@ -108,9 +108,21 @@ function EstadisticasContent() {
                 }
             });
 
-            // Ordenar costaleros por puesto o alfabético si se prefiere
+            // Ordenar costaleros: Asistentes -> Ausentes -> Justificados -> Pendientes, y luego Alfabético
             tStats.forEach(ts => {
-                ts.costaleros.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                ts.costaleros.sort((a, b) => {
+                    const getPriority = (estado?: string) => {
+                        if (estado === 'presente') return 1;
+                        if (estado === 'ausente') return 2;
+                        if (estado === 'justificado' || estado === 'justificada') return 3;
+                        return 4; // Pendiente
+                    };
+                    const priorityA = getPriority(a.estado);
+                    const priorityB = getPriority(b.estado);
+
+                    if (priorityA !== priorityB) return priorityA - priorityB;
+                    return a.nombre.localeCompare(b.nombre);
+                });
             });
 
             setTrabajaderaStats(tStats);

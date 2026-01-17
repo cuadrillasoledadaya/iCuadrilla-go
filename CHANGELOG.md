@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.17 (17/01/2026)
+
+- **UI Estadísticas**: Implementado orden personalizado en los bocadillos de trabajadera. Ahora aparecen primero los Presentes, luego los Ausentes y por último los Justificados, manteniendo el orden alfabético dentro de cada grupo.
+
 ## v1.2.16 (17/01/2026)
 
 - **UI Estadísticas**: Mejorada la legibilidad de los bocadillos de costaleros. Aumentado el tamaño de fuente y unificado el color de texto a negro para mayor contraste sobre los colores de fondo.
