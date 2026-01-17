@@ -140,11 +140,11 @@ function EstadisticasContent() {
 
     const getStatusColor = (estado?: string) => {
         switch (estado) {
-            case 'presente': return 'bg-emerald-500 text-white';
+            case 'presente': return 'bg-emerald-500 text-neutral-900';
             case 'justificado':
             case 'justificada': return 'bg-amber-400 text-neutral-900';
-            case 'ausente': return 'bg-red-500 text-white';
-            default: return 'bg-neutral-100 text-neutral-400 border border-neutral-200';
+            case 'ausente': return 'bg-red-500 text-neutral-900';
+            default: return 'bg-neutral-100 text-neutral-900 border border-neutral-200';
         }
     };
 
@@ -257,12 +257,12 @@ function EstadisticasContent() {
                                         <div
                                             key={c.id}
                                             className={cn(
-                                                "min-w-[120px] p-3 rounded-2xl flex flex-col items-center justify-center text-center space-y-1 shadow-lg border border-black/5 animate-in zoom-in-95",
+                                                "min-w-[120px] p-3 rounded-2xl flex flex-col items-center justify-center text-center space-y-0.5 shadow-lg border border-black/5 animate-in zoom-in-95",
                                                 getStatusColor(c.estado)
                                             )}
                                         >
-                                            <span className="text-[10px] font-black uppercase leading-tight line-clamp-1">{c.nombre}</span>
-                                            <span className="text-[8px] font-bold opacity-70 tracking-tighter uppercase">{c.puesto || 'Costalero'}</span>
+                                            <span className="text-[11px] font-black uppercase leading-tight line-clamp-1">{c.nombre}</span>
+                                            <span className="text-[9px] font-bold opacity-80 tracking-tighter uppercase">{c.puesto || 'Costalero'}</span>
                                         </div>
                                     ))}
                                     {t.costaleros.length === 0 && (

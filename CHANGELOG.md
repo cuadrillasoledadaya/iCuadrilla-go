@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.16 (17/01/2026)
+
+- **UI Estadísticas**: Mejorada la legibilidad de los bocadillos de costaleros. Aumentado el tamaño de fuente y unificado el color de texto a negro para mayor contraste sobre los colores de fondo.
+
 ## v1.2.15 (17/01/2026)
 
 - **Interactividad**: Añadida la posibilidad de expandir cada trabajadera en las estadísticas. Ahora puedes ver quién está en cada fila, su posición y su estado mediante bocadillos visuales horizontales.
