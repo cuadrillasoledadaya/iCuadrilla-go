@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.32 (17/01/2026)
+
+- **Bugfix**: Corregida la codificacion de caracteres especiales (tildes, Ñ) en la exportacion CSV. Ahora se utiliza UTF-8 con BOM para garantizar compatibilidad con Excel.
+
 ## v1.2.31 (17/01/2026)
 
 - **Mejora Exportacion**: Enriquecida la exportacion de estadisticas. Ahora incluye datos detallados por evento: nombre, apellidos, trabajadera, puesto, suplemento y estado de cada costalero. Ademas, se ha anadido un encabezado destacado con el nombre del evento, estado, fecha y hora.

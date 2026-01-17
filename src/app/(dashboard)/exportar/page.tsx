@@ -125,6 +125,20 @@ export default function ExportarDatos() {
     }, []);
 
     // --- CSV EXPORTS ---
+    const downloadCSV = (content: string, filename: string) => {
+        // Add UTF-8 BOM for Excel compatibility with Spanish characters
+        const BOM = '\uFEFF';
+        const blob = new Blob([BOM + content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     const exportCostalerosCSV = () => {
         const headers = ["Nombre", "Apellidos", "Trabajadera", "Puesto", "Altura (m)", "Suplemento (cm)"];
         const rows = costaleros.map(c => [
@@ -136,22 +150,12 @@ export default function ExportarDatos() {
             c.suplemento || "-"
         ]);
 
-        let csvContent = "data:text/csv;charset=utf-8,"
-            + headers.join(";") + "\n"
-            + rows.map(e => e.join(";")).join("\n");
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `listado_cuadrilla_${temporadaActiva || 'export'}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const csvContent = headers.join(";") + "\n" + rows.map(e => e.join(";")).join("\n");
+        downloadCSV(csvContent, `listado_cuadrilla_${temporadaActiva || 'export'}.csv`);
     };
 
     const exportEstadisticasCSV = () => {
-        // Header info
-        let csvContent = "data:text/csv;charset=utf-8,";
+        let csvContent = "";
 
         eventosStats.forEach((evento, index) => {
             if (index > 0) csvContent += "\n\n"; // Separator between events
@@ -172,13 +176,7 @@ export default function ExportarDatos() {
             });
         });
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `estadisticas_detalladas_${temporadaActiva || 'export'}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        downloadCSV(csvContent, `estadisticas_detalladas_${temporadaActiva || 'export'}.csv`);
     };
 
     // --- PDF EXPORTS ---
