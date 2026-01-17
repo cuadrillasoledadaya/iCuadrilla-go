@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.11 (17/01/2026)
+
+- **Filtros**: Corregida la lista de Trabajaderas en eventos. Ahora se filtra correctamente al personal técnico (Capataces y Auxiliares), mostrando únicamente a los costaleros.
+
 ## v1.2.10 (17/01/2026)
 
 - **UI/UX**: Corregido el color de la etiqueta "JUSTIFICADA" en la vista por Trabajaderas. Ahora se muestra correctamente en naranja independientemente del género.

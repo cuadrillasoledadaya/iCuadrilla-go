@@ -44,7 +44,7 @@ export default function TrabajaderasAsistencia() {
 
             // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("*").order("trabajadera").order("apellidos"),
+                supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera").order("apellidos"),
                 supabase.from("asistencias").select("*").eq("evento_id", params.id)
             ]);
 
