@@ -170,7 +170,7 @@ export default function AgendaEventos() {
                     filtered.map((e) => (
                         <div
                             key={e.id}
-                            onClick={() => router.push(`/eventos/${e.id}`)}
+                            onClick={() => setExpandedId(expandedId === e.id ? null : e.id)}
                             className={cn(
                                 "p-6 rounded-[32px] flex flex-col space-y-4 group cursor-pointer active:scale-[0.98] transition-all border shadow-sm",
                                 getCardStyle(e.estado)
@@ -213,26 +213,56 @@ export default function AgendaEventos() {
                                     </div>
                                     <span className="text-xs truncate">{e.ubicacion}</span>
                                 </div>
-                            </div>
+                                {/* Accordion Content (Description) */}
+                                <div className={cn(
+                                    "overflow-hidden transition-all duration-500 ease-in-out",
+                                    expandedId === e.id ? "max-h-[500px] opacity-100 pt-4" : "max-h-0 opacity-0 pt-0"
+                                )}>
+                                    <div className="p-4 bg-white/40 rounded-2xl border border-black/5 space-y-2">
+                                        <div className="flex items-center gap-2 text-neutral-400">
+                                            <Activity size={12} className="text-primary" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest">Observaciones</span>
+                                        </div>
+                                        <p className="text-sm font-medium text-neutral-700 leading-relaxed whitespace-pre-wrap">
+                                            {e.descripcion || "Sin observaciones adicionales."}
+                                        </p>
+                                        <button
+                                            onClick={(ee) => {
+                                                ee.stopPropagation();
+                                                router.push(`/eventos/${e.id}`);
+                                            }}
+                                            className="w-full mt-4 h-12 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-transform"
+                                        >
+                                            Entrar al Evento
+                                        </button>
+                                    </div>
+                                </div>
 
-                            <div className="flex justify-end pt-2 border-t border-black/5">
-                                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mr-auto italic group-hover:text-primary transition-colors">Ver Detalles</span>
-                                <ChevronRight className="text-neutral-400 group-hover:text-primary transition-colors" size={20} />
+                                <div className="flex justify-end pt-2 border-t border-black/5">
+                                    <div className="flex items-center gap-2 group/btn">
+                                        <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest italic group-hover/btn:text-primary transition-colors">
+                                            {expandedId === e.id ? "Cerrar Detalles" : "Ver Detalles"}
+                                        </span>
+                                        <ChevronRight className={cn(
+                                            "text-neutral-400 group-hover/btn:text-primary transition-all duration-300",
+                                            expandedId === e.id && "rotate-90"
+                                        )} size={20} />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                            ))
                 )}
-            </div>
+                        </div>
 
-            {/* FAB */}
-            {canManageEvents && (
-                <button
-                    onClick={() => router.push('/eventos/nuevo')}
-                    className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
-                >
-                    <Plus size={32} strokeWidth={3} />
-                </button>
-            )}
-        </div>
-    );
+            {/* FAB */ }
+            { canManageEvents && (
+                            <button
+                                onClick={() => router.push('/eventos/nuevo')}
+                                className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
+                            >
+                                <Plus size={32} strokeWidth={3} />
+                            </button>
+                        )}
+            </div>
+            );
 }

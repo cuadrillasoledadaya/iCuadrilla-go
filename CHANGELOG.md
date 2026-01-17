@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.06 (17/01/2026)
+
+- **UI Agenda**: Corregida la navegación del acordeón. Ahora al tocar la tarjeta se expande para ver las observaciones, y la entrada al evento se realiza mediante el nuevo botón "Entrar al Evento" dentro del detalle expandido.
+
 ## v1.2.05 (17/01/2026)
 
 - **UI Agenda**: Implementada la función de acordeón en las tarjetas de eventos. Ahora se pueden ver las observaciones/descripciones directamente desde la agenda expandiendo la tarjeta.
