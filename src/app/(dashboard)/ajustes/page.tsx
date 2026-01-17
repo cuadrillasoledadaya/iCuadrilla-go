@@ -4,8 +4,9 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Lock, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
+import { ChevronLeft, Lock, Eye, EyeOff, Check, AlertCircle, ShieldCheck, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export default function AjustesPage() {
     const router = useRouter();
@@ -15,6 +16,7 @@ export default function AjustesPage() {
     const [showPasswords, setShowPasswords] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const { canManageRoles } = useUserRole();
 
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -146,8 +148,8 @@ export default function AjustesPage() {
 
                     {message && (
                         <div className={`p-4 rounded-2xl flex items-center gap-3 ${message.type === 'success'
-                                ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
-                                : 'bg-red-50 border border-red-200 text-red-700'
+                            ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                            : 'bg-red-50 border border-red-200 text-red-700'
                             }`}>
                             {message.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
                             <span className="text-sm font-bold">{message.text}</span>
@@ -163,6 +165,32 @@ export default function AjustesPage() {
                     </Button>
                 </form>
             </div>
+
+            {/* Role Management Section (Only for Superadmins/Masters) */}
+            {canManageRoles && (
+                <div className="space-y-4">
+                    <div className="px-2">
+                        <h2 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Administración Avanzada</h2>
+                    </div>
+                    <button
+                        onClick={() => router.push('/ajustes/roles')}
+                        className="w-full bg-white p-6 rounded-[32px] border border-black/5 shadow-sm flex items-center justify-between group hover:border-primary/20 transition-all active:scale-[0.98]"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-neutral-900 text-white group-hover:bg-primary transition-colors">
+                                <ShieldCheck size={24} />
+                            </div>
+                            <div className="text-left">
+                                <h3 className="text-lg font-black text-neutral-900">Gestión de Roles</h3>
+                                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Administrar Capataces y Auxiliares</p>
+                            </div>
+                        </div>
+                        <div className="p-2 text-neutral-300 group-hover:text-primary transition-colors">
+                            <ChevronRight size={20} />
+                        </div>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

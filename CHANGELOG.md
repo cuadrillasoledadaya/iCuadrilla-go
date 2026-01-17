@@ -4,6 +4,11 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.03 (17/01/2026)
+
+- **Gestión de Roles**: Restaurado el acceso a la sección de Gestión de Roles para Superadmins dentro del panel de Ajustes.
+- **Seguridad**: Reforzada la protección de rutas administrativas.
+
 ## v1.2.02 (16/01/2026)
 
 - **UI Relevos**: Cambiado el nombre por defecto del primer relevo generado automáticamente de "Relevo 1" a "Salida".
