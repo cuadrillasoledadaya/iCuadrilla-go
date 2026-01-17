@@ -132,6 +132,13 @@ function EstadisticasContent() {
 
     useEffect(() => {
         fetchData();
+
+        // Auto-refresh cada 30 segundos
+        const interval = setInterval(() => {
+            fetchData();
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, [params.id]);
 
     if (loading) return (

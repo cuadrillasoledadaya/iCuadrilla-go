@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.21 (17/01/2026)
+
+- **Performance Estadísticas**: Implementado refresco automático de datos cada 30 segundos en el panel de estadísticas detalladas. Esto permite ver la llegada de los costaleros en tiempo real sin tener que recargar la página manualmente.
+
 ## v1.2.20 (17/01/2026)
 
 - **Feedback de Usuario**: Ahora el costalero puede ver si su notificación de ausencia ha sido leída por el staff. El mensaje "RESPUESTA ENVIADA" cambia a "RESPUESTA LEÍDA" (en color esmeralda) una vez que se marca como leída en el centro de notificaciones.
