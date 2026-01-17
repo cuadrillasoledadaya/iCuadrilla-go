@@ -192,7 +192,7 @@ export default function TrabajaderasAsistencia() {
 
                                             <div className={cn(
                                                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest",
-                                                m.state === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
+                                                m.estado === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
                                                 (m.estado === 'justificado' || m.estado === 'justificada') && "bg-amber-50 text-amber-600 border-amber-100",
                                                 m.estado === 'ausente' && "bg-red-50 text-red-600 border-red-100",
                                                 !m.estado && "bg-amber-50 text-amber-600 border-amber-200 pending-badge shadow-sm"
