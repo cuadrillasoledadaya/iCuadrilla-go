@@ -45,6 +45,7 @@ export default function DetalleEvento() {
     const [showAbsenceModal, setShowAbsenceModal] = useState(false);
     const [absenceReason, setAbsenceReason] = useState("");
     const [costaleroId, setCostaleroId] = useState<string | null>(null);
+    const [costaleroNombre, setCostaleroNombre] = useState("");
     const [alreadyNotified, setAlreadyNotified] = useState(false);
 
     const fetchData = async () => {
@@ -96,9 +97,10 @@ export default function DetalleEvento() {
     useEffect(() => {
         const fetchCostaleroInfo = async () => {
             if (isCostalero && userId && evento) {
-                const { data: costaleroData } = await supabase.from("costaleros").select("id").eq("user_id", userId).single();
+                const { data: costaleroData } = await supabase.from("costaleros").select("id, nombre, apellidos").eq("user_id", userId).single();
                 if (costaleroData) {
                     setCostaleroId(costaleroData.id);
+                    setCostaleroNombre(`${costaleroData.nombre} ${costaleroData.apellidos}`);
                     const { data: asistenciaData } = await supabase.from("asistencias").select("estado").eq("evento_id", evento.id).eq("costalero_id", costaleroData.id).single();
                     if (asistenciaData) setAlreadyNotified(true);
                 }
@@ -122,7 +124,7 @@ export default function DetalleEvento() {
                 validada_por_capataz: false
             });
             await supabase.from("notificaciones").insert({
-                titulo: `Ausencia: ${evento.titulo}`,
+                titulo: `Ausencia: ${costaleroNombre} - ${evento.titulo}`,
                 mensaje: `Motivo: ${absenceReason}`,
                 tipo: 'ausencia',
                 evento_id: evento.id,

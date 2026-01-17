@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.19 (17/01/2026)
+
+- **Notificaciones**: Añadido el nombre del costalero al título de las notificaciones de ausencia. Ahora el equipo de staff puede identificar rápidamente quién ha enviado la falta desde la lista de notificaciones.
+
 ## v1.2.18 (17/01/2026)
 
 - **Corrección Lógica**: Corregido el contador de asistencia por trabajadera. Ahora solo los hermanos marcados como "Presente" cuentan en el indicador numérico (ej: 5 de 7), excluyendo las ausencias justificadas del conteo de presencia real.
