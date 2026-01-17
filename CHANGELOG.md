@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.04 (17/01/2026)
+
+- **PWA Standalone**: Restaurado el comportamiento de "App nativa". Se han añadido los meta-tags necesarios para iPhone y Android y sincronizado los colores del manifest con el nuevo verde corporativo.
+
 ## v1.2.03 (17/01/2026)
 
 - **Gestión de Roles**: Restaurado el acceso a la sección de Gestión de Roles para Superadmins dentro del panel de Ajustes.

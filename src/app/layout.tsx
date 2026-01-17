@@ -8,6 +8,18 @@ export const metadata: Metadata = {
     title: "iCuadrilla - Gestión de Costaleros",
     description: "App privada para la gestión de cuadrillas de costaleros",
     manifest: "/manifest.json",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "black-translucent",
+        title: "iCuadrilla",
+    },
+    formatDetection: {
+        telephone: false,
+    },
+};
+
+export const viewport = {
+    themeColor: "#165d31",
 };
 
 import { LayoutProvider } from "@/components/layout-context";
