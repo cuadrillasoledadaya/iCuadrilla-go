@@ -172,9 +172,9 @@ export default function DetalleEvento() {
     const actionButtons = [
         ...(canManageEvents ? [
             { label: "ESTADÍSTICAS DETALLADAS", icon: BarChart3, color: "bg-neutral-900 shadow-neutral-200", href: `/eventos/${params.id}/estadisticas` },
-            { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }
+            { label: "ESCANEAR ASISTENCIA", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }
         ] : []),
-        { label: "VER POR TRABAJADERAS", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
+        { label: "ASISTENCIA MANUAL", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
         ...(canManageEvents ? [
             { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
             { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` },

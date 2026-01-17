@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.25 (17/01/2026)
+
+- **UI Refinamiento**: Renombrado botones en el detalle del evento para mayor claridad: "ESCANEAR NUEVOS" pasa a ser "ESCANEAR ASISTENCIA" y "VER POR TRABAJADERAS" ahora es "ASISTENCIA MANUAL".
+
 ## v1.2.24 (17/01/2026)
 
 - **Hotfix**: Corregido error de compilación en Vercel causado por una referencia inexistente a un icono de Lucide ('ListCircle').
