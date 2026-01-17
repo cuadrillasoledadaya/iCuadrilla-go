@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.08 (17/01/2026)
+
+- **Corrección de Errores**: Mejorada la inicialización de la cámara en el Escáner de Asistencia. Añadido botón de reintento y lógica más robusta para evitar el "cuadro negro" en dispositivos móviles.
+
 ## v1.2.07 (17/01/2026)
 
 - **Seguridad**: Corregido el acceso al Escáner de Asistencia. Ahora los Capataces y Administradores tienen acceso correcto a la función, restringiéndola únicamente a costaleros base.
