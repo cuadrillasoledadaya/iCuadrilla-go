@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.30 (17/01/2026)
+
+- **Bugfix**: Corregida la exportación a PDF en el Centro de Exportación. Se ha actualizado la forma de importar `jspdf-autotable` para compatibilidad con el entorno de producción.
+
 ## v1.2.29 (17/01/2026)
 
 - **Nueva Funcionalidad**: Implementado el Centro de Exportación de Datos (`/exportar`). Permite descargar el listado de costaleros de la temporada activa y las estadísticas de asistencia de todos los eventos en formato CSV (compatible con Excel/Google Sheets) o PDF.

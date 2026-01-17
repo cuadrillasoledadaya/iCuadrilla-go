@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { FileDown, Table, Users, BarChart3, ChevronLeft } from "lucide-react";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -150,23 +150,23 @@ export default function ExportarDatos() {
 
     // --- PDF EXPORTS ---
     const exportCostalerosPDF = () => {
-        const doc = new jsPDF() as any;
+        const doc = new jsPDF();
 
         doc.setFontSize(18);
         doc.text("Listado de Cuadrilla", 14, 20);
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`Temporada ${temporadaActiva || '-'} • Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+        doc.text(`Temporada ${temporadaActiva || '-'} - Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
 
         const tableRows = costaleros.map(c => [
             `${c.nombre} ${c.apellidos}`,
-            c.trabajadera,
+            String(c.trabajadera),
             c.puesto,
             c.altura ? `${c.altura}m` : '-',
             c.suplemento ? `${c.suplemento}cm` : '-'
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [["Nombre Completo", "Trab.", "Puesto", "Altura", "Supl."]],
             body: tableRows,
             startY: 35,
@@ -179,25 +179,25 @@ export default function ExportarDatos() {
     };
 
     const exportEstadisticasPDF = () => {
-        const doc = new jsPDF() as any;
+        const doc = new jsPDF();
 
         doc.setFontSize(18);
-        doc.text("Estadísticas de Asistencia", 14, 20);
+        doc.text("Estadisticas de Asistencia", 14, 20);
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`Temporada ${temporadaActiva || '-'} • Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+        doc.text(`Temporada ${temporadaActiva || '-'} - Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
 
         const tableRows = eventosStats.map(e => [
             e.titulo,
             new Date(e.fecha_inicio).toLocaleDateString('es-ES'),
-            e.presentes,
-            e.ausentes,
-            e.justificados,
-            e.total
+            String(e.presentes),
+            String(e.ausentes),
+            String(e.justificados),
+            String(e.total)
         ]);
 
-        doc.autoTable({
-            head: [["Evento", "Fecha", "✓ Pres.", "✗ Aus.", "⊘ Just.", "Total"]],
+        autoTable(doc, {
+            head: [["Evento", "Fecha", "Pres.", "Aus.", "Just.", "Total"]],
             body: tableRows,
             startY: 35,
             theme: 'grid',
