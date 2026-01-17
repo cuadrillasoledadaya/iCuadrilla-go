@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.13 (17/01/2026)
+
+- **UI/UX Refactor**: Reubicado el Dashboard de Estadísticas Visuales a una sección propia llamada "Estadísticas Detalladas" para mantener el detalle del evento organizado y limpio.
+
 ## v1.2.12 (17/01/2026)
 
 - **Nueva Función**: Dashboard Visual de Estadísticas en el detalle de eventos. Incluye barra de progreso global, mensajes predictivos de llegada ("Faltan X costaleros") y un mapa visual de asistencia por trabajaderas (las 7 filas).

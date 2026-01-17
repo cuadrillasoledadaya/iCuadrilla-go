@@ -20,8 +20,7 @@ import {
     AlertCircle,
     X,
     Send,
-    Trophy,
-    TrendingUp
+    BarChart3
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -35,22 +34,12 @@ interface Evento {
     estado: string;
 }
 
-interface TrabajaderaStat {
-    id: number;
-    total: number;
-    presentes: number;
-    justificados: number;
-    ausentes: number;
-    pendientes: number;
-}
-
 export default function DetalleEvento() {
     const params = useParams();
     const router = useRouter();
     const { isCostalero, userId, canManageEvents, rol } = useUserRole();
     const [evento, setEvento] = useState<Evento | null>(null);
     const [stats, setStats] = useState({ presentes: 0, justificados: 0, ausentes: 0, pendientes: 0, total: 0 });
-    const [trabajaderaStats, setTrabajaderaStats] = useState<TrabajaderaStat[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [showAbsenceModal, setShowAbsenceModal] = useState(false);
@@ -74,46 +63,19 @@ export default function DetalleEvento() {
             setEvento(eventData);
 
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("id, trabajadera").eq("rol", "costalero"),
+                supabase.from("costaleros").select("id", { count: "exact", head: true }).eq("rol", "costalero"),
                 supabase.from("asistencias").select("estado, costalero_id").eq("evento_id", params.id)
             ]);
 
-            const costaleros = costalerosRes.data || [];
+            const totalCostaleros = costalerosRes.count || 0;
             const asistencias = asistenciasRes.data || [];
 
-            // Stats globales
             const presentes = asistencias.filter(a => a.estado === 'presente').length;
             const justificados = asistencias.filter(a => a.estado === 'justificado' || a.estado === 'justificada').length;
             const ausentes = asistencias.filter(a => a.estado === 'ausente').length;
-            const total = costaleros.length;
-            const pendientes = total - (presentes + justificados + ausentes);
+            const pendientes = totalCostaleros - (presentes + justificados + ausentes);
 
-            setStats({ presentes, justificados, ausentes, pendientes, total });
-
-            // Stats por trabajadera (1-7)
-            const tStats: TrabajaderaStat[] = Array.from({ length: 7 }, (_, i) => ({
-                id: i + 1,
-                total: 0,
-                presentes: 0,
-                justificados: 0,
-                ausentes: 0,
-                pendientes: 0
-            }));
-
-            costaleros.forEach(c => {
-                const t = c.trabajadera;
-                if (t >= 1 && t <= 7) {
-                    const idx = t - 1;
-                    tStats[idx].total++;
-                    const asis = asistencias.find(a => a.costalero_id === c.id);
-                    if (asis?.estado === 'presente') tStats[idx].presentes++;
-                    else if (asis?.estado === 'justificado' || asis?.estado === 'justificada') tStats[idx].justificados++;
-                    else if (asis?.estado === 'ausente') tStats[idx].ausentes++;
-                    else tStats[idx].pendientes++;
-                }
-            });
-
-            setTrabajaderaStats(tStats);
+            setStats({ presentes, justificados, ausentes, pendientes, total: totalCostaleros });
         }
         setLoading(false);
     };
@@ -191,14 +153,19 @@ export default function DetalleEvento() {
     };
 
     const actionButtons = [
-        ...(canManageEvents ? [{ label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }] : []),
+        ...(canManageEvents ? [
+            { label: "ESTADÍSTICAS DETALLADAS", icon: BarChart3, color: "bg-neutral-900 shadow-neutral-200", href: `/eventos/${params.id}/estadisticas` },
+            { label: "ESCANEAR NUEVOS", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }
+        ] : []),
         { label: "VER POR TRABAJADERAS", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
-        { label: "WHATSAPP", icon: Share2, color: "bg-green-500 shadow-green-200", href: `https://wa.me/?text=Asistencia` },
         ...(canManageEvents ? [
             { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
-            { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` }
+            { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` },
+            { label: "COMPARTIR WHATSAPP", icon: Share2, color: "bg-green-500 shadow-green-200", href: `https://wa.me/?text=Asistencia` }
         ] : []),
-        ...(rol === 'costalero' && !alreadyNotified && evento?.estado === 'pendiente' ? [{ label: "NOTIFICAR AUSENCIA", icon: AlertCircle, color: "bg-red-500 shadow-red-200", action: () => setShowAbsenceModal(true) }] : [])
+        ...(rol === 'costalero' && !alreadyNotified && evento?.estado === 'pendiente' ? [
+            { label: "NOTIFICAR AUSENCIA", icon: AlertCircle, color: "bg-red-500 shadow-red-200", action: () => setShowAbsenceModal(true) }
+        ] : [])
     ];
 
     if (loading && !evento) return (
@@ -209,20 +176,8 @@ export default function DetalleEvento() {
 
     if (!evento) return <div className="p-6 text-center bg-background min-h-screen"><Button onClick={() => router.back()}>Volver</Button></div>;
 
-    const progress = stats.total > 0 ? Math.round(((stats.presentes + stats.justificados) / stats.total) * 100) : 0;
-
-    // Predictive messages
-    const getPredictiveMessage = () => {
-        if (progress === 100) return "¡Cuadrilla completa! Todo listo.";
-        if (progress > 90) return `Casi listo. Faltan ${stats.pendientes} hermanos por llegar.`;
-        if (progress > 70) return `¡Buen ritmo! Faltan ${stats.pendientes} costaleros.`;
-        if (stats.pendientes > 0) return `Todavía faltan ${stats.pendientes} costaleros por llegar.`;
-        return "Iniciando control de asistencia...";
-    };
-
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen relative">
-            {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button onClick={() => router.back()} className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 group/back z-10">
                     <ArrowLeft size={24} className="group-hover/back:-translate-x-1 transition-transform" />
@@ -230,167 +185,93 @@ export default function DetalleEvento() {
                 <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12 line-clamp-1">{evento.titulo}</h1>
                 {canManageEvents && (
                     <div className="flex gap-2">
-                        <button onClick={() => router.push(`/eventos/${params.id}/editar`)} className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-colors"><Pencil size={20} /></button>
-                        <button onClick={handleDelete} className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
+                        <button onClick={() => router.push(`/eventos/${params.id}/editar`)} className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-colors hover:border-primary/20"><Pencil size={20} /></button>
+                        <button onClick={handleDelete} className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-red-500 transition-colors hover:border-red-100"><Trash2 size={20} /></button>
                     </div>
                 )}
             </header>
 
-            {/* Info Central Premium */}
+            {/* Info Central Reverted to clean style */}
             <div className={cn(
-                "p-8 rounded-[48px] border shadow-xl transition-all duration-500 space-y-6 relative overflow-hidden",
-                evento.estado === 'en-curso' ? "bg-emerald-50 border-emerald-100" :
-                    evento.estado === 'finalizado' ? "bg-red-50 border-red-100" : "bg-white border-neutral-100"
+                "text-center space-y-3 py-10 rounded-[48px] border shadow-md transition-all duration-500",
+                evento.estado === 'en-curso' ? "bg-emerald-100/60 border-emerald-200" :
+                    evento.estado === 'finalizado' ? "bg-red-100/60 border-red-200" : "bg-orange-100/60 border-orange-200"
             )}>
-                {/* Background Decor */}
-                <div className="absolute top-0 right-0 p-4 opacity-5">
-                    {evento.estado === 'en-curso' ? <Activity size={120} /> : <Timer size={120} />}
+                <div className={cn(
+                    "inline-flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border mb-2 shadow-sm",
+                    evento.estado === 'en-curso' ? "bg-emerald-200/80 border-emerald-300 text-emerald-900" :
+                        evento.estado === 'finalizado' ? "bg-red-200/80 border-red-300 text-red-900" : "bg-orange-200/80 border-orange-300 text-orange-900"
+                )}>
+                    {evento.estado === 'en-curso' ? <Activity size={14} className="animate-pulse" /> :
+                        evento.estado === 'finalizado' ? <CheckCircle2 size={14} /> : <Timer size={14} />}
+                    {evento.estado.replace('-', ' ')}
                 </div>
-
-                <div className="space-y-2 relative z-10 text-center">
-                    <div className={cn(
-                        "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm mb-4",
-                        evento.estado === 'en-curso' ? "bg-emerald-500 text-white border-emerald-400" :
-                            evento.estado === 'finalizado' ? "bg-neutral-600 text-white border-neutral-500" : "bg-amber-500 text-white border-amber-400"
-                    )}>
-                        {evento.estado === 'en-curso' ? <Activity size={12} className="animate-pulse" /> :
-                            evento.estado === 'finalizado' ? <CheckCircle2 size={12} /> : <Timer size={12} />}
-                        {evento.estado.replace('-', ' ')}
+                <h2 className="text-4xl font-black text-neutral-900 uppercase tracking-tighter px-6">{evento.titulo}</h2>
+                <p className="text-neutral-600 font-bold capitalize text-sm">
+                    {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                </p>
+                {isCostalero && alreadyNotified && (
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-neutral-900 text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
+                        <CheckCircle2 size={14} className="text-emerald-400" />
+                        <span>Respuesta Enviada</span>
                     </div>
-                    <h2 className="text-3xl font-black text-neutral-900 uppercase tracking-tighter leading-none italic">{evento.titulo}</h2>
-                    <p className="text-neutral-500 font-bold capitalize text-xs">
-                        {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })} • {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                )}
+            </div>
+
+            {/* Simple Stats Grid */}
+            <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
+                    <span className="text-3xl font-black text-emerald-600">{stats.presentes}</span>
+                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Presentes</span>
                 </div>
-
-                {/* Progress Wheel/Bar */}
-                <div className="space-y-3 relative z-10">
-                    <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Progreso Total</span>
-                        <span className="text-2xl font-black text-neutral-900 italic">{progress}%</span>
-                    </div>
-                    <div className="h-4 bg-neutral-100 rounded-full overflow-hidden p-1 border shadow-inner">
-                        <div
-                            className={cn(
-                                "h-full rounded-full transition-all duration-1000 ease-out",
-                                progress > 80 ? "bg-emerald-500" : progress > 40 ? "bg-amber-500" : "bg-red-500"
-                            )}
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                    <p className="text-[11px] font-bold text-neutral-600 text-center animate-pulse pt-2 italic">
-                        {getPredictiveMessage()}
-                    </p>
+                <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
+                    <span className="text-3xl font-black text-amber-500">{stats.justificados}</span>
+                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Justif.</span>
+                </div>
+                <div className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-1">
+                    <span className="text-3xl font-black text-red-500">{stats.ausentes}</span>
+                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-tighter">Ausentes</span>
                 </div>
             </div>
 
-            {/* Dashboard Visual de Trabajaderas (Admin/Capataz only) */}
-            {canManageEvents && (
-                <div className="space-y-4">
-                    <h3 className="text-sm font-black text-neutral-400 uppercase tracking-[0.2em] pl-2 flex items-center gap-2">
-                        <LayoutGrid size={14} className="text-primary" /> Visual por Trabajaderas
-                    </h3>
-                    <div className="grid grid-cols-1 gap-3">
-                        {trabajaderaStats.map((t) => (
-                            <div key={t.id} className="bg-white p-4 rounded-[32px] border border-black/5 shadow-sm flex items-center gap-4 group hover:border-primary/20 transition-all">
-                                <div className={cn(
-                                    "w-12 h-12 rounded-2xl flex items-center justify-center font-black text-md italic shadow-inner border",
-                                    t.pendientes === 0 ? "bg-emerald-500 text-white border-emerald-400" :
-                                        t.presentes > 0 ? "bg-amber-100 text-amber-600 border-amber-200" : "bg-neutral-50 text-neutral-300 border-neutral-100"
-                                )}>
-                                    {t.id}
-                                </div>
-                                <div className="flex-1 space-y-1">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
-                                        <span className="text-neutral-900">Trabajadera {t.id}</span>
-                                        <span className="text-neutral-400">{t.presentes + t.justificados} / {t.total}</span>
-                                    </div>
-                                    <div className="flex gap-1 h-3">
-                                        {/* Presentes */}
-                                        {Array.from({ length: t.presentes }).map((_, i) => (
-                                            <div key={`p-${i}`} className="flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)] animate-in zoom-in" />
-                                        ))}
-                                        {/* Justificados */}
-                                        {Array.from({ length: t.justificados }).map((_, i) => (
-                                            <div key={`j-${i}`} className="flex-1 bg-amber-400 rounded-full animate-in zoom-in" />
-                                        ))}
-                                        {/* Ausentes */}
-                                        {Array.from({ length: t.ausentes }).map((_, i) => (
-                                            <div key={`a-${i}`} className="flex-1 bg-red-400 rounded-full animate-in zoom-in" />
-                                        ))}
-                                        {/* Pendientes */}
-                                        {Array.from({ length: t.pendientes }).map((_, i) => (
-                                            <div key={`n-${i}`} className="flex-1 bg-neutral-100 border border-neutral-200/50 rounded-full" />
-                                        ))}
-                                    </div>
-                                </div>
-                                {t.pendientes === 0 && <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />}
-                                {t.ausentes > 0 && <AlertCircle className="text-red-500 shrink-0 animate-pulse" size={18} />}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Stats Grid Refined */}
-            <div className="grid grid-cols-4 gap-2">
-                {[
-                    { val: stats.presentes, label: "PRES.", color: "text-emerald-500" },
-                    { val: stats.justificados, label: "JUST.", color: "text-amber-500" },
-                    { val: stats.ausentes, label: "AUS.", color: "text-red-500" },
-                    { val: stats.pendientes, label: "PEND.", color: "text-neutral-400" }
-                ].map((s, idx) => (
-                    <div key={idx} className="bg-white p-4 rounded-[24px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center">
-                        <span className={cn("text-xl font-black italic", s.color)}>{s.val}</span>
-                        <span className="text-[8px] font-black text-neutral-300 tracking-widest">{s.label}</span>
-                    </div>
-                ))}
-            </div>
-
-            {/* Action Buttons */}
+            {/* Action Buttons Grid */}
             <div className="grid grid-cols-2 gap-3">
                 {actionButtons.map((btn) => (
                     <button
                         key={btn.label}
                         onClick={'action' in btn ? btn.action : () => router.push(btn.href!)}
                         className={cn(
-                            "h-20 rounded-3xl flex flex-col items-center justify-center gap-2 text-white font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all border-b-4",
-                            btn.color,
-                            "border-black/10"
+                            "h-16 rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-black text-[9px] uppercase tracking-widest shadow-md active:scale-[0.98] transition-all",
+                            btn.color
                         )}
                     >
-                        <btn.icon size={24} />
-                        {btn.label.split(' ')[0]}
+                        <btn.icon size={20} />
+                        {btn.label.split(' ').slice(0, 2).join(' ')}
                     </button>
                 ))}
             </div>
 
-            {/* Listas Section (Only if not costalero) */}
+            {/* Lists Section */}
             {!isCostalero && (
                 <div className="space-y-4 pt-4">
-                    <h3 className="text-sm font-black text-neutral-400 uppercase tracking-[0.2em] pl-2">Listas Detalladas</h3>
-                    <div className="grid grid-cols-1 gap-3">
-                        <button onClick={() => router.push(`/eventos/${params.id}/asistentes`)} className="w-full bg-white p-5 rounded-[32px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all">
+                    <h3 className="text-xl font-black text-neutral-900 tracking-tight">Listas de Asistencia</h3>
+                    <div className="space-y-3">
+                        <button onClick={() => router.push(`/eventos/${params.id}/asistentes`)} className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 shadow-inner">
-                                    <Users size={24} />
-                                </div>
+                                <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 shadow-inner"><Users size={24} /></div>
                                 <div className="text-left">
-                                    <p className="font-extrabold text-neutral-900 text-sm italic">Ver Listado Real</p>
-                                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.presentes + stats.justificados} presentes registrados</p>
+                                    <p className="font-extrabold text-neutral-900 text-sm italic">Ver Asistentes</p>
+                                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.presentes + stats.justificados} registrados</p>
                                 </div>
                             </div>
                             <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
                         </button>
-
-                        <button onClick={() => router.push(`/eventos/${params.id}/pendientes`)} className="w-full bg-white p-5 rounded-[32px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all">
+                        <button onClick={() => router.push(`/eventos/${params.id}/pendientes`)} className="w-full bg-white p-5 rounded-[24px] border border-black/5 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-2xl bg-amber-50 text-amber-600 shadow-inner">
-                                    <Hourglass size={24} />
-                                </div>
+                                <div className="p-3 rounded-2xl bg-amber-50 text-amber-600 shadow-inner"><Hourglass size={24} /></div>
                                 <div className="text-left">
-                                    <p className="font-extrabold text-neutral-900 text-sm italic">Pendientes por Llegar</p>
-                                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.pendientes} hermanos sin registrar</p>
+                                    <p className="font-extrabold text-neutral-900 text-sm italic">Ver Pendientes</p>
+                                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{stats.pendientes} sin registrar</p>
                                 </div>
                             </div>
                             <ChevronRight className="text-neutral-300 group-hover:text-primary transition-colors" size={20} />
@@ -402,16 +283,13 @@ export default function DetalleEvento() {
             {/* Absence Modal */}
             {showAbsenceModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-                    <div className="bg-white w-full max-w-md rounded-[40px] p-8 space-y-6 shadow-2xl animate-in zoom-in-95 border-t-4 border-primary">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-xl font-extrabold uppercase text-neutral-900 italic">Notificar Ausencia</h3>
+                    <div className="bg-white w-full max-w-md rounded-[32px] p-6 space-y-6 shadow-2xl animate-in zoom-in-95">
+                        <div className="flex justify-between items-center text-neutral-900">
+                            <h3 className="text-lg font-black uppercase italic">Motivo de Ausencia</h3>
                             <button onClick={() => setShowAbsenceModal(false)} className="p-2 bg-neutral-100 rounded-full hover:bg-neutral-200"><X size={20} className="text-neutral-500" /></button>
                         </div>
-                        <div className="space-y-4">
-                            <p className="text-sm text-neutral-500 font-medium">Esta ausencia se registrará automáticamente en la base de datos.</p>
-                            <textarea value={absenceReason} onChange={(e) => setAbsenceReason(e.target.value)} placeholder="Motivo de la ausencia..." className="w-full h-32 p-4 rounded-2xl bg-neutral-50 border border-neutral-200 text-neutral-900 font-medium text-sm focus:ring-2 focus:ring-primary/50 resize-none outline-none transition-all" />
-                        </div>
-                        <Button onClick={handleConfirmAbsence} disabled={!absenceReason.trim() || loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs shadow-lg">{loading ? "Enviando..." : <><Send size={18} className="mr-2" /> Enviar Motivo</>}</Button>
+                        <textarea value={absenceReason} onChange={(e) => setAbsenceReason(e.target.value)} placeholder="Escribe tu motivo aquí..." className="w-full h-32 p-4 rounded-2xl bg-neutral-50 border border-neutral-200 text-neutral-900 font-medium text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none" />
+                        <Button onClick={handleConfirmAbsence} disabled={!absenceReason.trim() || loading} className="w-full h-14 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2">{loading ? "Enviando..." : <><Send size={18} /> Enviar Notificación</>}</Button>
                     </div>
                 </div>
             )}
