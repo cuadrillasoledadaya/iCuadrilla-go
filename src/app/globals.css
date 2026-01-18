@@ -135,3 +135,16 @@ body {
     /* Firefox */
   }
 }
+
+/* Float Animation for Out-of-Position Costaleros */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}

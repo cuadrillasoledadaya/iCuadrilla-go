@@ -130,7 +130,14 @@ export default function GestionRelevos() {
     };
 
     const getCostaleroAt = (t: number, p: number) => {
-        return relevos.find(r => r.trabajadera === t && r.posicion === p)?.costalero;
+        const relevo = relevos.find(r => r.trabajadera === t && r.posicion === p);
+        if (!relevo?.costalero) return null;
+        // Buscar el estado de asistencia en la cuadrilla
+        const cuadrillaData = cuadrilla.find(c => c.id === relevo.costalero_id);
+        return {
+            ...relevo.costalero,
+            estadoAsistencia: cuadrillaData?.estadoAsistencia || 'pendiente'
+        };
     };
 
     const handlePosClick = async (t: number, p: number) => {
@@ -429,7 +436,20 @@ export default function GestionRelevos() {
                                 // Comprobación flexible: "Patero Izq" incluye "Patero"
                                 const isOutOfPosition = costalero && !huecosLabels[p - 1].toLowerCase().includes(costalero.puesto.toLowerCase());
                                 const isOutOfTrabajadera = costalero && Number(costalero.trabajadera) !== Number(t);
+                                const isOutOfPlace = isOutOfPosition || isOutOfTrabajadera;
                                 const releveData = relevos.find(r => r.trabajadera === t && r.posicion === p);
+
+                                // Colores basados en asistencia
+                                const getAsistenciaBg = () => {
+                                    if (!costalero) return 'bg-neutral-50/50 border-dashed border-neutral-200';
+                                    if (isSelected) return 'border-primary bg-primary/5 shadow-lg scale-105 z-10';
+                                    switch (costalero.estadoAsistencia) {
+                                        case 'presente': return 'bg-emerald-50 border-emerald-300 shadow-sm';
+                                        case 'ausente': return 'bg-red-50 border-red-300 shadow-sm';
+                                        case 'justificado': return 'bg-amber-50 border-amber-300 shadow-sm';
+                                        default: return 'bg-white border-neutral-100 shadow-sm';
+                                    }
+                                };
 
                                 return (
                                     <button
@@ -437,12 +457,8 @@ export default function GestionRelevos() {
                                         onClick={() => handlePosClick(t, p)}
                                         className={cn(
                                             "relative p-3 rounded-[20px] border-2 transition-all flex flex-col justify-between h-24 text-left",
-                                            isSelected ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                                costalero ? (
-                                                    isOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
-                                                        isOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
-                                                            "bg-white border-neutral-100 shadow-sm"
-                                                ) : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                            getAsistenciaBg(),
+                                            isOutOfPlace && costalero && 'animate-[float_2s_ease-in-out_infinite]'
                                         )}
                                     >
                                         <div className="flex justify-between items-start">
@@ -467,6 +483,11 @@ export default function GestionRelevos() {
                                             {costalero ? `${costalero.nombre} ${costalero.apellidos}` : 'Asignar...'}
                                         </span>
                                         {isSelected && <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-pulse" />}
+                                        {isOutOfPlace && costalero && (
+                                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                                                <span className="text-[8px] text-white font-black">!</span>
+                                            </div>
+                                        )}
                                     </button>
                                 );
                             })}
@@ -477,19 +498,28 @@ export default function GestionRelevos() {
                                     const costaleroCorriente = getCostaleroAt(t, 5);
                                     const isCorrienteOutOfPosition = costaleroCorriente && costaleroCorriente.puesto !== "Corriente";
                                     const isCorrienteOutOfTrabajadera = costaleroCorriente && Number(costaleroCorriente.trabajadera) !== Number(t);
+                                    const isCorrienteOutOfPlace = isCorrienteOutOfPosition || isCorrienteOutOfTrabajadera;
                                     const releveData = relevos.find(r => r.trabajadera === t && r.posicion === 5);
+
+                                    // Colores basados en asistencia para Corriente
+                                    const getCorrienteAsistenciaBg = () => {
+                                        if (!costaleroCorriente) return 'bg-neutral-50/50 border-dashed border-neutral-200';
+                                        if (selectedPos?.t === t && selectedPos?.p === 5) return 'border-primary bg-primary/5 shadow-lg scale-105 z-10';
+                                        switch (costaleroCorriente.estadoAsistencia) {
+                                            case 'presente': return 'bg-emerald-50 border-emerald-300 shadow-sm';
+                                            case 'ausente': return 'bg-red-50 border-red-300 shadow-sm';
+                                            case 'justificado': return 'bg-amber-50 border-amber-300 shadow-sm';
+                                            default: return 'bg-white border-neutral-100 shadow-sm';
+                                        }
+                                    };
 
                                     return (
                                         <button
                                             onClick={() => handlePosClick(t, 5)}
                                             className={cn(
-                                                "w-full max-w-[240px] p-3 rounded-[20px] border-2 transition-all flex flex-col justify-between h-24 text-center",
-                                                selectedPos?.t === t && selectedPos?.p === 5 ? "border-primary bg-primary/5 shadow-lg scale-105 z-10" :
-                                                    costaleroCorriente ? (
-                                                        isCorrienteOutOfTrabajadera ? "bg-orange-50 border-orange-200 shadow-sm" :
-                                                            isCorrienteOutOfPosition ? "bg-red-50 border-red-200 shadow-sm" :
-                                                                "bg-white border-neutral-100 shadow-sm"
-                                                    ) : "bg-neutral-50/50 border-dashed border-neutral-200"
+                                                "w-full max-w-[240px] p-3 rounded-[20px] border-2 transition-all flex flex-col justify-between h-24 text-center relative",
+                                                getCorrienteAsistenciaBg(),
+                                                isCorrienteOutOfPlace && costaleroCorriente && 'animate-[float_2s_ease-in-out_infinite]'
                                             )}
                                         >
                                             <div className="flex justify-center items-center gap-2">
@@ -513,6 +543,11 @@ export default function GestionRelevos() {
                                             )}>
                                                 {costaleroCorriente ? `${costaleroCorriente.nombre} ${costaleroCorriente.apellidos}` : 'Sin asignar'}
                                             </span>
+                                            {isCorrienteOutOfPlace && costaleroCorriente && (
+                                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                                                    <span className="text-[8px] text-white font-black">!</span>
+                                                </div>
+                                            )}
                                         </button>
                                     );
                                 })()}
