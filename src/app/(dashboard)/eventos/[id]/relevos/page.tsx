@@ -290,22 +290,32 @@ export default function GestionRelevos() {
     const occupadas = relevos.filter(r => r.costalero_id).length;
     const pct = (occupadas / totalHuecos) * 100;
 
-    const filteredCandidates = cuadrilla.filter(c => {
-        // Mostrar todos los costaleros (ya no filtramos por presente)
-        const isAssigned = relevos.some(r => r.costalero_id === c.id);
-        if (isAssigned) return false;
+    const filteredCandidates = cuadrilla
+        .filter(c => {
+            // Mostrar todos los costaleros (ya no filtramos por presente)
+            const isAssigned = relevos.some(r => r.costalero_id === c.id);
+            if (isAssigned) return false;
 
-        // Si searchOther es false, filtramos por trabajadera
-        if (!searchOther && Number(c.trabajadera) !== Number(selectedPos?.t)) {
-            return false;
-        }
+            // Si searchOther es false, filtramos por trabajadera
+            if (!searchOther && Number(c.trabajadera) !== Number(selectedPos?.t)) {
+                return false;
+            }
 
-        if (searchTerm) {
-            const fullName = `${c.nombre} ${c.apellidos}`.toLowerCase();
-            return fullName.includes(searchTerm.toLowerCase());
-        }
-        return true;
-    });
+            if (searchTerm) {
+                const fullName = `${c.nombre} ${c.apellidos}`.toLowerCase();
+                return fullName.includes(searchTerm.toLowerCase());
+            }
+            return true;
+        })
+        // Ordenar por trabajadera y luego por apellidos
+        .sort((a, b) => {
+            // Primero ordenar por trabajadera
+            if (a.trabajadera !== b.trabajadera) {
+                return a.trabajadera - b.trabajadera;
+            }
+            // Luego por apellidos
+            return a.apellidos.localeCompare(b.apellidos);
+        });
 
     // Función para obtener el color del borde según estado de asistencia
     const getAsistenciaBorderColor = (estado: string) => {

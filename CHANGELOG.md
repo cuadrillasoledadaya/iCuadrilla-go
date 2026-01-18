@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.36 (18/01/2026)
+
+- **Mejora Relevos**: Al activar "Otras trabajaderas", ahora los costaleros se ordenan por trabajadera (1 a 7) y luego alfabeticamente por apellidos. Esto facilita encontrar cualquier costalero de la cuadrilla.
+
 ## v1.2.35 (18/01/2026)
 
 - **Mejora Relevos**: Ahora se muestran TODOS los costaleros de la trabajadera en la lista de seleccion (no solo los presentes). Los costaleros aparecen con borde de color segun su estado de asistencia: verde (presente), naranja (justificado), rojo (ausente), gris (pendiente). Esto permite planificar relevos con antelacion antes del evento.
