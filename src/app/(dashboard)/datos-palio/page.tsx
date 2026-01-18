@@ -94,7 +94,7 @@ export default function DatosPalioPage() {
                     }, { onConflict: "temporada_id,trabajadera" });
             }
 
-            alert("¡Datos guardados correctamente!");
+            alert(`¡Datos guardados correctamente para la temporada ${temporadaActiva}!`);
         } catch (e) {
             console.error("Error saving:", e);
             alert("Error al guardar los datos");

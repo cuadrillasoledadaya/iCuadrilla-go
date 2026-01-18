@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.39 (18/01/2026)
+
+- **Mejora Datos Palio**: Mejora en la confirmación de guardado, indicando explícitamente la temporada a la que corresponden los datos.
+
 ## v1.2.38 (18/01/2026)
 
 - **Nueva Seccion**: Implementada la pagina 'Datos Palio' con perfil de alturas de trabajaderas. Incluye grafico de linea SVG para visualizar el perfil, inputs editables para cada trabajadera (T1-T7), calculo automatico de diferencias entre trabajaderas, y guardado por temporada.
