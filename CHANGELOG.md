@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.38 (18/01/2026)
+
+- **Nueva Seccion**: Implementada la pagina 'Datos Palio' con perfil de alturas de trabajaderas. Incluye grafico de linea SVG para visualizar el perfil, inputs editables para cada trabajadera (T1-T7), calculo automatico de diferencias entre trabajaderas, y guardado por temporada.
+
 ## v1.2.37 (18/01/2026)
 
 - **Mejora Visual Relevos**: Las posiciones de relevo ahora muestran el color de asistencia del costalero asignado (verde=presente, naranja=justificado, rojo=ausente). Ademas, si el costalero esta fuera de posicion o trabajadera, la tarjeta tiene un efecto flotante y un indicador de alerta naranja.
