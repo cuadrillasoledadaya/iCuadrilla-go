@@ -14,7 +14,7 @@ interface Costalero {
     apellidos: string;
     trabajadera: number;
     puesto: string;
-    presente: boolean;
+    estadoAsistencia: 'presente' | 'ausente' | 'justificado' | 'pendiente';
     suplemento?: number;
 }
 
@@ -93,14 +93,25 @@ export default function GestionRelevos() {
             // 2. Costaleros y Asistencias - filtrar por evento_id para independencia total
             const [costalerosRes, asistenciasRes] = await Promise.all([
                 supabase.from("costaleros").select("*").eq("rol", "costalero"),
-                supabase.from("asistencias").select("*").eq("evento_id", params.id).eq("estado", "presente")
+                supabase.from("asistencias").select("costalero_id, estado").eq("evento_id", params.id)
             ]);
 
-            const presentIds = new Set(asistenciasRes.data?.map(a => a.costalero_id) || []);
-            const formattedCuadrilla = (costalerosRes.data || []).map(c => ({
-                ...c,
-                presente: presentIds.has(c.id)
-            }));
+            // Crear mapa de estados de asistencia
+            const asistenciaMap = new Map<string, string>();
+            asistenciasRes.data?.forEach(a => {
+                asistenciaMap.set(a.costalero_id, a.estado);
+            });
+
+            const formattedCuadrilla = (costalerosRes.data || []).map(c => {
+                const estado = asistenciaMap.get(c.id);
+                return {
+                    ...c,
+                    estadoAsistencia: estado === 'presente' ? 'presente' :
+                        estado === 'ausente' ? 'ausente' :
+                            (estado === 'justificado' || estado === 'justificada') ? 'justificado' :
+                                'pendiente' as const
+                };
+            });
             setCuadrilla(formattedCuadrilla);
         } catch (e) {
             console.error(e);
@@ -280,7 +291,7 @@ export default function GestionRelevos() {
     const pct = (occupadas / totalHuecos) * 100;
 
     const filteredCandidates = cuadrilla.filter(c => {
-        if (!c.presente) return false;
+        // Mostrar todos los costaleros (ya no filtramos por presente)
         const isAssigned = relevos.some(r => r.costalero_id === c.id);
         if (isAssigned) return false;
 
@@ -295,6 +306,25 @@ export default function GestionRelevos() {
         }
         return true;
     });
+
+    // Función para obtener el color del borde según estado de asistencia
+    const getAsistenciaBorderColor = (estado: string) => {
+        switch (estado) {
+            case 'presente': return 'border-l-4 border-l-emerald-500';
+            case 'ausente': return 'border-l-4 border-l-red-500';
+            case 'justificado': return 'border-l-4 border-l-amber-500';
+            default: return 'border-l-4 border-l-neutral-300';
+        }
+    };
+
+    const getAsistenciaLabel = (estado: string) => {
+        switch (estado) {
+            case 'presente': return { text: 'PRESENTE', color: 'bg-emerald-100 text-emerald-700' };
+            case 'ausente': return { text: 'AUSENTE', color: 'bg-red-100 text-red-700' };
+            case 'justificado': return { text: 'JUSTIFICADO', color: 'bg-amber-100 text-amber-700' };
+            default: return { text: 'PENDIENTE', color: 'bg-neutral-100 text-neutral-500' };
+        }
+    };
 
     if (loading && relevos.length === 0) return (
         <div className="flex min-h-screen items-center justify-center bg-background">
@@ -532,19 +562,30 @@ export default function GestionRelevos() {
                                 {filteredCandidates.length === 0 ? (
                                     <div className="text-center py-10 opacity-40 italic text-sm">No hay costaleros libres</div>
                                 ) : (
-                                    filteredCandidates.map(c => (
-                                        <button
-                                            key={c.id}
-                                            onClick={() => assignCostalero(c.id)}
-                                            className="w-full p-4 bg-neutral-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-primary/20 rounded-2xl flex items-center justify-between group transition-all"
-                                        >
-                                            <div className="text-left">
-                                                <p className="font-extrabold text-neutral-900 group-hover:text-primary">{c.nombre} {c.apellidos}</p>
-                                                <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">T-{c.trabajadera} • {c.puesto}</p>
-                                            </div>
-                                            <UserPlus size={18} className="text-neutral-900 group-hover:text-primary" />
-                                        </button>
-                                    ))
+                                    filteredCandidates.map(c => {
+                                        const label = getAsistenciaLabel(c.estadoAsistencia);
+                                        return (
+                                            <button
+                                                key={c.id}
+                                                onClick={() => assignCostalero(c.id)}
+                                                className={cn(
+                                                    "w-full p-4 bg-neutral-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-primary/20 rounded-2xl flex items-center justify-between group transition-all",
+                                                    getAsistenciaBorderColor(c.estadoAsistencia)
+                                                )}
+                                            >
+                                                <div className="text-left">
+                                                    <p className="font-extrabold text-neutral-900 group-hover:text-primary">{c.nombre} {c.apellidos}</p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">T-{c.trabajadera} • {c.puesto}</p>
+                                                        <span className={cn("text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase", label.color)}>
+                                                            {label.text}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <UserPlus size={18} className="text-neutral-900 group-hover:text-primary" />
+                                            </button>
+                                        );
+                                    })
                                 )}
                             </div>
                         </div>

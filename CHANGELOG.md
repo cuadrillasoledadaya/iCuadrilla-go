@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.35 (18/01/2026)
+
+- **Mejora Relevos**: Ahora se muestran TODOS los costaleros de la trabajadera en la lista de seleccion (no solo los presentes). Los costaleros aparecen con borde de color segun su estado de asistencia: verde (presente), naranja (justificado), rojo (ausente), gris (pendiente). Esto permite planificar relevos con antelacion antes del evento.
+
 ## v1.2.34 (18/01/2026)
 
 - **Bugfix Critico**: Corregido el fallo de independencia de eventos en la gestion de relevos. Ahora la asistencia se filtra por `evento_id` en lugar de por fecha, asegurando que cada evento tiene su propia lista de costaleros elegibles totalmente independiente.
