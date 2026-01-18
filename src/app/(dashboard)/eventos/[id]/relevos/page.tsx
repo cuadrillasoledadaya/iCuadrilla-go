@@ -90,24 +90,18 @@ export default function GestionRelevos() {
                 setActiveMudaId(mudasData[0].id);
             }
 
-            // 2. Costaleros y Asistencias
-            const { data: evento } = await supabase.from("eventos").select("fecha_inicio").eq("id", params.id).single();
-            if (evento) {
-                const dateObj = new Date(evento.fecha_inicio);
-                const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            // 2. Costaleros y Asistencias - filtrar por evento_id para independencia total
+            const [costalerosRes, asistenciasRes] = await Promise.all([
+                supabase.from("costaleros").select("*").eq("rol", "costalero"),
+                supabase.from("asistencias").select("*").eq("evento_id", params.id).eq("estado", "presente")
+            ]);
 
-                const [costalerosRes, asistenciasRes] = await Promise.all([
-                    supabase.from("costaleros").select("*").eq("rol", "costalero"),
-                    supabase.from("asistencias").select("*").eq("fecha", eventDate).eq("estado", "presente")
-                ]);
-
-                const presentIds = new Set(asistenciasRes.data?.map(a => a.costalero_id) || []);
-                const formattedCuadrilla = (costalerosRes.data || []).map(c => ({
-                    ...c,
-                    presente: presentIds.has(c.id)
-                }));
-                setCuadrilla(formattedCuadrilla);
-            }
+            const presentIds = new Set(asistenciasRes.data?.map(a => a.costalero_id) || []);
+            const formattedCuadrilla = (costalerosRes.data || []).map(c => ({
+                ...c,
+                presente: presentIds.has(c.id)
+            }));
+            setCuadrilla(formattedCuadrilla);
         } catch (e) {
             console.error(e);
         } finally {

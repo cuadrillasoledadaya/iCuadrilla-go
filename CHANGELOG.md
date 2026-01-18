@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.34 (18/01/2026)
+
+- **Bugfix Critico**: Corregido el fallo de independencia de eventos en la gestion de relevos. Ahora la asistencia se filtra por `evento_id` en lugar de por fecha, asegurando que cada evento tiene su propia lista de costaleros elegibles totalmente independiente.
+
 ## v1.2.33 (17/01/2026)
 
 - **Bugfix**: Segundo intento de correccion de encoding CSV. Ahora se usan bytes explicitos para el BOM (EF BB BF) y TextEncoder para garantizar UTF-8.
