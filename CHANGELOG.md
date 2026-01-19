@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.48 (19/01/2026)
+
+- **UX Sidebar**: El selector de "Temporada" del menú lateral ahora es funcional. Permite ver cuál está activa y cambiar a otras temporadas creadas rápidamente (con confirmación), sin tener que ir a ajustes.
+
 ## v1.2.47 (19/01/2026)
 
 - **UI Eventos**: Eliminados los botones de selección de tipo ("Ensayo", "Igualá", etc.) del formulario de creación de eventos, para simplificar la interfaz.

@@ -30,6 +30,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
     const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [temporadasList, setTemporadasList] = useState<any[]>([]);
+    const [activeSeason, setActiveSeason] = useState<any | null>(null);
+    const [seasonsOpen, setSeasonsOpen] = useState(false);
+    const [loadingSeasons, setLoadingSeasons] = useState(true);
 
     useEffect(() => {
         const getUser = async () => {
@@ -37,7 +41,36 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             if (user) setUserEmail(user.email || null);
         };
         getUser();
+        fetchSeasons();
     }, []);
+
+    const fetchSeasons = async () => {
+        setLoadingSeasons(true);
+        const { data } = await supabase.from("temporadas").select("*").order("created_at", { ascending: false });
+        if (data) {
+            setTemporadasList(data);
+            const active = data.find((t: any) => t.activa);
+            setActiveSeason(active || null);
+        }
+        setLoadingSeasons(false);
+    };
+
+    const handleSwitchSeason = async (season: any) => {
+        if (season.activa) {
+            setSeasonsOpen(false);
+            return;
+        }
+
+        if (confirm(`¿Cambiar a la temporada ${season.nombre}?`)) {
+            // Desactivar todas
+            await supabase.from("temporadas").update({ activa: false }).neq("id", "00000000-0000-0000-0000-000000000000");
+            // Activar seleccionada
+            await supabase.from("temporadas").update({ activa: true }).eq("id", season.id);
+
+            // Recargar para que toda la app se entere
+            window.location.reload();
+        }
+    };
 
     const { isCostalero, isAdmin, canManageSeasons, canManageRoles, loading: roleLoading } = useUserRole();
 
@@ -149,12 +182,45 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                     {/* Temporada Selector */}
                     <div className="space-y-4">
-                        <h3 className="px-4 text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">TEMPORADA</h3>
+                        <h3 className="px-4 text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">{loadingSeasons ? "Cargando..." : "TEMPORADA ACTIVA"}</h3>
                         <div className="px-4">
-                            <button className="w-full flex items-center justify-between px-4 h-14 bg-neutral-50 rounded-2xl border border-black/5 text-sm font-bold text-neutral-700">
-                                <span>Temporada 2025</span>
-                                <ChevronDown size={16} />
+                            <button
+                                onClick={() => setSeasonsOpen(!seasonsOpen)}
+                                className={cn(
+                                    "w-full flex items-center justify-between px-4 h-14 bg-neutral-50 rounded-2xl border border-black/5 text-sm font-bold text-neutral-900 transition-all",
+                                    seasonsOpen && "ring-2 ring-primary/20 border-primary"
+                                )}
+                            >
+                                <span className="uppercase">{activeSeason?.nombre || "Seleccionar..."}</span>
+                                <ChevronDown size={16} className={cn("transition-transform", seasonsOpen && "rotate-180")} />
                             </button>
+
+                            {/* Dropdown de Temporadas */}
+                            <div className={cn(
+                                "grid transition-all duration-300 ease-in-out overflow-hidden",
+                                seasonsOpen ? "grid-rows-[1fr] mt-2 opacity-100" : "grid-rows-[0fr] mt-0 opacity-0"
+                            )}>
+                                <div className="min-h-0 bg-white border border-black/5 rounded-2xl shadow-xl overflow-hidden">
+                                    {temporadasList.map((temp) => (
+                                        <button
+                                            key={temp.id}
+                                            onClick={() => handleSwitchSeason(temp)}
+                                            className={cn(
+                                                "w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-between hover:bg-neutral-50 transition-colors border-b border-black/5 last:border-0",
+                                                temp.activa ? "bg-primary/5 text-primary" : "text-neutral-500"
+                                            )}
+                                        >
+                                            {temp.nombre}
+                                            {temp.activa && <div className="w-2 h-2 rounded-full bg-primary shadow-sm" />}
+                                        </button>
+                                    ))}
+                                    {temporadasList.length === 0 && (
+                                        <div className="p-4 text-center text-[10px] text-neutral-400 uppercase">
+                                            No hay temporadas
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -169,7 +235,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.47</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.48</p>
                     </div>
                 </div>
             </aside>
