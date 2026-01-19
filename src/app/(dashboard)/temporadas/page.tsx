@@ -42,17 +42,55 @@ export default function GestionTemporadas() {
         setCreating(true);
 
         try {
-            // 1. Desactivar resto (opcional, pero buena práctica)
+            // 1. Obtener la temporada activa ACTUAL (antes de desactivar)
+            // Esto servirá de base para clonar datos
+            const { data: oldSeason } = await supabase
+                .from("temporadas")
+                .select("id")
+                .eq("activa", true)
+                .single();
+
+            // 2. Desactivar resto
             await supabase.from("temporadas").update({ activa: false }).neq("id", "00000000-0000-0000-0000-000000000000");
 
-            // 2. Crear nueva temporada
-            const { error: tempError } = await supabase
+            // 3. Crear nueva temporada
+            const { data: newSeason, error: tempError } = await supabase
                 .from("temporadas")
-                .insert([{ nombre: nuevaTemporada, activa: true }]);
+                .insert([{ nombre: nuevaTemporada, activa: true }])
+                .select()
+                .single();
 
             if (tempError) throw tempError;
 
-            alert(`Temporada ${nuevaTemporada} creada y activada correctamente.`);
+            // 4. CLONAR DATOS
+            // A. Perfil de seccion (Datos Palio)
+            if (oldSeason) {
+                const { data: oldProfile } = await supabase
+                    .from("perfil_trabajaderas")
+                    .select("trabajadera, altura_cm")
+                    .eq("temporada_id", oldSeason.id);
+
+                if (oldProfile && oldProfile.length > 0) {
+                    const newProfileRows = oldProfile.map(p => ({
+                        temporada_id: newSeason.id,
+                        trabajadera: p.trabajadera,
+                        altura_cm: p.altura_cm
+                    }));
+
+                    const { error: cloneError } = await supabase
+                        .from("perfil_trabajaderas")
+                        .insert(newProfileRows);
+
+                    if (cloneError) console.error("Error clonando perfil:", cloneError);
+                }
+            }
+
+            // B. Costaleros
+            // Los costaleros son una tabla global ("maestra") en este diseño, por lo que 
+            // no requieren clonación. Permanecen disponibles para la nueva temporada automáticamente.
+            // Sus campos 'trabajadera' y 'puesto' son el estado actual.
+
+            alert(`Temporada ${nuevaTemporada} creada y activada correctamente.\n\nDatos del palio migrados desde la temporada anterior.`);
             setNuevaTemporada("");
             fetchTemporadas();
         } catch (e: any) {

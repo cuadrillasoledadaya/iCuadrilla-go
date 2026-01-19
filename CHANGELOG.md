@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.46 (19/01/2026)
+
+- **Lógica Temporadas**: Implementada la migración automática de datos al crear una nueva temporada. Ahora, al activarla, se copian automáticamente los datos del 'Perfil de Palio' (alturas de trabajaderas) de la temporada anterior. Confirmado que el listado de costaleros se mantiene global.
+
 ## v1.2.45 (19/01/2026)
 
 - **UI Temporadas**: Rediseñada por completo la página de Gestión de Temporadas. Ahora sigue la estética visual del resto de la aplicación (fondo blanco, tarjetas con sombras suaves, tipografía bold).
