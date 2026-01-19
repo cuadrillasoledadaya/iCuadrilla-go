@@ -271,9 +271,8 @@ export default function DatosPalioPage() {
                 </div>
             </div>
 
-            {/* Botón Guardar Flotante */}
-            {/* Botón Guardar Flotante */}
-            <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background to-transparent z-50">
+            {/* Botón Guardar - Inline (No Fijo) */}
+            <div className="mt-8 mb-12">
                 <Button
                     onClick={guardarDatos}
                     disabled={saving || !temporadaId}
