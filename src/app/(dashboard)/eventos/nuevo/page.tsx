@@ -45,14 +45,22 @@ export default function NuevoEvento() {
                 fechaFin = localFin.toISOString();
             }
 
+            // Obtener temporada activa para asignar el evento
+            const { data: activeSeason } = await supabase
+                .from("temporadas")
+                .select("id")
+                .eq("activa", true)
+                .single();
+
             const { error } = await supabase.from("eventos").insert({
                 titulo: form.titulo,
                 descripcion: form.descripcion || null,
                 ubicacion: form.ubicacion || null,
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin,
-                tipo: form.tipo,
-                estado: "pendiente"
+                tipo: "Ensayo", // Default type since buttons were removed
+                estado: "pendiente",
+                temporada_id: activeSeason?.id || null
             });
 
             if (error) {

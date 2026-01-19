@@ -40,10 +40,25 @@ export default function AgendaEventos() {
 
     useEffect(() => {
         const fetchEventos = async () => {
-            const { data } = await supabase
+            // 1. Obtener temporada activa
+            const { data: activeSeason } = await supabase
+                .from("temporadas")
+                .select("id")
+                .eq("activa", true)
+                .single();
+
+            // 2. Construir query base
+            let query = supabase
                 .from("eventos")
                 .select("*")
                 .order("fecha_inicio", { ascending: false });
+
+            // 3. Filtrar por temporada si existe
+            if (activeSeason) {
+                query = query.eq("temporada_id", activeSeason.id);
+            }
+
+            const { data } = await query;
 
             if (data) setEventos(data as Evento[]);
             setLoading(false);
