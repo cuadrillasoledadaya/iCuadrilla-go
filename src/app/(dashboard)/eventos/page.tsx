@@ -38,14 +38,18 @@ export default function AgendaEventos() {
     const [loading, setLoading] = useState(true);
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
+    const [activeSeasonName, setActiveSeasonName] = useState("");
+
     useEffect(() => {
         const fetchEventos = async () => {
             // 1. Obtener temporada activa
             const { data: activeSeason } = await supabase
                 .from("temporadas")
-                .select("id")
+                .select("id, nombre")
                 .eq("activa", true)
                 .single();
+
+            if (activeSeason) setActiveSeasonName(activeSeason.nombre);
 
             // 2. Construir query base
             let query = supabase
@@ -154,7 +158,7 @@ export default function AgendaEventos() {
                 </button>
                 <div className="text-center space-y-0.5">
                     <h1 className="text-2xl font-black tracking-tight uppercase text-neutral-900">Agenda de Eventos</h1>
-                    <p className="text-neutral-500 font-bold italic text-[10px] tracking-widest uppercase">Temporada 2025</p>
+                    <p className="text-neutral-500 font-bold italic text-[10px] tracking-widest uppercase">Temporada {activeSeasonName || "..."}</p>
                 </div>
             </header>
 

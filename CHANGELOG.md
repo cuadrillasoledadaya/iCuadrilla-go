@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.50 (19/01/2026)
+
+- **UI Global**: Corregidos los textos de "Temporada 2025" que aparecían fijos en el Dashboard y la Agenda. Ahora muestran automáticamente el nombre de la temporada que esté activa (2026, 2027, etc.).
+
 ## v1.2.49 (19/01/2026)
 
 - **Fix Eventos**: Ahora la agenda de eventos filtra correctamente por la **temporada activa**. Los eventos antiguos o de otros años ya no se mezclan en la vista principal. Al crear eventos nuevos, se asignan automáticamente a la temporada actual.

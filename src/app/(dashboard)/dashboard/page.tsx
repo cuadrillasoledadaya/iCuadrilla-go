@@ -40,6 +40,7 @@ export default function DashboardPage() {
     const [avisos, setAvisos] = useState<any[]>([]); // New State
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [activeSeasonName, setActiveSeasonName] = useState("");
 
     useEffect(() => {
         if (roleLoading) return;
@@ -49,6 +50,14 @@ export default function DashboardPage() {
             if (user) {
                 setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario");
             }
+
+            // 0. Obtener temporada activa
+            const { data: activeSeason } = await supabase
+                .from("temporadas")
+                .select("nombre")
+                .eq("activa", true)
+                .single();
+            if (activeSeason) setActiveSeasonName(activeSeason.nombre);
 
             // 1. Obtener cuadrilla (Solo costaleros activos, excluyendo staff)
             const { count: total } = await supabase.from("costaleros")
@@ -288,7 +297,7 @@ export default function DashboardPage() {
                                             (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
                             </span>
                             <span className="text-neutral-300">•</span>
-                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada 2025</span>
+                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada {activeSeasonName || "..."}</span>
                         </div>
                     </div>
                 </div>
