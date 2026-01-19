@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.43 (19/01/2026)
+
+- **Mejora Mediciones**: Añadida confirmación de seguridad en inputs. Ahora, al cambiar un valor y salir del campo (perder foco), se pide confirmación explícita para guardar esa medición individualmente en la base de datos.
+
 ## v1.2.42 (19/01/2026)
 
 - **Nueva Función Eventos**: Implementada la sección 'Mediciones' dentro de cada ensayo/evento. Permite registrar las alturas del costal 'Pre' y 'Post' ensayo para cada costalero, ordenados por trabajadera.

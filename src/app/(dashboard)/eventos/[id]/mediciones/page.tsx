@@ -29,6 +29,7 @@ export default function MedicionesPage() {
     const [saving, setSaving] = useState(false);
     const [costaleros, setCostaleros] = useState<Costalero[]>([]);
     const [mediciones, setMediciones] = useState<Record<string, Medicion>>({});
+    const [originalMediciones, setOriginalMediciones] = useState<Record<string, Medicion>>({});
     const [searchTerm, setSearchTerm] = useState("");
     const [eventTitle, setEventTitle] = useState("");
 
@@ -76,6 +77,7 @@ export default function MedicionesPage() {
                     map[m.costalero_id] = m;
                 });
                 setMediciones(map);
+                setOriginalMediciones(JSON.parse(JSON.stringify(map)));
             }
 
         } catch (e) {
@@ -95,6 +97,48 @@ export default function MedicionesPage() {
                 [field]: numValue
             }
         }));
+    };
+
+    const handleBlur = async (costaleroId: string, field: 'altura_pre' | 'altura_post') => {
+        const currentVal = mediciones[costaleroId]?.[field];
+        const originalVal = originalMediciones[costaleroId]?.[field];
+        const costalero = costaleros.find(c => c.id === costaleroId);
+
+        // Si el valor no ha cambiado, no hacer nada
+        if (currentVal === originalVal) return;
+
+        // Si el valor ha cambiado, pedir confirmación y guardar
+        const fieldName = field === 'altura_pre' ? 'Pre-Ensayo' : 'Post-Ensayo';
+        const confirmMsg = `¿Guardar altura ${fieldName} para ${costalero?.nombre} ${costalero?.apellidos}?`;
+
+        if (window.confirm(confirmMsg)) {
+            try {
+                const medicion = mediciones[costaleroId];
+                const { error } = await supabase
+                    .from("mediciones_ensayo")
+                    .upsert({
+                        evento_id: params.id,
+                        costalero_id: costaleroId,
+                        altura_pre: medicion.altura_pre,
+                        altura_post: medicion.altura_post,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'evento_id, costalero_id' });
+
+                if (error) throw error;
+
+                // Actualizar el estado 'original' para evitar pedir confirmación de nuevo si no cambia más
+                setOriginalMediciones(prev => ({
+                    ...prev,
+                    [costaleroId]: { ...medicion }
+                }));
+                // Opcional: Feedback visual discreto (toast no tenemos, alert quizás molesto si ya confirmó)
+            } catch (e: any) {
+                alert("Error al guardar: " + e.message);
+            }
+        } else {
+            // Si cancela, revertir al valor original (opcional, el usuario suele preferir mantener el dato editado por si acaso)
+            // En este caso, dejamos el dato editado pero SIN guardar en BD.
+        }
     };
 
     const guardarMediciones = async () => {
@@ -202,6 +246,7 @@ export default function MedicionesPage() {
                                                 placeholder="0.0"
                                                 value={medicion.altura_pre ?? ''}
                                                 onChange={(e) => handleAlturaChange(costalero.id, 'altura_pre', e.target.value)}
+                                                onBlur={() => handleBlur(costalero.id, 'altura_pre')}
                                                 className="w-full text-center bg-white border border-neutral-200 rounded-lg py-2 text-sm font-bold text-neutral-900 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                                             />
                                             <span className="absolute right-3 top-2 text-[10px] text-neutral-400 font-bold">cm</span>
@@ -218,6 +263,7 @@ export default function MedicionesPage() {
                                                 placeholder="0.0"
                                                 value={medicion.altura_post ?? ''}
                                                 onChange={(e) => handleAlturaChange(costalero.id, 'altura_post', e.target.value)}
+                                                onBlur={() => handleBlur(costalero.id, 'altura_post')}
                                                 className="w-full text-center bg-white border border-neutral-200 rounded-lg py-2 text-sm font-bold text-neutral-900 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                                             />
                                             <span className="absolute right-3 top-2 text-[10px] text-neutral-400 font-bold">cm</span>
