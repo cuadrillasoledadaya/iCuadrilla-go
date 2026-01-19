@@ -101,28 +101,7 @@ export default function NuevoEvento() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                        {[
-                            { value: 'Ensayo', label: 'ENSAYO' },
-                            { value: 'Salida', label: 'SALIDA' },
-                            { value: 'Igualá', label: 'IGUALÁ' },
-                            { value: 'Otro', label: 'OTRO' }
-                        ].map((tipo) => (
-                            <button
-                                key={tipo.value}
-                                type="button"
-                                onClick={() => setForm({ ...form, tipo: tipo.value })}
-                                className={cn(
-                                    "h-12 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                                    form.tipo === tipo.value
-                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-                                        : "bg-white text-neutral-400 border-black/5 hover:border-primary/20"
-                                )}
-                            >
-                                {tipo.label}
-                            </button>
-                        ))}
-                    </div>
+
                 </div>
 
                 {/* Fecha y Horas */}

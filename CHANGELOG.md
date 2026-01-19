@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.47 (19/01/2026)
+
+- **UI Eventos**: Eliminados los botones de selección de tipo ("Ensayo", "Igualá", etc.) del formulario de creación de eventos, para simplificar la interfaz.
+
 ## v1.2.46 (19/01/2026)
 
 - **Lógica Temporadas**: Implementada la migración automática de datos al crear una nueva temporada. Ahora, al activarla, se copian automáticamente los datos del 'Perfil de Palio' (alturas de trabajaderas) de la temporada anterior. Confirmado que el listado de costaleros se mantiene global.
