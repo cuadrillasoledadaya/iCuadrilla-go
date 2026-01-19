@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.42 (19/01/2026)
+
+- **Nueva Función Eventos**: Implementada la sección 'Mediciones' dentro de cada ensayo/evento. Permite registrar las alturas del costal 'Pre' y 'Post' ensayo para cada costalero, ordenados por trabajadera.
+
 ## v1.2.41 (19/01/2026)
 
 - **UI Datos Palio**: Rediseñado el botón de guardar para que aparezca al final del formulario (inline) en lugar de fijo abajo. Esto mejora la experiencia de uso y evita conflictos visuales con la navegación.
