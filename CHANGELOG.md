@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.52 (19/01/2026)
+
+- **Feature Aniversarios**: Añadida notificación automática para los costaleros que cumplen **50 años** en la cuadrilla. Se une a la ya existente de los 25 años.
+
 ## v1.2.51 (19/01/2026)
 
 - **Mantenimiento**: Ejecutada corrección de datos en base de datos. Se han restaurado y asignado correctamente los eventos antiguos de 2025 que habían quedado huérfanos tras la actualización de temporadas.

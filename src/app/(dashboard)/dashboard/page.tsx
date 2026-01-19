@@ -165,65 +165,74 @@ export default function DashboardPage() {
             if (!isWithinRange) return;
 
             const currentYear = now.getFullYear();
-            // Formula: ano_ingreso + 24 = currentYear (porque el año de ingreso cuenta como año 1)
-            const targetYear = currentYear - 24;
 
-            // Find costaleros celebrating 25 years
-            const { data: jubilaryCostaleros } = await supabase
-                .from("costaleros")
-                .select("id, nombre, apellidos, ano_ingreso")
-                .eq("ano_ingreso", targetYear);
+            // Define anniversaries to check: { years: 25, offset: 24 }, { years: 50, offset: 49 }
+            const anniversaries = [
+                { years: 25, offset: 24 },
+                { years: 50, offset: 49 }
+            ];
 
-            if (!jubilaryCostaleros || jubilaryCostaleros.length === 0) return;
+            for (const ann of anniversaries) {
+                // Formula: ano_ingreso + offset = currentYear
+                const targetYear = currentYear - ann.offset;
 
-            // For each costalero, check if notification already exists for this year
-            for (const costalero of jubilaryCostaleros) {
-                const notificationTitle = `🎉 25 Años de Costalero: ${costalero.nombre} ${costalero.apellidos}`;
+                // Find costaleros celebrating this anniversary
+                const { data: jubilaryCostaleros } = await supabase
+                    .from("costaleros")
+                    .select("id, nombre, apellidos, ano_ingreso")
+                    .eq("ano_ingreso", targetYear);
 
-                if (isAdmin) {
-                    const { data: adminNotif } = await supabase
-                        .from("notificaciones")
-                        .select("id")
-                        .eq("titulo", notificationTitle)
-                        .eq("destinatario", "admin")
-                        .eq("costalero_id", costalero.id)
-                        .limit(1);
+                if (!jubilaryCostaleros || jubilaryCostaleros.length === 0) continue;
 
-                    if (!adminNotif || adminNotif.length === 0) {
-                        await supabase
+                // For each costalero, check/create notification
+                for (const costalero of jubilaryCostaleros) {
+                    const notificationTitle = `🎉 ${ann.years} Años de Costalero: ${costalero.nombre} ${costalero.apellidos}`;
+
+                    if (isAdmin) {
+                        const { data: adminNotif } = await supabase
                             .from("notificaciones")
-                            .insert({
-                                titulo: notificationTitle,
-                                mensaje: `${costalero.nombre} ${costalero.apellidos} cumple 25 años como costalero este año ${currentYear}. ¡Enhorabuena!`,
-                                tipo: 'aniversario',
-                                leido: false,
-                                costalero_id: costalero.id,
-                                destinatario: 'admin'
-                            });
+                            .select("id")
+                            .eq("titulo", notificationTitle)
+                            .eq("destinatario", "admin")
+                            .eq("costalero_id", costalero.id)
+                            .limit(1);
+
+                        if (!adminNotif || adminNotif.length === 0) {
+                            await supabase
+                                .from("notificaciones")
+                                .insert({
+                                    titulo: notificationTitle,
+                                    mensaje: `${costalero.nombre} ${costalero.apellidos} cumple ${ann.years} años como costalero este año ${currentYear}. ¡Enhorabuena!`,
+                                    tipo: 'aniversario',
+                                    leido: false,
+                                    costalero_id: costalero.id,
+                                    destinatario: 'admin'
+                                });
+                        }
                     }
-                }
 
-                // 2. Create/Check COSTALERO Notification (Only if the CURRENT user is that costalero)
-                if (isCostalero && costaleroId === costalero.id) {
-                    const { data: costNotif } = await supabase
-                        .from("notificaciones")
-                        .select("id")
-                        .eq("titulo", notificationTitle)
-                        .eq("destinatario", "costalero")
-                        .eq("costalero_id", costalero.id)
-                        .limit(1);
-
-                    if (!costNotif || costNotif.length === 0) {
-                        await supabase
+                    // 2. Create/Check COSTALERO Notification
+                    if (isCostalero && costaleroId === costalero.id) {
+                        const { data: costNotif } = await supabase
                             .from("notificaciones")
-                            .insert({
-                                titulo: notificationTitle,
-                                mensaje: `¡Enhorabuena! Este año ${currentYear} cumples 25 años en la cuadrilla. Gracias por tu entrega y devoción.`,
-                                tipo: 'aniversario',
-                                leido: false,
-                                costalero_id: costalero.id,
-                                destinatario: 'costalero'
-                            });
+                            .select("id")
+                            .eq("titulo", notificationTitle)
+                            .eq("destinatario", "costalero")
+                            .eq("costalero_id", costalero.id)
+                            .limit(1);
+
+                        if (!costNotif || costNotif.length === 0) {
+                            await supabase
+                                .from("notificaciones")
+                                .insert({
+                                    titulo: notificationTitle,
+                                    mensaje: `¡Enhorabuena! Este año ${currentYear} cumples ${ann.years} años en la cuadrilla. Gracias por una vida de entrega y devoción.`,
+                                    tipo: 'aniversario',
+                                    leido: false,
+                                    costalero_id: costalero.id,
+                                    destinatario: 'costalero'
+                                });
+                        }
                     }
                 }
             }
