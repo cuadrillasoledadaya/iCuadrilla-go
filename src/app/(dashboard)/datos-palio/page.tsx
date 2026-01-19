@@ -27,6 +27,7 @@ export default function DatosPalioPage() {
         { trabajadera: 6, altura_cm: 143 },
         { trabajadera: 7, altura_cm: 143 },
     ]);
+    const [originalAlturas, setOriginalAlturas] = useState<PerfilTrabajadera[]>([]);
 
     useEffect(() => {
         fetchData();
@@ -55,6 +56,10 @@ export default function DatosPalioPage() {
 
                 if (perfilData && perfilData.length === 7) {
                     setAlturas(perfilData);
+                    setOriginalAlturas(JSON.parse(JSON.stringify(perfilData)));
+                } else {
+                    // Si no hay datos, inicializamos 'original' con los defaults para que detecte cambios
+                    setOriginalAlturas(JSON.parse(JSON.stringify(alturas)));
                 }
             }
         } catch (e) {
@@ -78,8 +83,53 @@ export default function DatosPalioPage() {
         return alturas[index + 1].altura_cm - alturas[index].altura_cm;
     };
 
+    const handleBlur = async (trabajadera: number) => {
+        if (!temporadaId) {
+            alert("No hay una temporada activa para guardar datos.");
+            return;
+        }
+
+        const current = alturas.find(a => a.trabajadera === trabajadera);
+        const original = originalAlturas.find(a => a.trabajadera === trabajadera);
+
+        if (!current) return;
+
+        // Si no ha cambiado (y tenemos original), no hacer nada
+        if (original && current.altura_cm === original.altura_cm) return;
+
+        if (window.confirm(`¿Guardar altura de T${trabajadera} (${current.altura_cm} cm)?`)) {
+            try {
+                const { error } = await supabase
+                    .from("perfil_trabajaderas")
+                    .upsert({
+                        temporada_id: temporadaId,
+                        trabajadera: current.trabajadera,
+                        altura_cm: current.altura_cm
+                    }, { onConflict: "temporada_id,trabajadera" });
+
+                if (error) throw error;
+
+                // Actualizar original
+                setOriginalAlturas(prev => {
+                    const exists = prev.some(p => p.trabajadera === trabajadera);
+                    if (exists) {
+                        return prev.map(p => p.trabajadera === trabajadera ? { ...p, altura_cm: current.altura_cm } : p);
+                    } else {
+                        return [...prev, { ...current }];
+                    }
+                });
+
+            } catch (e: any) {
+                alert("Error al guardar: " + e.message);
+            }
+        }
+    };
+
     const guardarDatos = async () => {
-        if (!temporadaId) return;
+        if (!temporadaId) {
+            alert("⚠️ ERROR: No hay ninguna temporada marcada como 'Activa' en el sistema.\n\nVe a Ajustes > Temporadas y activa una.");
+            return;
+        }
         setSaving(true);
 
         try {
@@ -94,6 +144,8 @@ export default function DatosPalioPage() {
                     }, { onConflict: "temporada_id,trabajadera" });
             }
 
+            // Actualizar estado 'original' tras guardado masivo
+            setOriginalAlturas(JSON.parse(JSON.stringify(alturas)));
             alert(`¡Datos guardados correctamente para la temporada ${temporadaActiva}!`);
         } catch (e) {
             console.error("Error saving:", e);
@@ -247,6 +299,7 @@ export default function DatosPalioPage() {
                                                 step="0.5"
                                                 value={altura.altura_cm}
                                                 onChange={(e) => handleAlturaChange(altura.trabajadera, e.target.value)}
+                                                onBlur={() => handleBlur(altura.trabajadera)}
                                                 className="w-24 text-right text-xl font-black text-neutral-900 bg-transparent border-none outline-none"
                                             />
                                             <span className="text-sm text-neutral-400 font-medium">cm</span>
@@ -272,14 +325,14 @@ export default function DatosPalioPage() {
             </div>
 
             {/* Botón Guardar - Inline (No Fijo) */}
-            <div className="mt-8 mb-12">
+            <div className="mt-8 mb-12 px-6">
                 <Button
                     onClick={guardarDatos}
-                    disabled={saving || !temporadaId}
+                    disabled={saving}
                     className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl transform transition-transform active:scale-95"
                 >
                     <Save size={18} className="mr-2" />
-                    {saving ? "Guardando..." : "Guardar Datos"}
+                    {saving ? "Guardando..." : "Guardar Todo"}
                 </Button>
             </div>
         </div>

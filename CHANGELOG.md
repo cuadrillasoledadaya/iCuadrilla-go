@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.44 (19/01/2026)
+
+- **Mejora Datos Palio**: Implementada confirmación de seguridad per-input (al perder foco) y arreglado el botón "Guardar Todo". Si no hay temporada activa, ahora muestra un mensaje de error claro en lugar de no hacer nada.
+
 ## v1.2.43 (19/01/2026)
 
 - **Mejora Mediciones**: Añadida confirmación de seguridad en inputs. Ahora, al cambiar un valor y salir del campo (perder foco), se pide confirmación explícita para guardar esa medición individualmente en la base de datos.
