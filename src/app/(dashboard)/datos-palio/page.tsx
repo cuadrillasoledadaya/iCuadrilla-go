@@ -272,11 +272,12 @@ export default function DatosPalioPage() {
             </div>
 
             {/* Botón Guardar Flotante */}
-            <div className="fixed bottom-6 left-6 right-6 z-40">
+            {/* Botón Guardar Flotante */}
+            <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background to-transparent z-50">
                 <Button
                     onClick={guardarDatos}
                     disabled={saving || !temporadaId}
-                    className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-lg"
+                    className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl transform transition-transform active:scale-95"
                 >
                     <Save size={18} className="mr-2" />
                     {saving ? "Guardando..." : "Guardar Datos"}

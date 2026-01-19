@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.40 (19/01/2026)
+
+- **Fix UI Datos Palio**: Se ha asegurado la visibilidad del boton de guardar datos, que ahora aparece fijo en la parte inferior con mayor prioridad visual (z-index) y un fondo degradado para evitar superposiciones.
+
 ## v1.2.39 (18/01/2026)
 
 - **Mejora Datos Palio**: Mejora en la confirmación de guardado, indicando explícitamente la temporada a la que corresponden los datos.
