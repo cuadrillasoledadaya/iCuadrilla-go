@@ -4,89 +4,168 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ArrowLeft, Calendar, Check, Plus, Trophy } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export default function GestionTemporadas() {
+    const router = useRouter();
     const [temporadas, setTemporadas] = useState<any[]>([]);
     const [nuevaTemporada, setNuevaTemporada] = useState("");
     const [loading, setLoading] = useState(false);
+    const [creating, setCreating] = useState(false);
 
     useEffect(() => {
         fetchTemporadas();
     }, []);
 
     const fetchTemporadas = async () => {
+        setLoading(true);
         const { data } = await supabase.from("temporadas").select("*").order("created_at", { ascending: false });
         if (data) setTemporadas(data);
-    };
-
-    const crearYClonar = async () => {
-        if (!nuevaTemporada) return;
-        setLoading(true);
-
-        // 1. Crear nueva temporada
-        const { data: temp, error: tempError } = await supabase
-            .from("temporadas")
-            .insert([{ nombre: nuevaTemporada, activa: true }])
-            .select()
-            .single();
-
-        if (tempError) {
-            alert("Error al crear temporada");
-            setLoading(false);
-            return;
-        }
-
-        // 2. Obtener costaleros actuales (de la anterior o general)
-        // En este esquema simplificado, los costaleros están en una tabla única.
-        // La "Clonación" técnica aquí es más una marca de tiempo o simplemente
-        // asegurar que los datos base (altura, trabajadera) se mantienen para la nueva temporada.
-        // Si quisiéramos históricos por temporada, necesitaríamos una tabla intermedia costaleros_temporada.
-        // Siguiendo el prompt: "clonar los datos de los costaleros (Nombre, Puesto, Altura) del año anterior".
-
-        // Para este MVP, los costaleros son persistentes. La clonación se refiere a mantener sus puestos.
-        // Si el usuario quiere un histórico real, deberíamos haber diseñado la DB de otra forma.
-        // Vamos a simular la clonación asegurando que todos los costaleros están listos para la nueva temporada.
-
-        alert(`Temporada ${nuevaTemporada} activada. Los costaleros han sido vinculados.`);
-
-        setNuevaTemporada("");
-        fetchTemporadas();
         setLoading(false);
     };
 
+    const handleActivar = async (id: string) => {
+        if (!confirm("¿Estás seguro de cambiar la temporada activa?")) return;
+
+        // Desactivar todas
+        await supabase.from("temporadas").update({ activa: false }).neq("id", "00000000-0000-0000-0000-000000000000"); // Hack to update all rows if no restrictive policy
+        // Activar la seleccionada
+        await supabase.from("temporadas").update({ activa: true }).eq("id", id);
+
+        fetchTemporadas();
+    };
+
+    const crearYClonar = async () => {
+        if (!nuevaTemporada.trim()) return;
+        setCreating(true);
+
+        try {
+            // 1. Desactivar resto (opcional, pero buena práctica)
+            await supabase.from("temporadas").update({ activa: false }).neq("id", "00000000-0000-0000-0000-000000000000");
+
+            // 2. Crear nueva temporada
+            const { error: tempError } = await supabase
+                .from("temporadas")
+                .insert([{ nombre: nuevaTemporada, activa: true }]);
+
+            if (tempError) throw tempError;
+
+            alert(`Temporada ${nuevaTemporada} creada y activada correctamente.`);
+            setNuevaTemporada("");
+            fetchTemporadas();
+        } catch (e: any) {
+            alert("Error al crear la temporada: " + e.message);
+        } finally {
+            setCreating(false);
+        }
+    };
+
     return (
-        <div className="p-6 space-y-8">
-            <h1 className="text-2xl font-bold text-white">Gestión de Temporadas</h1>
-
-            <div className="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-4">
-                <h2 className="text-sm font-bold uppercase text-neutral-500">Crear Nueva Temporada</h2>
-                <div className="flex gap-4">
-                    <Input
-                        placeholder="Ej: 2025"
-                        value={nuevaTemporada}
-                        onChange={(e) => setNuevaTemporada(e.target.value)}
-                        className="bg-neutral-950 border-neutral-800"
-                    />
-                    <Button onClick={crearYClonar} disabled={loading} className="bg-white text-black font-bold">
-                        {loading ? "Clonando..." : "Crear y Activar"}
-                    </Button>
+        <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-500">
+            {/* Header */}
+            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4 flex items-center gap-4">
+                <button
+                    onClick={() => router.back()}
+                    className="p-2 bg-white border border-black/5 rounded-full hover:bg-neutral-100 transition-colors"
+                >
+                    <ArrowLeft size={20} className="text-neutral-600" />
+                </button>
+                <div className="flex-1">
+                    <h1 className="text-lg font-black uppercase tracking-tight text-neutral-900 line-clamp-1">
+                        Control de Temporadas
+                    </h1>
                 </div>
-                <p className="text-[10px] text-neutral-500">
-                    * Al crear una temporada, se mantienen los datos de altura y trabajadera del año anterior.
-                </p>
-            </div>
+            </header>
 
-            <div className="space-y-4">
-                <h2 className="text-sm font-bold uppercase text-neutral-500">Historial</h2>
-                <div className="grid gap-2">
-                    {temporadas.map(t => (
-                        <div key={t.id} className="flex justify-between items-center p-4 bg-neutral-950 border border-neutral-800 rounded-lg">
-                            <span className="font-bold text-white">{t.nombre}</span>
-                            <span className={t.activa ? "text-green-500 text-xs font-bold uppercase" : "text-neutral-600 text-xs uppercase"}>
-                                {t.activa ? "Activa" : "Finalizada"}
-                            </span>
+            <div className="p-6 space-y-8">
+                {/* Create Section */}
+                <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-xl space-y-4">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-3 bg-primary/10 rounded-2xl text-primary">
+                            <Plus size={24} />
                         </div>
-                    ))}
+                        <div>
+                            <h2 className="text-lg font-black uppercase tracking-tight text-neutral-900">Nueva Temporada</h2>
+                            <p className="text-xs font-bold text-neutral-400">Prepara el sistema para un nuevo año</p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        <Input
+                            placeholder="Ej: 2026"
+                            value={nuevaTemporada}
+                            onChange={(e) => setNuevaTemporada(e.target.value)}
+                            className="h-14 rounded-2xl bg-neutral-50 border-transparent focus:border-primary focus:bg-white text-lg font-bold text-center uppercase tracking-widest"
+                        />
+                        <Button
+                            onClick={crearYClonar}
+                            disabled={creating || !nuevaTemporada}
+                            className="h-14 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                        >
+                            {creating ? "Creando..." : "Crear y Activar"}
+                        </Button>
+                    </div>
+                    <p className="text-[10px] text-center text-neutral-400 font-medium px-4">
+                        * Al crearla, se activará automáticamente y mantendrá los datos de los costaleros.
+                    </p>
+                </div>
+
+                {/* History Section */}
+                <div>
+                    <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest mb-4 px-2">Historial</h3>
+                    <div className="space-y-3">
+                        {loading ? (
+                            <div className="text-center py-10"><div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div></div>
+                        ) : temporadas.map(t => (
+                            <div
+                                key={t.id}
+                                className={cn(
+                                    "relative p-5 rounded-[24px] border transition-all duration-300 flex items-center justify-between group",
+                                    t.activa
+                                        ? "bg-white border-primary shadow-lg scale-[1.02] z-10"
+                                        : "bg-white/50 border-black/5 hover:bg-white hover:border-black/10 hover:shadow-md"
+                                )}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className={cn(
+                                        "p-3 rounded-2xl flex items-center justify-center transition-colors",
+                                        t.activa ? "bg-primary text-white shadow-md" : "bg-neutral-100 text-neutral-400"
+                                    )}>
+                                        {t.activa ? <Trophy size={20} /> : <Calendar size={20} />}
+                                    </div>
+                                    <div>
+                                        <h4 className={cn(
+                                            "text-lg font-black uppercase tracking-tight",
+                                            t.activa ? "text-neutral-900" : "text-neutral-500"
+                                        )}>{t.nombre}</h4>
+                                        <span className={cn(
+                                            "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full inline-block mt-1",
+                                            t.activa ? "bg-green-100 text-green-700" : "bg-neutral-100 text-neutral-400"
+                                        )}>
+                                            {t.activa ? "Temporada Activa" : "Finalizada"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {!t.activa && (
+                                    <button
+                                        onClick={() => handleActivar(t.id)}
+                                        className="opacity-0 group-hover:opacity-100 p-2 bg-neutral-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-800 transition-all transform translate-x-4 group-hover:translate-x-0"
+                                    >
+                                        Activar
+                                    </button>
+                                )}
+
+                                {t.activa && (
+                                    <div className="absolute top-0 right-0 p-3">
+                                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

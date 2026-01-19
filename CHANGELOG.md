@@ -4,6 +4,11 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.45 (19/01/2026)
+
+- **UI Temporadas**: Rediseñada por completo la página de Gestión de Temporadas. Ahora sigue la estética visual del resto de la aplicación (fondo blanco, tarjetas con sombras suaves, tipografía bold).
+- **Mejora UX**: Añadido botón rápido para "Activar" temporadas antiguas desde el historial.
+
 ## v1.2.44 (19/01/2026)
 
 - **Mejora Datos Palio**: Implementada confirmación de seguridad per-input (al perder foco) y arreglado el botón "Guardar Todo". Si no hay temporada activa, ahora muestra un mensaje de error claro en lugar de no hacer nada.
