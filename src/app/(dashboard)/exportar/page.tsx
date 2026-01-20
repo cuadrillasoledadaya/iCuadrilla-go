@@ -207,14 +207,14 @@ export default function ExportarDatos() {
         let csvContent = "";
 
         eventsToExport.forEach((evento, index) => {
-            if (index > 0) csvContent += "\n\n"; // Separator between events
+            if (index > 0) csvContent += "\n\n\n"; // Triple line break between events
 
-            // Event header
-            csvContent += `EVENTO: ${evento.titulo}\n`;
+            // === Event Title as Section Header ===
+            csvContent += `=== ${evento.titulo.toUpperCase()} ===\n`;
             csvContent += `Estado: ${evento.estado}\n`;
             csvContent += `Fecha: ${new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}\n`;
             csvContent += `Hora: ${new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}\n`;
-            csvContent += `Presentes: ${evento.presentes}; Ausentes: ${evento.ausentes}; Justificados: ${evento.justificados}\n\n`;
+            csvContent += `Presentes: ${evento.presentes} | Ausentes: ${evento.ausentes} | Justificados: ${evento.justificados}\n\n`;
 
             // Table headers
             csvContent += "Nombre;Apellidos;Trabajadera;Puesto;Suplemento;Estado\n";
@@ -385,7 +385,8 @@ export default function ExportarDatos() {
                     <Button
                         onClick={() => {
                             const content = generateEstadisticasCSV(eventosStats);
-                            generateAndExportCSV(content, `estadisticas_globales_${temporadaActiva || 'export'}.csv`);
+                            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                            generateAndExportCSV(content, `estadistica_global_${today}.csv`);
                         }}
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
@@ -393,7 +394,10 @@ export default function ExportarDatos() {
                         <span className="text-[10px] uppercase tracking-widest">Todo CSV</span>
                     </Button>
                     <Button
-                        onClick={() => generateEstadisticasPDF(eventosStats, `estadisticas_globales_${temporadaActiva || 'export'}.pdf`)}
+                        onClick={() => {
+                            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                            generateEstadisticasPDF(eventosStats, `estadistica_global_${today}.pdf`);
+                        }}
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
                         <FileDown size={20} />

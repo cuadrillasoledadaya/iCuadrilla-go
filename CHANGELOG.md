@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.74 (20/01/2026)
+
+- **Exportación Global Mejorada**: Refinado el formato de las estadísticas globales. Cada evento ahora aparece claramente separado con su título destacado (=== TÍTULO ===), facilitando la lectura del CSV. El archivo descargado se nombra `estadistica_global_YYYYMMDD.csv` incluyendo la fecha de exportación.
+
 ## v1.2.73 (20/01/2026)
 
 - **Hotfix Exportación PC**: Solucionado problema donde Windows 10/11 mostraba el diálogo de compartir incluso en PC. Ahora la descarga es **directa y automática** en ordenadores, sin diálogos intermedios. En móviles se mantiene el menú de compartir.
