@@ -132,24 +132,36 @@ export default function ExportarDatos() {
         // Detect if it's a mobile device using userAgent
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+        // --- PC FLOW: DIRECT DOWNLOAD (Skip sharing entirely) ---
+        if (!isMobile) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            return;
+        }
+
+        // --- MOBILE FLOW: Try native share, fallback to download ---
         try {
             const file = new File([blob], filename, { type: blob.type });
 
-            // Try to use native sharing ONLY on Mobile devices
-            if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
                     title: filename,
                     text: `Reporte iCuadrilla: ${filename}`
                 });
-                return; // Stop here if shared successfully
+                return; // Successfully shared
             }
         } catch (error) {
             console.log("Sharing cancelled or failed, falling back to download", error);
-            // Fallback to normal download if share was cancelled or failed
         }
 
-        // --- FALLBACK / PC FLOW: DIRECT DOWNLOAD ---
+        // Fallback for mobile if share fails or is not available
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
