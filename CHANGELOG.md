@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.58 (20/01/2026)
+
+- **UI Dashboard**: Eliminada la etiqueta del tipo de evento (ej: "Ensayo") de la tarjeta para simplificar la vista. Se ha puesto en **negrita** la hora de fin para igualarla visualmente con la hora de inicio.
+
 ## v1.2.57 (20/01/2026)
 
 - **UI Dashboard**: Ajuste fino en tarjeta de eventos. Movido el horario al pie de la tarjeta, mostrando ahora **Inicio - Fin** (ej: 21:00 - 23:30) para mayor claridad.
