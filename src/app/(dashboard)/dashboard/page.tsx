@@ -315,10 +315,11 @@ export default function DashboardPage() {
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background">
             {/* Header */}
             {/* Header */}
+            {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
                 <button
                     onClick={() => setSidebarOpen(true)}
-                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
                 >
                     <Menu size={24} />
                 </button>
@@ -339,7 +340,7 @@ export default function DashboardPage() {
 
                 <button
                     onClick={() => router.push('/notificaciones')}
-                    className="absolute right-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors relative"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
                 >
                     <Bell size={24} />
                     {unreadCount > 0 && (

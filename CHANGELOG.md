@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.71 (20/01/2026)
+
+- **UI Dashboard**: Alineada perfectamente la campana de notificaciones con el botón de menú. Ahora ambos elementos guardan la misma altura y separación, restaurando la simetría del encabezado.
+
 ## v1.2.70 (20/01/2026)
 
 - **Mejora Móvil (Compartir)**: Al descargar informes desde el móvil, ahora se abrirá automáticamente el menú nativo de "Compartir". Esto te permite enviar los CSV/PDF directamente por WhatsApp, Telegram, Email o guardarlos en "Archivos" de forma mucho más fácil.
