@@ -19,6 +19,7 @@ interface Costalero {
     puesto: string;
     altura: number | null;
     suplemento: number | null;
+    qr_code: string;
 }
 
 interface EventoStats {

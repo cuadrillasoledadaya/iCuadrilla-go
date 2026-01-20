@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.81 (20/01/2026)
+
+- **Fix Build**: Añadido el campo `qr_code` faltante a la interfaz TypeScript de `Costalero` en exportaciones para resolver error de compilación.
+
 ## v1.2.80 (20/01/2026)
 
 - **Hotfix Crítico QR**: Corregido error crítico en la exportación de códigos QR. Ahora se usa el campo `qr_code` (único y permanente del costalero) en lugar del `id`. Los QR exportados ahora coinciden exactamente con los QR de las fichas de los costaleros y son reconocidos correctamente por el escáner.
