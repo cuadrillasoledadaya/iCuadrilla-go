@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.70 (20/01/2026)
+
+- **Mejora Móvil (Compartir)**: Al descargar informes desde el móvil, ahora se abrirá automáticamente el menú nativo de "Compartir". Esto te permite enviar los CSV/PDF directamente por WhatsApp, Telegram, Email o guardarlos en "Archivos" de forma mucho más fácil.
+
 ## v1.2.69 (20/01/2026)
 
 - **Hotfix Exportación**: Solucionado un error crítico que impedía la carga de la pantalla de exportación debido a una variable de estado faltante.
