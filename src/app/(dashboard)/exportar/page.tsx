@@ -127,8 +127,38 @@ export default function ExportarDatos() {
         fetchData();
     }, []);
 
+    // --- SHARED EXPORT HANDLER ---
+    const handleExport = async (blob: Blob, filename: string) => {
+        try {
+            const file = new File([blob], filename, { type: blob.type });
+
+            // Try to use native sharing if available (Mobile mainly)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: filename,
+                    text: `Aquí tienes el archivo exportado: ${filename}`
+                });
+                return; // Stop here if shared successfully
+            }
+        } catch (error) {
+            console.log("Sharing cancelled or failed, falling back to download", error);
+            // Fallback to normal download if user cancelled share or error occurred
+        }
+
+        // --- FALLBACK: NORMAL DOWNLOAD ---
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     // --- CSV EXPORTS ---
-    const downloadCSV = (content: string, filename: string) => {
+    const generateAndExportCSV = (content: string, filename: string) => {
         // Manual UTF-8 BOM bytes: EF BB BF
         const BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
         const encoder = new TextEncoder();
@@ -140,14 +170,7 @@ export default function ExportarDatos() {
         combined.set(contentBytes, BOM.length);
 
         const blob = new Blob([combined], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        handleExport(blob, filename);
     };
 
     const exportCostalerosCSV = () => {
@@ -162,7 +185,7 @@ export default function ExportarDatos() {
         ]);
 
         const csvContent = headers.join(";") + "\n" + rows.map(e => e.join(";")).join("\n");
-        downloadCSV(csvContent, `listado_cuadrilla_${temporadaActiva || 'export'}.csv`);
+        generateAndExportCSV(csvContent, `listado_cuadrilla_${temporadaActiva || 'export'}.csv`);
     };
 
     const generateEstadisticasCSV = (eventsToExport: EventoStats[]) => {
@@ -216,7 +239,9 @@ export default function ExportarDatos() {
             styles: { fontSize: 9 }
         });
 
-        doc.save(`listado_cuadrilla_${temporadaActiva || 'export'}.pdf`);
+        // Use helper instead of doc.save
+        const blob = doc.output('blob');
+        handleExport(blob, `listado_cuadrilla_${temporadaActiva || 'export'}.pdf`);
     };
 
     const generateEstadisticasPDF = (eventsToExport: EventoStats[], filename: string) => {
@@ -270,7 +295,9 @@ export default function ExportarDatos() {
             }
         });
 
-        doc.save(filename);
+        // Use helper instead of doc.save
+        const blob = doc.output('blob');
+        handleExport(blob, filename);
     };
 
     if (loading) return (
@@ -343,7 +370,7 @@ export default function ExportarDatos() {
                     <Button
                         onClick={() => {
                             const content = generateEstadisticasCSV(eventosStats);
-                            downloadCSV(content, `estadisticas_globales_${temporadaActiva || 'export'}.csv`);
+                            generateAndExportCSV(content, `estadisticas_globales_${temporadaActiva || 'export'}.csv`);
                         }}
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
@@ -385,7 +412,7 @@ export default function ExportarDatos() {
                             const event = eventosStats.find(e => e.id === selectedEventId);
                             if (event) {
                                 const content = generateEstadisticasCSV([event]);
-                                downloadCSV(content, `estadistica_evento_${event.titulo}_${new Date(event.fecha_inicio).toLocaleDateString()}.csv`);
+                                generateAndExportCSV(content, `estadistica_evento_${event.titulo}_${new Date(event.fecha_inicio).toLocaleDateString()}.csv`);
                             }
                         }}
                         className="h-14 bg-white border border-black/5 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
