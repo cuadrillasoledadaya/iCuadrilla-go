@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.73 (20/01/2026)
+
+- **Hotfix Exportación PC**: Solucionado problema donde Windows 10/11 mostraba el diálogo de compartir incluso en PC. Ahora la descarga es **directa y automática** en ordenadores, sin diálogos intermedios. En móviles se mantiene el menú de compartir.
+
 ## v1.2.71 (20/01/2026)
 
 - **UI Dashboard**: Alineada perfectamente la campana de notificaciones con el botón de menú. Ahora ambos elementos guardan la misma altura y separación, restaurando la simetría del encabezado.
