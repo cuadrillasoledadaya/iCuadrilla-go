@@ -45,6 +45,7 @@ export default function ExportarDatos() {
     const [eventosStats, setEventosStats] = useState<EventoStats[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedEventId, setSelectedEventId] = useState<string>("");
+    const [temporadaActiva, setTemporadaActiva] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
