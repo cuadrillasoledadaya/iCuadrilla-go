@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.82 (20/01/2026)
+
+- **UX Global**: Añadido botón flotante "Scroll to Top" en todas las páginas. Aparece discretamente al hacer scroll hacia abajo (después de 300px) y permite volver al inicio con un solo clic. Diseño minimalista que no entorpece la navegación.
+
 ## v1.2.81 (20/01/2026)
 
 - **Fix Build**: Añadido el campo `qr_code` faltante a la interfaz TypeScript de `Costalero` en exportaciones para resolver error de compilación.
