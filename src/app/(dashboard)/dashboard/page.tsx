@@ -42,20 +42,20 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [activeSeasonName, setActiveSeasonName] = useState("");
     const [activeIndex, setActiveIndex] = useState(0);
+    const [activeAvisoIndex, setActiveAvisoIndex] = useState(0);
+
     const carouselRef = useRef<HTMLDivElement>(null);
+    const avisosCarouselRef = useRef<HTMLDivElement>(null);
 
-    const handleScroll = () => {
-        if (!carouselRef.current) return;
-        const container = carouselRef.current;
+    const handleCarouselScroll = (container: HTMLDivElement | null, setIndex: (i: number) => void) => {
+        if (!container) return;
 
-        // Find the child closest to the center of the container
         const containerCenter = container.scrollLeft + container.clientWidth / 2;
         let closestIndex = 0;
         let minDiff = Infinity;
 
         Array.from(container.children).forEach((child, index) => {
             const childEl = child as HTMLElement;
-            // Calculate child center relative to scrolling content
             const childCenter = childEl.offsetLeft + childEl.offsetWidth / 2;
             const diff = Math.abs(childCenter - containerCenter);
 
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             }
         });
 
-        setActiveIndex(closestIndex);
+        setIndex(closestIndex);
     };
 
     useEffect(() => {
@@ -361,7 +361,7 @@ export default function DashboardPage() {
                         {/* Carousel Container */}
                         <div
                             ref={carouselRef}
-                            onScroll={handleScroll}
+                            onScroll={() => handleCarouselScroll(carouselRef.current, setActiveIndex)}
                             className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar"
                         >
                             {proximosEventos.map((evento: any) => (
@@ -431,7 +431,11 @@ export default function DashboardPage() {
                 {avisos.length > 0 ? (
                     <div className="space-y-4">
                         {/* Carousel Container */}
-                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar">
+                        <div
+                            ref={avisosCarouselRef}
+                            onScroll={() => handleCarouselScroll(avisosCarouselRef.current, setActiveAvisoIndex)}
+                            className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar"
+                        >
                             {avisos.map((aviso: any) => (
                                 <div
                                     key={aviso.id}
@@ -451,10 +455,10 @@ export default function DashboardPage() {
                             ))}
                         </div>
 
-                        {/* Simple Dots Indicator */}
+                        {/* Interactive Dots Indicator */}
                         <div className="flex justify-center gap-1.5">
                             {avisos.map((_: any, idx: number) => (
-                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-primary w-4" : "bg-neutral-200")} />
+                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all duration-300", idx === activeAvisoIndex ? "bg-primary w-4" : "bg-neutral-200")} />
                             ))}
                         </div>
                     </div>

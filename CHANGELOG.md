@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.60 (20/01/2026)
+
+- **UI Dashboard**: Extendida la interactividad de los puntos indicadores (dots) también al carrusel de **Avisos Recientes**. Ahora ambos deslizadores responden al movimiento.
+
 ## v1.2.59 (20/01/2026)
 
 - **UI Dashboard**: Los puntos indicadores de paginación en el carrusel de eventos ahora son **interactivos y dinámicos**. Al deslizar las tarjetas, el punto activo cambia automáticamente para reflejar la posición actual.
