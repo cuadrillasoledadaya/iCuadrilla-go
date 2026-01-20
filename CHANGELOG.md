@@ -4,6 +4,11 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.54 (20/01/2026)
+
+- **Permisos Cuadrilla**: Ahora todos los costaleros pueden ver el listado completo de la cuadrilla (no solo su propio perfil).
+- **Seguridad**: Se ha restringido el botón de "Alta de Costalero" y "Editar Información" exclusivamente a los Administradores y Capataces. Los costaleros no pueden añadir nuevos miembros ni modificar datos de otros.
+
 ## v1.2.53 (20/01/2026)
 
 - **Seguridad**: Restringido el acceso a la creación y cambio de temporadas. Si un costalero accede a la página de temporadas, solo verá el historial pero no tendrá los controles para crear o activar nuevas temporadas.

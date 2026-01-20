@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface Costalero {
     id: string;
@@ -24,6 +25,7 @@ interface Costalero {
 
 export default function CuadrillaList() {
     const router = useRouter();
+    const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
     const [costaleros, setCostaleros] = useState<Costalero[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -60,12 +62,14 @@ export default function CuadrillaList() {
                     <h1 className="text-2xl font-black tracking-tighter uppercase text-neutral-900 italic">La Cuadrilla</h1>
                     <p className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">Listado de Hermanos Costaleros</p>
                 </div>
-                <button
-                    onClick={() => router.push('/costaleros/nuevo')}
-                    className="absolute right-0 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
-                >
-                    <UserPlus size={24} />
-                </button>
+                {(isAdmin || isMaster) && (
+                    <button
+                        onClick={() => router.push('/costaleros/nuevo')}
+                        className="absolute right-0 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
+                    >
+                        <UserPlus size={24} />
+                    </button>
+                )}
             </header>
 
             {/* Búsqueda y Filtros */}
@@ -149,12 +153,14 @@ export default function CuadrillaList() {
                     >
                         Ver Ficha Detallada
                     </button>
-                    <button
-                        onClick={() => router.push(`/cuadrilla/${selectedCostalero}/editar`)}
-                        className="w-full h-14 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg shadow-primary/20 transition-all"
-                    >
-                        Editar Información
-                    </button>
+                    {(isAdmin || isMaster) && (
+                        <button
+                            onClick={() => router.push(`/cuadrilla/${selectedCostalero}/editar`)}
+                            className="w-full h-14 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg shadow-primary/20 transition-all"
+                        >
+                            Editar Información
+                        </button>
+                    )}
                 </div>
             </Modal>
         </div>
