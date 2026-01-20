@@ -55,7 +55,7 @@ export default function AgendaEventos() {
             let query = supabase
                 .from("eventos")
                 .select("*")
-                .order("fecha_inicio", { ascending: false });
+                .order("fecha_inicio", { ascending: true }); // Base ASC sorting
 
             // 3. Filtrar por temporada si existe
             if (activeSeason) {
@@ -64,7 +64,16 @@ export default function AgendaEventos() {
 
             const { data } = await query;
 
-            if (data) setEventos(data as Evento[]);
+            if (data) {
+                const sorted = (data as Evento[]).sort((a, b) => {
+                    const isFinishedA = a.estado === 'finalizado' ? 1 : 0;
+                    const isFinishedB = b.estado === 'finalizado' ? 1 : 0;
+
+                    if (isFinishedA !== isFinishedB) return isFinishedA - isFinishedB;
+                    return new Date(a.fecha_inicio).getTime() - new Date(b.fecha_inicio).getTime();
+                });
+                setEventos(sorted);
+            }
             setLoading(false);
         };
         fetchEventos();
@@ -131,8 +140,17 @@ export default function AgendaEventos() {
             });
 
             const updatedEventos = await Promise.all(updates);
-            if (JSON.stringify(updatedEventos) !== JSON.stringify(eventos)) {
-                setEventos(updatedEventos);
+
+            const sorted = updatedEventos.sort((a, b) => {
+                const isFinishedA = a.estado === 'finalizado' ? 1 : 0;
+                const isFinishedB = b.estado === 'finalizado' ? 1 : 0;
+
+                if (isFinishedA !== isFinishedB) return isFinishedA - isFinishedB;
+                return new Date(a.fecha_inicio).getTime() - new Date(b.fecha_inicio).getTime();
+            });
+
+            if (JSON.stringify(sorted) !== JSON.stringify(eventos)) {
+                setEventos(sorted);
             }
         };
 

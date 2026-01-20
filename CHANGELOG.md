@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.55 (20/01/2026)
+
+- **Agenda Inteligente**: Mejorada la ordenación de los eventos. Ahora los eventos **Pendientes y En Curso** aparecen siempre arriba (ordenados por fecha más próxima), mientras que los **Finalizados** se mueven automáticamente al final de la lista.
+
 ## v1.2.54 (20/01/2026)
 
 - **Permisos Cuadrilla**: Ahora todos los costaleros pueden ver el listado completo de la cuadrilla (no solo su propio perfil).
