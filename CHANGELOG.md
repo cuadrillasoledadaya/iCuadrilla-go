@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.77 (20/01/2026)
+
+- **Exportación Individual Mejorada**: Las exportaciones individuales ahora también usan formato Excel (.xlsx) con la misma estructura de hojas que la exportación global. Nombres de archivo actualizados al formato `estadistica_[Evento]_[Año].xlsx/pdf` para mejor organización.
+
 ## v1.2.76 (20/01/2026)
 
 - **Exportación Excel Multi-Hoja**: Implementada exportación global en formato Excel (.xlsx) real. Ahora cada evento ocupa una **hoja separada** dentro del archivo, con el título del evento como nombre de la hoja. Esto facilita enormemente la navegación y análisis de datos en Excel/Google Sheets.

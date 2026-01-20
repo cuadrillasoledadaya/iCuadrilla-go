@@ -478,27 +478,30 @@ export default function ExportarDatos() {
                         onClick={() => {
                             const event = eventosStats.find(e => e.id === selectedEventId);
                             if (event) {
-                                const content = generateEstadisticasCSV([event]);
-                                generateAndExportCSV(content, `estadistica_evento_${event.titulo}_${new Date(event.fecha_inicio).toLocaleDateString()}.csv`);
+                                const year = new Date(event.fecha_inicio).getFullYear();
+                                const eventName = event.titulo.replace(/[:\\/?*\[\]]/g, '_'); // Sanitize
+                                generateEstadisticasExcel([event], `estadistica_${eventName}_${year}.xlsx`);
                             }
                         }}
                         className="h-14 bg-white border border-black/5 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                     >
                         <Table size={18} />
-                        <span className="text-[10px] uppercase tracking-widest">Evento CSV</span>
+                        <span className="text-[10px] uppercase tracking-widest">Excel</span>
                     </Button>
                     <Button
                         disabled={!selectedEventId}
                         onClick={() => {
                             const event = eventosStats.find(e => e.id === selectedEventId);
                             if (event) {
-                                generateEstadisticasPDF([event], `estadistica_evento_${event.titulo}.pdf`);
+                                const year = new Date(event.fecha_inicio).getFullYear();
+                                const eventName = event.titulo.replace(/[:\\/?*\[\]]/g, '_'); // Sanitize
+                                generateEstadisticasPDF([event], `estadistica_${eventName}_${year}.pdf`);
                             }
                         }}
                         className="h-14 bg-white border border-black/5 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                     >
                         <FileDown size={18} />
-                        <span className="text-[10px] uppercase tracking-widest">Evento PDF</span>
+                        <span className="text-[10px] uppercase tracking-widest">PDF</span>
                     </Button>
                 </div>
             </section>
