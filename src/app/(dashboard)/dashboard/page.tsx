@@ -339,13 +339,22 @@ export default function DashboardPage() {
                                     key={evento.id}
                                     className="snap-center shrink-0 w-[85%] bg-orange-50/50 border border-orange-100 p-6 rounded-[32px] shadow-sm flex flex-col justify-between min-h-[160px]"
                                 >
-                                    <div className="flex justify-between items-start">
-                                        <div className="space-y-1">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="space-y-1 flex-1">
                                             <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight leading-none line-clamp-2">{evento.titulo}</h3>
-                                            <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest">{evento.tipo}</p>
+                                            <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                                                {evento.tipo}
+                                                <span className="text-orange-400 mx-1">•</span>
+                                                {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                            </p>
                                         </div>
-                                        <div className="p-2 bg-white/80 rounded-xl text-orange-600 shadow-sm border border-orange-100 shrink-0">
-                                            <Clock size={20} />
+                                        <div className="flex flex-col items-center gap-2 shrink-0">
+                                            <div className="p-2 bg-white/80 rounded-xl text-orange-600 shadow-sm border border-orange-100">
+                                                <Clock size={20} />
+                                            </div>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-orange-700 bg-white/50 px-2 py-0.5 rounded-lg border border-orange-100/50">
+                                                {evento.estado || 'PENDIENTE'}
+                                            </span>
                                         </div>
                                     </div>
 
