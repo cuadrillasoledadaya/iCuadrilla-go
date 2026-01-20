@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.78 (20/01/2026)
+
+- **Exportación de Códigos QR**: Nueva funcionalidad para exportar todos los códigos QR de la cuadrilla en un PDF organizado por trabajaderas. Los códigos QR están correctamente espaciados en una cuadrícula de 2 columnas con nombre y puesto de cada costalero debajo del QR. Perfecto para imprimir y usar en eventos. Archivo generado: `codigos_qr_cuadrilla_DD_MM_YYYY.pdf`
+
 ## v1.2.77 (20/01/2026)
 
 - **Exportación Individual Mejorada**: Las exportaciones individuales ahora también usan formato Excel (.xlsx) con la misma estructura de hojas que la exportación global. Nombres de archivo actualizados al formato `estadistica_[Evento]_[Año].xlsx/pdf` para mejor organización.

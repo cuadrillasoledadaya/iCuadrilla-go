@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { FileDown, Table, Users, BarChart3, ChevronLeft } from "lucide-react";
+import { FileDown, Table, Users, BarChart3, ChevronLeft, QrCode } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import * as XLSX from 'xlsx';
+import QRCodeLib from 'qrcode';
 
 interface Costalero {
     id: string;
@@ -362,6 +363,105 @@ export default function ExportarDatos() {
         handleExport(blob, filename);
     };
 
+    // --- QR CODE EXPORT ---
+    const exportQRCodesPDF = async () => {
+        const doc = new jsPDF();
+
+        // Group costaleros by trabajadera
+        const trabajaderasGroups: { [key: number]: typeof costaleros } = {};
+        costaleros.forEach(c => {
+            if (!trabajaderasGroups[c.trabajadera]) {
+                trabajaderasGroups[c.trabajadera] = [];
+            }
+            trabajaderasGroups[c.trabajadera].push(c);
+        });
+
+        // Sort trabajaderas
+        const sortedTrabajaderas = Object.keys(trabajaderasGroups).map(Number).sort((a, b) => a - b);
+
+        let yPos = 20;
+        let isFirstPage = true;
+
+        for (const trabajaderaNum of sortedTrabajaderas) {
+            const costalerosList = trabajaderasGroups[trabajaderaNum];
+
+            // Trabajadera header
+            if (!isFirstPage || yPos > 20) {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            }
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`TRABAJADERA ${trabajaderaNum}`, 105, yPos, { align: 'center' });
+            yPos += 10;
+
+            // QR Codes grid (2 columns)
+            let col = 0;
+            const qrSize = 35;
+            const colWidth = 100;
+            const rowHeight = 50;
+
+            for (const costalero of costalerosList) {
+                // Check if we need a new page
+                if (yPos + rowHeight > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                    col = 0;
+                }
+
+                const xPos = col === 0 ? 15 : 115;
+
+                try {
+                    // Generate QR code as Data URL
+                    const qrDataUrl = await QRCodeLib.toDataURL(costalero.id, {
+                        width: 200,
+                        margin: 1
+                    });
+
+                    // Add QR code image
+                    doc.addImage(qrDataUrl, 'PNG', xPos, yPos, qrSize, qrSize);
+
+                    // Add costalero name below QR
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'normal');
+                    const fullName = `${costalero.nombre} ${costalero.apellidos}`;
+                    doc.text(fullName, xPos + qrSize / 2, yPos + qrSize + 5, { align: 'center', maxWidth: qrSize });
+
+                    // Add puesto
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(costalero.puesto, xPos + qrSize / 2, yPos + qrSize + 10, { align: 'center', maxWidth: qrSize });
+                    doc.setTextColor(0);
+
+                } catch (error) {
+                    console.error(`Error generating QR for ${costalero.nombre}:`, error);
+                }
+
+                col++;
+                if (col >= 2) {
+                    col = 0;
+                    yPos += rowHeight;
+                }
+            }
+
+            // Move to next trabajadera
+            if (col !== 0) {
+                yPos += rowHeight;
+            }
+            yPos += 10; // Extra space between trabajaderas
+            isFirstPage = false;
+        }
+
+        const today = new Date();
+        const dateStr = `${today.getDate().toString().padStart(2, '0')}_${(today.getMonth() + 1).toString().padStart(2, '0')}_${today.getFullYear()}`;
+
+        const blob = doc.output('blob');
+        handleExport(blob, `codigos_qr_cuadrilla_${dateStr}.pdf`);
+    };
+
     if (loading) return (
         <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
@@ -413,6 +513,28 @@ export default function ExportarDatos() {
                         <span className="text-[10px] uppercase tracking-widest">PDF</span>
                     </Button>
                 </div>
+            </section>
+
+            <div className="h-px bg-black/5" />
+
+            {/* QR Codes Section */}
+            <section className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="p-3 bg-purple-100 rounded-2xl">
+                        <QrCode size={24} className="text-purple-600" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-neutral-900 uppercase tracking-tight">Códigos QR</h2>
+                        <p className="text-xs text-neutral-400 font-medium">Exportar todos los QR por trabajaderas</p>
+                    </div>
+                </div>
+                <Button
+                    onClick={exportQRCodesPDF}
+                    className="w-full h-16 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl flex items-center justify-center gap-3 shadow-lg"
+                >
+                    <QrCode size={20} />
+                    <span className="text-sm uppercase tracking-widest">Descargar PDF con QR Codes</span>
+                </Button>
             </section>
 
             <div className="h-px bg-black/5" />
