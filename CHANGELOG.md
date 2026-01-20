@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.64 (20/01/2026)
+
+- **Rediseño Registro**: La página de "Crear Cuenta" ha sido rediseñada completamente para compartir la estética premium y oscura de la pantalla de inicio de sesión, manteniendo la coherencia visual en todo el flujo de autenticación.
+
 ## v1.2.63 (20/01/2026)
 
 - **UI Fix**: Eliminado el borde blanco (overscroll) que aparecía al deslizar la pantalla de bienvenida en móviles. Ahora el fondo se mantiene negro sólido en todo momento, mejorando la sensación de app nativa.
