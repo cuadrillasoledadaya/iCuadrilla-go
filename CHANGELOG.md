@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.79 (20/01/2026)
+
+- **Hotfix QR Codes**: Incrementado significativamente el tamaño y calidad de los códigos QR exportados (de 35mm a 50mm, resolución de 200px a 400px). Añadido nivel máximo de corrección de errores (H) para garantizar el escaneo correcto incluso con impresiones de menor calidad. Los QR ahora se reconocen perfectamente al escanearlos.
+
 ## v1.2.78 (20/01/2026)
 
 - **Exportación de Códigos QR**: Nueva funcionalidad para exportar todos los códigos QR de la cuadrilla en un PDF organizado por trabajaderas. Los códigos QR están correctamente espaciados en una cuadrícula de 2 columnas con nombre y puesto de cada costalero debajo del QR. Perfecto para imprimir y usar en eventos. Archivo generado: `codigos_qr_cuadrilla_DD_MM_YYYY.pdf`

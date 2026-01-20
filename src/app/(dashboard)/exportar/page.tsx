@@ -400,25 +400,26 @@ export default function ExportarDatos() {
 
             // QR Codes grid (2 columns)
             let col = 0;
-            const qrSize = 35;
+            const qrSize = 50; // Increased from 35 to 50mm for better scanning
             const colWidth = 100;
-            const rowHeight = 50;
+            const rowHeight = 65; // Increased to accommodate larger QR
 
             for (const costalero of costalerosList) {
                 // Check if we need a new page
-                if (yPos + rowHeight > 280) {
+                if (yPos + rowHeight > 270) { // Adjusted threshold
                     doc.addPage();
                     yPos = 20;
                     col = 0;
                 }
 
-                const xPos = col === 0 ? 15 : 115;
+                const xPos = col === 0 ? 10 : 110;
 
                 try {
-                    // Generate QR code as Data URL
+                    // Generate QR code as Data URL with higher quality
                     const qrDataUrl = await QRCodeLib.toDataURL(costalero.id, {
-                        width: 200,
-                        margin: 1
+                        width: 400, // Increased from 200 for better quality
+                        margin: 2,   // Increased margin
+                        errorCorrectionLevel: 'H' // Highest error correction
                     });
 
                     // Add QR code image
