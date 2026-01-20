@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.62 (20/01/2026)
+
+- **Mejora Comercial**: Cambiado el flujo de cierre de sesión. Ahora, al salir de la aplicación, el usuario es redirigido a la **Página de Bienvenida** en lugar del login, mostrando la pantalla comercial e imagen de la hermandad.
+
 ## v1.2.61 (20/01/2026)
 
 - **Corrección de Roles**: Solucionado un problema por el que el menú lateral no se actualizaba correctamente al iniciar sesión como Administrador. Ahora los permisos se recalculan automáticamente en tiempo real.
