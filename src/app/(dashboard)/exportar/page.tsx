@@ -416,7 +416,8 @@ export default function ExportarDatos() {
 
                 try {
                     // Generate QR code as Data URL with higher quality
-                    const qrDataUrl = await QRCodeLib.toDataURL(costalero.id, {
+                    // CRITICAL: Use qr_code field, not id - this matches the costalero's profile QR
+                    const qrDataUrl = await QRCodeLib.toDataURL(costalero.qr_code, {
                         width: 400, // Increased from 200 for better quality
                         margin: 2,   // Increased margin
                         errorCorrectionLevel: 'H' // Highest error correction

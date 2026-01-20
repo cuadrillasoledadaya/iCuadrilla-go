@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.80 (20/01/2026)
+
+- **Hotfix Crítico QR**: Corregido error crítico en la exportación de códigos QR. Ahora se usa el campo `qr_code` (único y permanente del costalero) en lugar del `id`. Los QR exportados ahora coinciden exactamente con los QR de las fichas de los costaleros y son reconocidos correctamente por el escáner.
+
 ## v1.2.79 (20/01/2026)
 
 - **Hotfix QR Codes**: Incrementado significativamente el tamaño y calidad de los códigos QR exportados (de 35mm a 50mm, resolución de 200px a 400px). Añadido nivel máximo de corrección de errores (H) para garantizar el escaneo correcto incluso con impresiones de menor calidad. Los QR ahora se reconocen perfectamente al escanearlos.
