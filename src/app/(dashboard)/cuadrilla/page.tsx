@@ -7,7 +7,8 @@ import {
     UserPlus,
     ChevronRight,
     Users,
-    Filter
+    Filter,
+    ChevronLeft
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,12 @@ export default function CuadrillaList() {
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
             {/* Header */}
             <header className="relative flex items-center justify-center min-h-[64px]">
+                <button
+                    onClick={() => router.back()}
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors z-10"
+                >
+                    <ChevronLeft size={24} />
+                </button>
                 <div className="text-center space-y-0.5">
                     <h1 className="text-2xl font-black tracking-tighter uppercase text-neutral-900 italic">La Cuadrilla</h1>
                     <p className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">Listado de Hermanos Costaleros</p>

@@ -185,14 +185,14 @@ export default function MedicionesPage() {
 
     return (
         <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-500">
-            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4 flex items-center gap-4">
+            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4 relative flex items-center justify-center">
                 <button
                     onClick={() => router.back()}
-                    className="p-2 bg-white border border-black/5 rounded-full hover:bg-neutral-100 transition-colors"
+                    className="absolute left-6 p-2 bg-white border border-black/5 rounded-full hover:bg-neutral-100 transition-colors"
                 >
                     <ArrowLeft size={20} className="text-neutral-600" />
                 </button>
-                <div className="flex-1">
+                <div className="text-center">
                     <h1 className="text-lg font-black uppercase tracking-tight text-neutral-900 line-clamp-1">
                         Mediciones
                     </h1>
