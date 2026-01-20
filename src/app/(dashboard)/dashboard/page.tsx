@@ -342,10 +342,8 @@ export default function DashboardPage() {
                                     <div className="flex justify-between items-start gap-4">
                                         <div className="space-y-1 flex-1">
                                             <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight leading-none line-clamp-2">{evento.titulo}</h3>
-                                            <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                                            <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest gap-1">
                                                 {evento.tipo}
-                                                <span className="text-orange-400 mx-1">•</span>
-                                                {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                         <div className="flex flex-col items-center gap-2 shrink-0">
@@ -363,8 +361,13 @@ export default function DashboardPage() {
                                             {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                                         </span>
                                         <div className="h-3 w-[1px] bg-neutral-300" />
-                                        <span className="text-neutral-900 font-black text-sm">
+                                        <span className="text-neutral-900 font-black text-sm flex items-center gap-1">
                                             {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                            {evento.fecha_fin && (
+                                                <span className="text-neutral-400 font-medium">
+                                                    - {new Date(evento.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            )}
                                         </span>
                                     </div>
                                 </div>
