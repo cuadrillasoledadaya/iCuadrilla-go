@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.53 (20/01/2026)
+
+- **Seguridad**: Restringido el acceso a la creación y cambio de temporadas. Si un costalero accede a la página de temporadas, solo verá el historial pero no tendrá los controles para crear o activar nuevas temporadas.
+
 ## v1.2.52 (19/01/2026)
 
 - **Feature Aniversarios**: Añadida notificación automática para los costaleros que cumplen **50 años** en la cuadrilla. Se une a la ya existente de los 25 años.

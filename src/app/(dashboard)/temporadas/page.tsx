@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Calendar, Check, Plus, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export default function GestionTemporadas() {
     const router = useRouter();
+    const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
     const [temporadas, setTemporadas] = useState<any[]>([]);
     const [nuevaTemporada, setNuevaTemporada] = useState("");
     const [loading, setLoading] = useState(false);
@@ -27,6 +29,10 @@ export default function GestionTemporadas() {
     };
 
     const handleActivar = async (id: string) => {
+        if (!isAdmin && !isMaster) {
+            alert("No tienes permisos para realizar esta acción.");
+            return;
+        }
         if (!confirm("¿Estás seguro de cambiar la temporada activa?")) return;
 
         // Desactivar todas
@@ -38,6 +44,7 @@ export default function GestionTemporadas() {
     };
 
     const crearYClonar = async () => {
+        if (!isAdmin && !isMaster) return;
         if (!nuevaTemporada.trim()) return;
         setCreating(true);
 
@@ -118,37 +125,33 @@ export default function GestionTemporadas() {
             </header>
 
             <div className="p-6 space-y-8">
-                {/* Create Section */}
-                <div className="bg-white p-6 rounded-[32px] border border-black/5 shadow-xl space-y-4">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-                            <Plus size={24} />
-                        </div>
-                        <div>
+                {/* Crear Nueva */}
+                {(isAdmin || isMaster) && (
+                    <div className="bg-white p-6 rounded-[32px] shadow-sm border border-black/5 space-y-4">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-primary/10 rounded-xl text-primary">
+                                <Plus size={20} />
+                            </div>
                             <h2 className="text-lg font-black uppercase tracking-tight text-neutral-900">Nueva Temporada</h2>
-                            <p className="text-xs font-bold text-neutral-400">Prepara el sistema para un nuevo año</p>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <Input
+                                placeholder="Ej: 2026, 2027..."
+                                value={nuevaTemporada}
+                                onChange={(e) => setNuevaTemporada(e.target.value)}
+                                className="h-12 rounded-xl border-black/10 bg-neutral-50 font-bold uppercase tracking-wider text-neutral-900"
+                            />
+                            <Button
+                                onClick={crearYClonar}
+                                disabled={!nuevaTemporada.trim() || creating}
+                                className="h-12 px-6 rounded-xl bg-neutral-900 text-white font-black uppercase tracking-widest hover:bg-black transition-colors"
+                            >
+                                {creating ? "Creando..." : "Crear"}
+                            </Button>
                         </div>
                     </div>
-
-                    <div className="flex flex-col gap-4">
-                        <Input
-                            placeholder="Ej: 2026"
-                            value={nuevaTemporada}
-                            onChange={(e) => setNuevaTemporada(e.target.value)}
-                            className="h-14 rounded-2xl bg-neutral-50 border-transparent focus:border-primary focus:bg-white text-lg font-bold text-center uppercase tracking-widest"
-                        />
-                        <Button
-                            onClick={crearYClonar}
-                            disabled={creating || !nuevaTemporada}
-                            className="h-14 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-                        >
-                            {creating ? "Creando..." : "Crear y Activar"}
-                        </Button>
-                    </div>
-                    <p className="text-[10px] text-center text-neutral-400 font-medium px-4">
-                        * Al crearla, se activará automáticamente y mantendrá los datos de los costaleros.
-                    </p>
-                </div>
+                )}
 
                 {/* History Section */}
                 <div>
