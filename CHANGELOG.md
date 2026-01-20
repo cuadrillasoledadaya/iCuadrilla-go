@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.76 (20/01/2026)
+
+- **Exportación Excel Multi-Hoja**: Implementada exportación global en formato Excel (.xlsx) real. Ahora cada evento ocupa una **hoja separada** dentro del archivo, con el título del evento como nombre de la hoja. Esto facilita enormemente la navegación y análisis de datos en Excel/Google Sheets.
+
 ## v1.2.75 (20/01/2026)
 
 - **UX Exportación**: Cambiado el formato de fecha en nombres de archivo. Ahora se usa formato legible DD_MM_YYYY (ej: `estadistica_global_20_01_2026.csv`) en lugar del formato compacto anterior.

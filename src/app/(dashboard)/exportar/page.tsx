@@ -8,6 +8,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import * as XLSX from 'xlsx';
 
 interface Costalero {
     id: string;
@@ -227,6 +228,52 @@ export default function ExportarDatos() {
         return csvContent;
     };
 
+    // --- EXCEL EXPORT (MULTI-SHEET) ---
+    const generateEstadisticasExcel = (eventsToExport: EventoStats[], filename: string) => {
+        const workbook = XLSX.utils.book_new();
+
+        eventsToExport.forEach((evento) => {
+            // Create header rows for each sheet
+            const headerData = [
+                [`${evento.titulo.toUpperCase()}`],
+                [`Estado: ${evento.estado}`],
+                [`Fecha: ${new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}`],
+                [`Hora: ${new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`],
+                [`Presentes: ${evento.presentes} | Ausentes: ${evento.ausentes} | Justificados: ${evento.justificados}`],
+                [], // Empty row
+                ['Nombre', 'Apellidos', 'Trabajadera', 'Puesto', 'Suplemento', 'Estado'] // Table headers
+            ];
+
+            // Add data rows
+            const dataRows = evento.asistencias.map(a => [
+                a.nombre,
+                a.apellidos,
+                a.trabajadera,
+                a.puesto,
+                a.suplemento || '-',
+                a.estado
+            ]);
+
+            // Combine header and data
+            const sheetData = [...headerData, ...dataRows];
+
+            // Create worksheet
+            const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+            // Sanitize sheet name (Excel has restrictions)
+            let sheetName = evento.titulo.substring(0, 31); // Max 31 chars
+            sheetName = sheetName.replace(/[:\\/?*\[\]]/g, '_'); // Remove invalid chars
+
+            // Add sheet to workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+        });
+
+        // Generate Excel file and trigger download
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        handleExport(blob, filename);
+    };
+
     // --- PDF EXPORTS ---
     const exportCostalerosPDF = () => {
         const doc = new jsPDF();
@@ -384,15 +431,14 @@ export default function ExportarDatos() {
                 <div className="grid grid-cols-2 gap-3">
                     <Button
                         onClick={() => {
-                            const content = generateEstadisticasCSV(eventosStats);
                             const today = new Date();
                             const dateStr = `${today.getDate().toString().padStart(2, '0')}_${(today.getMonth() + 1).toString().padStart(2, '0')}_${today.getFullYear()}`;
-                            generateAndExportCSV(content, `estadistica_global_${dateStr}.csv`);
+                            generateEstadisticasExcel(eventosStats, `estadistica_global_${dateStr}.xlsx`);
                         }}
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
                         <Table size={20} />
-                        <span className="text-[10px] uppercase tracking-widest">Todo CSV</span>
+                        <span className="text-[10px] uppercase tracking-widest">Excel</span>
                     </Button>
                     <Button
                         onClick={() => {
@@ -403,7 +449,7 @@ export default function ExportarDatos() {
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
                         <FileDown size={20} />
-                        <span className="text-[10px] uppercase tracking-widest">Todo PDF</span>
+                        <span className="text-[10px] uppercase tracking-widest">PDF</span>
                     </Button>
                 </div>
             </section>
