@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.75 (20/01/2026)
+
+- **UX Exportación**: Cambiado el formato de fecha en nombres de archivo. Ahora se usa formato legible DD_MM_YYYY (ej: `estadistica_global_20_01_2026.csv`) en lugar del formato compacto anterior.
+
 ## v1.2.74 (20/01/2026)
 
 - **Exportación Global Mejorada**: Refinado el formato de las estadísticas globales. Cada evento ahora aparece claramente separado con su título destacado (=== TÍTULO ===), facilitando la lectura del CSV. El archivo descargado se nombra `estadistica_global_YYYYMMDD.csv` incluyendo la fecha de exportación.

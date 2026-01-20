@@ -385,8 +385,9 @@ export default function ExportarDatos() {
                     <Button
                         onClick={() => {
                             const content = generateEstadisticasCSV(eventosStats);
-                            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-                            generateAndExportCSV(content, `estadistica_global_${today}.csv`);
+                            const today = new Date();
+                            const dateStr = `${today.getDate().toString().padStart(2, '0')}_${(today.getMonth() + 1).toString().padStart(2, '0')}_${today.getFullYear()}`;
+                            generateAndExportCSV(content, `estadistica_global_${dateStr}.csv`);
                         }}
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
@@ -395,8 +396,9 @@ export default function ExportarDatos() {
                     </Button>
                     <Button
                         onClick={() => {
-                            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-                            generateEstadisticasPDF(eventosStats, `estadistica_global_${today}.pdf`);
+                            const today = new Date();
+                            const dateStr = `${today.getDate().toString().padStart(2, '0')}_${(today.getMonth() + 1).toString().padStart(2, '0')}_${today.getFullYear()}`;
+                            generateEstadisticasPDF(eventosStats, `estadistica_global_${dateStr}.pdf`);
                         }}
                         className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
