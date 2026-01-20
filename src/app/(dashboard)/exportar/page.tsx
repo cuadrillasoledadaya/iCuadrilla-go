@@ -71,53 +71,55 @@ export default function ExportarDatos() {
                 setCostaleros(costalerosData);
             }
 
-            // Fetch eventos with detailed attendance stats
-            const { data: eventos } = await supabase
-                .from("eventos")
-                .select("*")
-                .order("fecha_inicio", { ascending: false });
+            // Fetch eventos ONLY for active season
+            if (temporadas?.id) {
+                const { data: eventos } = await supabase
+                    .from("eventos")
+                    .select("*")
+                    .eq("temporada_id", temporadas.id)
+                    .order("fecha_inicio", { ascending: false });
 
-            if (eventos && costalerosData) {
-                const statsPromises = eventos.map(async (evento) => {
-                    const { data: asistencias } = await supabase
-                        .from("asistencias")
-                        .select("costalero_id, estado")
-                        .eq("evento_id", evento.id);
+                if (eventos && costalerosData) {
+                    const statsPromises = eventos.map(async (evento) => {
+                        const { data: asistencias } = await supabase
+                            .from("asistencias")
+                            .select("costalero_id, estado")
+                            .eq("evento_id", evento.id);
 
-                    const detailedAsistencias = (asistencias || []).map(a => {
-                        const costalero = costalerosData.find(c => c.id === a.costalero_id);
+                        const detailedAsistencias = (asistencias || []).map(a => {
+                            const costalero = costalerosData.find(c => c.id === a.costalero_id);
+                            return {
+                                costalero_id: a.costalero_id,
+                                nombre: costalero?.nombre || 'Desconocido',
+                                apellidos: costalero?.apellidos || '',
+                                trabajadera: costalero?.trabajadera || 0,
+                                puesto: costalero?.puesto || '-',
+                                suplemento: costalero?.suplemento || null,
+                                estado: a.estado
+                            };
+                        }).sort((a, b) => a.trabajadera - b.trabajadera || a.apellidos.localeCompare(b.apellidos));
+
+                        const presentes = detailedAsistencias.filter(a => a.estado === 'presente').length;
+                        const ausentes = detailedAsistencias.filter(a => a.estado === 'ausente').length;
+                        const justificados = detailedAsistencias.filter(a => a.estado === 'justificado' || a.estado === 'justificada').length;
+
                         return {
-                            costalero_id: a.costalero_id,
-                            nombre: costalero?.nombre || 'Desconocido',
-                            apellidos: costalero?.apellidos || '',
-                            trabajadera: costalero?.trabajadera || 0,
-                            puesto: costalero?.puesto || '-',
-                            suplemento: costalero?.suplemento || null,
-                            estado: a.estado
+                            id: evento.id,
+                            titulo: evento.titulo,
+                            fecha_inicio: evento.fecha_inicio,
+                            estado: evento.estado,
+                            presentes,
+                            ausentes,
+                            justificados,
+                            total: presentes + ausentes + justificados,
+                            asistencias: detailedAsistencias
                         };
-                    }).sort((a, b) => a.trabajadera - b.trabajadera || a.apellidos.localeCompare(b.apellidos));
+                    });
 
-                    const presentes = detailedAsistencias.filter(a => a.estado === 'presente').length;
-                    const ausentes = detailedAsistencias.filter(a => a.estado === 'ausente').length;
-                    const justificados = detailedAsistencias.filter(a => a.estado === 'justificado' || a.estado === 'justificada').length;
-
-                    return {
-                        id: evento.id,
-                        titulo: evento.titulo,
-                        fecha_inicio: evento.fecha_inicio,
-                        estado: evento.estado,
-                        presentes,
-                        ausentes,
-                        justificados,
-                        total: presentes + ausentes + justificados,
-                        asistencias: detailedAsistencias
-                    };
-                });
-
-                const stats = await Promise.all(statsPromises);
-                setEventosStats(stats);
+                    const stats = await Promise.all(statsPromises);
+                    setEventosStats(stats);
+                }
             }
-
             setLoading(false);
         };
 
