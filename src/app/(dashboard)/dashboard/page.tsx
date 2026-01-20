@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import {
     Menu,
@@ -41,6 +41,32 @@ export default function DashboardPage() {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [activeSeasonName, setActiveSeasonName] = useState("");
+    const [activeIndex, setActiveIndex] = useState(0);
+    const carouselRef = useRef<HTMLDivElement>(null);
+
+    const handleScroll = () => {
+        if (!carouselRef.current) return;
+        const container = carouselRef.current;
+
+        // Find the child closest to the center of the container
+        const containerCenter = container.scrollLeft + container.clientWidth / 2;
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        Array.from(container.children).forEach((child, index) => {
+            const childEl = child as HTMLElement;
+            // Calculate child center relative to scrolling content
+            const childCenter = childEl.offsetLeft + childEl.offsetWidth / 2;
+            const diff = Math.abs(childCenter - containerCenter);
+
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = index;
+            }
+        });
+
+        setActiveIndex(closestIndex);
+    };
 
     useEffect(() => {
         if (roleLoading) return;
@@ -333,7 +359,11 @@ export default function DashboardPage() {
                 {proximosEventos.length > 0 ? (
                     <div className="space-y-4">
                         {/* Carousel Container */}
-                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar">
+                        <div
+                            ref={carouselRef}
+                            onScroll={handleScroll}
+                            className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar"
+                        >
                             {proximosEventos.map((evento: any) => (
                                 <div
                                     key={evento.id}
@@ -372,10 +402,10 @@ export default function DashboardPage() {
                             ))}
                         </div>
 
-                        {/* Simple Dots Indicator (Visual Only for now) */}
+                        {/* Interactive Dots Indicator */}
                         <div className="flex justify-center gap-1.5">
                             {proximosEventos.map((_: any, idx: number) => (
-                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all", idx === 0 ? "bg-primary w-4" : "bg-neutral-200")} />
+                                <div key={idx} className={cn("h-1.5 w-1.5 rounded-full transition-all duration-300", idx === activeIndex ? "bg-primary w-4" : "bg-neutral-200")} />
                             ))}
                         </div>
                     </div>
