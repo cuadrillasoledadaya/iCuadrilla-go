@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.61 (20/01/2026)
+
+- **Corrección de Roles**: Solucionado un problema por el que el menú lateral no se actualizaba correctamente al iniciar sesión como Administrador. Ahora los permisos se recalculan automáticamente en tiempo real.
+
 ## v1.2.60 (20/01/2026)
 
 - **UI Dashboard**: Extendida la interactividad de los puntos indicadores (dots) también al carrusel de **Avisos Recientes**. Ahora ambos deslizadores responden al movimiento.

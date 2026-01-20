@@ -74,6 +74,14 @@ export function useUserRole() {
         };
 
         checkRole();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+            checkRole();
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
     return {
