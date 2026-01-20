@@ -1,5 +1,15 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.69 (20/01/2026)
+
+- **Hotfix Exportación**: Solucionado un error crítico que impedía la carga de la pantalla de exportación debido a una variable de estado faltante.
+
+## v1.2.68 (20/01/2026)
+
+- **Exportación Flexible**: Ahora puedes elegir. Hemos añadido dos modos de exportación de estadísticas:
+  - **Global**: Descarga toda la actividad de la temporada de una sola vez.
+  - **Individual**: Selecciona un evento específico del desplegable y descarga solo su informe.
+
 ## v1.1.97 (16/01/2026)
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
