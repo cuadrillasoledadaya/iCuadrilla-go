@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.63 (20/01/2026)
+
+- **UI Fix**: Eliminado el borde blanco (overscroll) que aparecía al deslizar la pantalla de bienvenida en móviles. Ahora el fondo se mantiene negro sólido en todo momento, mejorando la sensación de app nativa.
+
 ## v1.2.62 (20/01/2026)
 
 - **Mejora Comercial**: Cambiado el flujo de cierre de sesión. Ahora, al salir de la aplicación, el usuario es redirigido a la **Página de Bienvenida** en lugar del login, mostrando la pantalla comercial e imagen de la hermandad.
