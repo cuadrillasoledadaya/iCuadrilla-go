@@ -314,31 +314,32 @@ export default function DashboardPage() {
     return (
         <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background">
             {/* Header */}
-            <header className="flex justify-between items-start">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setSidebarOpen(true)}
-                        className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
-                    >
-                        <Menu size={24} />
-                    </button>
-                    <div className="space-y-0.5">
-                        <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                                {isMaster ? "SUPERADMIN" :
-                                    rol === 'capataz' ? "CAPATAZ" :
-                                        rol === 'auxiliar' ? "AUXILIAR" :
-                                            (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
-                            </span>
-                            <span className="text-neutral-300">•</span>
-                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada {activeSeasonName || "..."}</span>
-                        </div>
+            {/* Header */}
+            <header className="relative flex items-center justify-center min-h-[64px]">
+                <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
+                >
+                    <Menu size={24} />
+                </button>
+
+                <div className="text-center space-y-0.5">
+                    <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                            {isMaster ? "SUPERADMIN" :
+                                rol === 'capataz' ? "CAPATAZ" :
+                                    rol === 'auxiliar' ? "AUXILIAR" :
+                                        (isAdmin && isCostalero ? "ADMIN + COSTALERO" : isAdmin ? "ADMIN" : "COSTALERO")}
+                        </span>
+                        <span className="text-neutral-300">•</span>
+                        <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporada {activeSeasonName || "..."}</span>
                     </div>
                 </div>
+
                 <button
                     onClick={() => router.push('/notificaciones')}
-                    className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors relative"
+                    className="absolute right-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors relative"
                 >
                     <Bell size={24} />
                     {unreadCount > 0 && (

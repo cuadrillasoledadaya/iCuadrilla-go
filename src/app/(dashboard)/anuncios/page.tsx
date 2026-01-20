@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bell, Pencil, Trash2 } from "lucide-react";
+import { Bell, Pencil, Trash2, ChevronLeft } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useRouter } from "next/navigation";
 
@@ -49,9 +49,17 @@ export default function TablonAnuncios() {
 
     return (
         <div className="p-6 space-y-8 bg-background min-h-screen pb-32">
-            <header className="text-center space-y-1">
-                <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Tablón de Anuncios</h1>
-                <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Comunicados Oficiales</p>
+            <header className="relative flex items-center justify-center min-h-[64px]">
+                <button
+                    onClick={() => router.back()}
+                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <div className="text-center space-y-0.5">
+                    <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">Tablón de Anuncios</h1>
+                    <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Comunicados Oficiales</p>
+                </div>
             </header>
 
             {canManageAnnouncements && (
