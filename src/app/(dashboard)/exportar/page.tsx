@@ -44,7 +44,7 @@ export default function ExportarDatos() {
     const [costaleros, setCostaleros] = useState<Costalero[]>([]);
     const [eventosStats, setEventosStats] = useState<EventoStats[]>([]);
     const [loading, setLoading] = useState(true);
-    const [temporadaActiva, setTemporadaActiva] = useState<string | null>(null);
+    const [selectedEventId, setSelectedEventId] = useState<string>("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -164,10 +164,10 @@ export default function ExportarDatos() {
         downloadCSV(csvContent, `listado_cuadrilla_${temporadaActiva || 'export'}.csv`);
     };
 
-    const exportEstadisticasCSV = () => {
+    const generateEstadisticasCSV = (eventsToExport: EventoStats[]) => {
         let csvContent = "";
 
-        eventosStats.forEach((evento, index) => {
+        eventsToExport.forEach((evento, index) => {
             if (index > 0) csvContent += "\n\n"; // Separator between events
 
             // Event header
@@ -185,8 +185,7 @@ export default function ExportarDatos() {
                 csvContent += `${a.nombre};${a.apellidos};${a.trabajadera};${a.puesto};${a.suplemento || '-'};${a.estado}\n`;
             });
         });
-
-        downloadCSV(csvContent, `estadisticas_detalladas_${temporadaActiva || 'export'}.csv`);
+        return csvContent;
     };
 
     // --- PDF EXPORTS ---
@@ -219,13 +218,13 @@ export default function ExportarDatos() {
         doc.save(`listado_cuadrilla_${temporadaActiva || 'export'}.pdf`);
     };
 
-    const exportEstadisticasPDF = () => {
+    const generateEstadisticasPDF = (eventsToExport: EventoStats[], filename: string) => {
         const doc = new jsPDF();
         let yPos = 15;
 
-        eventosStats.forEach((evento, index) => {
-            // Check if we need a new page
-            if (yPos > 250) {
+        eventsToExport.forEach((evento, index) => {
+            // Check if we need a new page (rough estimate)
+            if (yPos > 240) {
                 doc.addPage();
                 yPos = 15;
             }
@@ -262,9 +261,15 @@ export default function ExportarDatos() {
             });
 
             yPos = (doc as any).lastAutoTable.finalY + 15;
+
+            // Add page break between events if multiple and not the last one
+            if (index < eventsToExport.length - 1 && yPos > 240) {
+                doc.addPage();
+                yPos = 15;
+            }
         });
 
-        doc.save(`estadisticas_detalladas_${temporadaActiva || 'export'}.pdf`);
+        doc.save(filename);
     };
 
     if (loading) return (
@@ -322,31 +327,83 @@ export default function ExportarDatos() {
 
             <div className="h-px bg-black/5" />
 
-            {/* Estadisticas Section */}
+            {/* Estadisticas Global Section */}
             <section className="space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="p-3 bg-amber-100 rounded-2xl">
                         <BarChart3 size={24} className="text-amber-600" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-black text-neutral-900 uppercase tracking-tight">Estadísticas de Asistencia</h2>
-                        <p className="text-xs text-neutral-400 font-medium">{eventosStats.length} eventos registrados</p>
+                        <h2 className="text-lg font-black text-neutral-900 uppercase tracking-tight">Estadísticas Totales</h2>
+                        <p className="text-xs text-neutral-400 font-medium">{eventosStats.length} eventos (Reporte Global)</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                     <Button
-                        onClick={exportEstadisticasCSV}
-                        className="h-16 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
+                        onClick={() => {
+                            const content = generateEstadisticasCSV(eventosStats);
+                            downloadCSV(content, `estadisticas_globales_${temporadaActiva || 'export'}.csv`);
+                        }}
+                        className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
                         <Table size={20} />
-                        <span className="text-[10px] uppercase tracking-widest">CSV (Excel)</span>
+                        <span className="text-[10px] uppercase tracking-widest">Todo CSV</span>
                     </Button>
                     <Button
-                        onClick={exportEstadisticasPDF}
-                        className="h-16 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
+                        onClick={() => generateEstadisticasPDF(eventosStats, `estadisticas_globales_${temporadaActiva || 'export'}.pdf`)}
+                        className="h-16 bg-neutral-900 hover:bg-black text-white font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
                     >
                         <FileDown size={20} />
-                        <span className="text-[10px] uppercase tracking-widest">PDF</span>
+                        <span className="text-[10px] uppercase tracking-widest">Todo PDF</span>
+                    </Button>
+                </div>
+            </section>
+
+            {/* Estadisticas Individual Section */}
+            <section className="space-y-4 pt-4 border-t border-black/5">
+                <div className="space-y-2">
+                    <h2 className="text-sm font-black text-neutral-900 uppercase tracking-tight ml-1">Exportar Por Evento</h2>
+                    <select
+                        value={selectedEventId}
+                        onChange={(e) => setSelectedEventId(e.target.value)}
+                        className="w-full h-12 px-4 rounded-xl border border-black/10 bg-white text-sm font-bold text-neutral-700 focus:ring-2 focus:ring-primary/20 outline-none"
+                    >
+                        <option value="">Seleccionar Evento...</option>
+                        {eventosStats.map(e => (
+                            <option key={e.id} value={e.id}>
+                                {e.titulo} - {new Date(e.fecha_inicio).toLocaleDateString()}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <Button
+                        disabled={!selectedEventId}
+                        onClick={() => {
+                            const event = eventosStats.find(e => e.id === selectedEventId);
+                            if (event) {
+                                const content = generateEstadisticasCSV([event]);
+                                downloadCSV(content, `estadistica_evento_${event.titulo}_${new Date(event.fecha_inicio).toLocaleDateString()}.csv`);
+                            }
+                        }}
+                        className="h-14 bg-white border border-black/5 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                    >
+                        <Table size={18} />
+                        <span className="text-[10px] uppercase tracking-widest">Evento CSV</span>
+                    </Button>
+                    <Button
+                        disabled={!selectedEventId}
+                        onClick={() => {
+                            const event = eventosStats.find(e => e.id === selectedEventId);
+                            if (event) {
+                                generateEstadisticasPDF([event], `estadistica_evento_${event.titulo}.pdf`);
+                            }
+                        }}
+                        className="h-14 bg-white border border-black/5 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                    >
+                        <FileDown size={18} />
+                        <span className="text-[10px] uppercase tracking-widest">Evento PDF</span>
                     </Button>
                 </div>
             </section>

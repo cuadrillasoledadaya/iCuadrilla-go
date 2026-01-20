@@ -4,6 +4,10 @@
 
 - **UI Relevos**: Integrado el suplemento por defecto del costalero. Si un hermano está en su trabajadera habitual, ahora también se muestra su suplemento base automáticamente.
 
+## v1.2.67 (20/01/2026)
+
+- **Corrección Exportación**: Se ha añadido el filtro por temporada activa en la pantalla de Exportación. Ahora solo verás y exportarás los eventos y estadísticas correspondientes a la temporada actual (ej. 2026), ocultando los datos históricos de años anteriores.
+
 ## v1.2.66 (20/01/2026)
 
 - **UI Mediciones**: Centrado el encabezado en la pantalla de mediciones de eventos.
