@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.84 (21/01/2026)
+
+- **Hotfix Scroll Button**: Ajustada nuevamente la posición del botón scroll-to-top (de `bottom-28` a `bottom-40`) para evitar solapamiento con botones flotantes de acción (FAB) como el de "Crear Evento" en la agenda. Ahora hay suficiente separación vertical entre ambos elementos.
+
 ## v1.2.83 (21/01/2026)
 
 - **Hotfix Scroll Button**: Ajustada la posición del botón scroll-to-top (de `bottom-20` a `bottom-28`) para evitar solapamiento con la barra de navegación inferior. Ahora el botón tiene suficiente espacio y no interfiere con otros elementos flotantes.
