@@ -179,7 +179,7 @@ export default function DetalleEvento() {
             { label: "ESCANEAR ASISTENCIA", icon: QrCode, color: "bg-blue-600 shadow-blue-200", href: `/asistencia/scanner?evento=${params.id}` }
         ] : []),
         { label: "ASISTENCIA MANUAL", icon: LayoutGrid, color: "bg-emerald-600 shadow-emerald-200", href: `/eventos/${params.id}/trabajaderas` },
-        ...(canManageEvents ? [
+        ...(canManageEvents && evento ? [
             { label: "GESTIONAR RELEVOS", icon: Repeat, color: "bg-amber-600 shadow-amber-200", href: `/eventos/${params.id}/relevos` },
             { label: "MEDICIONES", icon: Ruler, color: "bg-indigo-600 shadow-indigo-200", href: `/eventos/${params.id}/mediciones` },
             {
