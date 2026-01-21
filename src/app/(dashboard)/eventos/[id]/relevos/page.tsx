@@ -51,7 +51,9 @@ export default function GestionRelevos() {
     const [searchTerm, setSearchTerm] = useState("");
     const [assignmentSupplement, setAssignmentSupplement] = useState("");
 
-    const totalHuecos = 35; // 7 trabajaderas * 5 huecos
+    const TRABAJADERAS_COUNT = 7;
+    const POSITIONS_PER_TRABAJADERA = 5;
+    const totalHuecos = TRABAJADERAS_COUNT * POSITIONS_PER_TRABAJADERA;
 
     useEffect(() => {
         fetchInitialData();
@@ -349,7 +351,19 @@ export default function GestionRelevos() {
         </div>
     );
 
-    const huecosLabels = ["Patero Izq", "Patero Der", "Fijador Izq", "Fijador Der", "Corriente"];
+    // Dynamic Position Label
+    const getPosicionLabel = (t: number, p: number) => {
+        const isFirstOrLast = t === 1 || t === TRABAJADERAS_COUNT;
+
+        switch (p) {
+            case 1: return isFirstOrLast ? "Patero Izq" : "Costero Izq";
+            case 2: return isFirstOrLast ? "Patero Der" : "Costero Der";
+            case 3: return "Fijador Izq";
+            case 4: return "Fijador Der";
+            case 5: return "Corriente";
+            default: return "";
+        }
+    };
 
     return (
         <div className="min-h-screen pb-32 bg-background animate-in fade-in duration-700">
@@ -421,7 +435,7 @@ export default function GestionRelevos() {
 
             {/* Tactical Grid */}
             <div className="p-6 space-y-12 mt-4">
-                {[1, 2, 3, 4, 5, 6, 7].map((t) => (
+                {Array.from({ length: TRABAJADERAS_COUNT }, (_, i) => i + 1).map((t) => (
                     <div key={t} className="space-y-6">
                         <div className="flex items-center gap-3 px-2">
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
@@ -430,11 +444,13 @@ export default function GestionRelevos() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            {[1, 2, 3, 4].map((p) => {
+                            {getPositionsForTrabajadera(t).map((p) => {
                                 const costalero = getCostaleroAt(t, p);
                                 const isSelected = selectedPos?.t === t && selectedPos?.p === p;
-                                // Comprobación flexible: "Patero Izq" incluye "Patero"
-                                const isOutOfPosition = costalero && !huecosLabels[p - 1].toLowerCase().includes(costalero.puesto.toLowerCase());
+                                const posLabel = getPosicionLabel(t, p);
+
+                                // Comprobación flexible: "Patero Izq" incluye "Patero", "Costero Izq" incluye "Costero"
+                                const isOutOfPosition = costalero && !posLabel.toLowerCase().includes(costalero.puesto.toLowerCase());
                                 const isOutOfTrabajadera = costalero && Number(costalero.trabajadera) !== Number(t);
                                 const isOutOfPlace = isOutOfPosition || isOutOfTrabajadera;
                                 const releveData = relevos.find(r => r.trabajadera === t && r.posicion === p);
@@ -462,7 +478,7 @@ export default function GestionRelevos() {
                                         )}
                                     >
                                         <div className="flex justify-between items-start">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">{huecosLabels[p - 1]}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-900">{posLabel}</span>
                                             <div className="flex flex-col items-end gap-1">
                                                 {costalero && (
                                                     <span className="text-[7px] font-black bg-neutral-900/5 text-neutral-900 px-1.5 py-0.5 rounded-full uppercase tracking-tighter">
@@ -563,11 +579,16 @@ export default function GestionRelevos() {
                     <div className="w-full max-w-sm bg-white rounded-t-[40px] p-8 pb-32 space-y-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="text-center space-y-2">
                             <div className="w-16 h-1 w-12 bg-neutral-100 rounded-full mx-auto mb-4" />
-                            <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight italic">Hueco Disponibles</h3>
-                            <p className="text-[10px] font-black text-neutral-900 uppercase tracking-widest">Trabajadera {selectedPos?.t} • {huecosLabels[(selectedPos?.p || 1) - 1]}</p>
+                            <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight italic">
+                                {selectedPos && getCostaleroAt(selectedPos.t, selectedPos.p) ? 'Cambiar Costalero' : 'Asignar Costalero'}
+                            </h3>
+                            <p className="text-[10px] font-black text-neutral-900 uppercase tracking-widest">
+                                Trabajadera {selectedPos?.t} • {selectedPos && getPosicionLabel(selectedPos.t, selectedPos.p)}
+                            </p>
                         </div>
 
                         <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-900" size={16} />
                                 <Input

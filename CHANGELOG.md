@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.90 (21/01/2026)
+
+- **Mejora Gestión de Relevos**: Actualizada la nomenclatura de puestos. Ahora se distingue entre "Patero" (Trabajaderas 1 y 7) y "Costero" (Trabajaderas intermedias), corrigiendo las validaciones de posición incorrectas.
+
 ## v1.2.89 (21/01/2026)
 
 - **Rediseño Tablón de Anuncios**: Actualizada la estética del tablón de anuncios para coincidir con el diseño global de la app. Reemplazados los bloques negros por tarjetas blancas con sombras suaves, tipografía moderna y bordes redondeados, mejorando la legibilidad y coherencia visual.
