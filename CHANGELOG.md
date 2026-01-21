@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.86 (21/01/2026)
+
+- **Compartir WhatsApp Mejorado**: Mensaje de compartir eventos por WhatsApp ahora incluye toda la información del evento formateada profesionalmente con emojis: título, fecha completa (día de la semana), horario completo (inicio-fin), lugar, tipo, estado y descripción. Mucho más claro y visual para compartir eventos con la cuadrilla.
+
 ## v1.2.85 (21/01/2026)
 
 - **Hotfix Scroll Button**: Ajuste final de posición del botón scroll-to-top a `bottom-52` (208px) para garantizar separación adecuada con todos los botones flotantes en diferentes páginas (eventos, relevos, etc.). Ahora el botón no interfiere con ningún elemento interactivo.
