@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.89 (21/01/2026)
+
+- **Rediseño Tablón de Anuncios**: Actualizada la estética del tablón de anuncios para coincidir con el diseño global de la app. Reemplazados los bloques negros por tarjetas blancas con sombras suaves, tipografía moderna y bordes redondeados, mejorando la legibilidad y coherencia visual.
+
 ## v1.2.88 (21/01/2026)
 
 - **Corrección Bug WhatsApp**: Corregido el campo de ubicación en el mensaje de compartir WhatsApp. Ahora usa correctamente `ubicacion` en lugar de `lugar`, evitando que aparezca "undefined".
