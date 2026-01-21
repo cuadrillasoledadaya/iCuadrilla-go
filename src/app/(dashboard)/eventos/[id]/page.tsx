@@ -32,7 +32,7 @@ interface Evento {
     titulo: string;
     fecha_inicio: string;
     fecha_fin: string;
-    lugar: string;
+    ubicacion: string;
     tipo: string;
     descripcion?: string;
     estado: string;
@@ -187,7 +187,7 @@ export default function DetalleEvento() {
                     `📋 *${evento.titulo.toUpperCase()}*\n\n` +
                     `📅 Fecha: ${new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}\n` +
                     `🕐 Hora: ${new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} - ${new Date(evento.fecha_fin).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}\n` +
-                    `📍 Lugar: ${evento.lugar}\n` +
+                    `📍 Lugar: ${evento.ubicacion}\n` +
                     `📝 Tipo: ${evento.tipo}\n` +
                     `🎯 Estado: ${evento.estado.toUpperCase()}\n\n` +
                     `💬 ${evento.descripcion || 'Sin descripción adicional'}\n\n` +

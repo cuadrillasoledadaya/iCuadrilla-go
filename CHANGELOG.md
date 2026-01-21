@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.88 (21/01/2026)
+
+- **Corrección Bug WhatsApp**: Corregido el campo de ubicación en el mensaje de compartir WhatsApp. Ahora usa correctamente `ubicacion` en lugar de `lugar`, evitando que aparezca "undefined".
+
 ## v1.2.87 (21/01/2026)
 
 - **Fix Build**: Añadida comprobación de nulidad para `evento` en el botón de compartir WhatsApp para resolver error de compilación TypeScript.
