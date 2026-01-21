@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.92 (21/01/2026)
+
+- **Ajuste UI Asistencia Manual**: Movido el indicador de "Suplemento" a la esquina inferior derecha y simplificado el texto (Cantidad + "cm").
+
 ## v1.2.91 (21/01/2026)
 
 - **Mejora Asistencia Manual**: Ahora se muestra visualmente el "Suplemento" en la tarjeta del costalero si lo tiene asignado, facilitando la identificación de necesidades especiales en la igualá.

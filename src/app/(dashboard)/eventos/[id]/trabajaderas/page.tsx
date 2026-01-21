@@ -189,32 +189,6 @@ export default function TrabajaderasAsistencia() {
                                             </div>
                                         )}
                                         <div className="space-y-3 text-left">
-                                            <div className="flex flex-col gap-1">
-                                                <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{m.nombre} {m.apellidos}</h3>
-                                                {m.suplemento && (
-                                                    <span className="self-start px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-black uppercase rounded-md border border-purple-200 shadow-sm">
-                                                        SUMA +{m.suplemento}cm
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            <div className={cn(
-                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest",
-                                                m.estado === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
-                                                (m.estado === 'justificado' || m.estado === 'justificada') && "bg-amber-50 text-amber-600 border-amber-100",
-                                                m.estado === 'ausente' && "bg-red-50 text-red-600 border-red-100",
-                                                !m.estado && "bg-neutral-900 text-white border-black pending-badge shadow-lg"
-                                            )}>
-                                                {m.estado === 'presente' && <CheckCircle2 size={10} />}
-                                                {(m.estado === 'justificado' || m.estado === 'justificada') && <FileText size={10} />}
-                                                {m.estado === 'ausente' && <XCircle size={10} />}
-                                                {!m.estado && <AlertCircle size={10} className="animate-bounce" />}
-                                                {m.estado || "PENDIENTE REGISTRO"}
-                                            </div>
-                                        </div>
-
-                                        <div className="text-right">
-                                            {m.hora && <span className="text-[10px] font-bold text-neutral-300 font-mono italic">{m.hora}</span>}
                                         </div>
                                     </button>
                                 ))}
