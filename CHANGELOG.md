@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.83 (21/01/2026)
+
+- **Hotfix Scroll Button**: Ajustada la posición del botón scroll-to-top (de `bottom-20` a `bottom-28`) para evitar solapamiento con la barra de navegación inferior. Ahora el botón tiene suficiente espacio y no interfiere con otros elementos flotantes.
+
 ## v1.2.82 (20/01/2026)
 
 - **UX Global**: Añadido botón flotante "Scroll to Top" en todas las páginas. Aparece discretamente al hacer scroll hacia abajo (después de 300px) y permite volver al inicio con un solo clic. Diseño minimalista que no entorpece la navegación.
