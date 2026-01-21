@@ -444,7 +444,7 @@ export default function GestionRelevos() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            {getPositionsForTrabajadera(t).map((p) => {
+                            {[1, 2, 3, 4].map((p) => {
                                 const costalero = getCostaleroAt(t, p);
                                 const isSelected = selectedPos?.t === t && selectedPos?.p === p;
                                 const posLabel = getPosicionLabel(t, p);
