@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.91 (21/01/2026)
+
+- **Mejora Asistencia Manual**: Ahora se muestra visualmente el "Suplemento" en la tarjeta del costalero si lo tiene asignado, facilitando la identificación de necesidades especiales en la igualá.
+
 ## v1.2.90 (21/01/2026)
 
 - **Mejora Gestión de Relevos**: Actualizada la nomenclatura de puestos. Ahora se distingue entre "Patero" (Trabajaderas 1 y 7) y "Costero" (Trabajaderas intermedias), corrigiendo las validaciones de posición incorrectas.

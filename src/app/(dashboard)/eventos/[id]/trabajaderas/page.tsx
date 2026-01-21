@@ -23,6 +23,7 @@ interface Costalero {
     estado?: 'presente' | 'ausente' | 'justificado' | 'justificada' | null;
     asistencia_id?: string;
     hora?: string;
+    suplemento?: number;
 }
 
 export default function TrabajaderasAsistencia() {
@@ -188,7 +189,14 @@ export default function TrabajaderasAsistencia() {
                                             </div>
                                         )}
                                         <div className="space-y-3 text-left">
-                                            <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{m.nombre} {m.apellidos}</h3>
+                                            <div className="flex flex-col gap-1">
+                                                <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{m.nombre} {m.apellidos}</h3>
+                                                {m.suplemento && (
+                                                    <span className="self-start px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-black uppercase rounded-md border border-purple-200 shadow-sm">
+                                                        SUMA +{m.suplemento}cm
+                                                    </span>
+                                                )}
+                                            </div>
 
                                             <div className={cn(
                                                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest",
