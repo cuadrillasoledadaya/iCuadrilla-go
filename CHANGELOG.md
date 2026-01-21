@@ -1,5 +1,9 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.87 (21/01/2026)
+
+- **Fix Build**: Añadida comprobación de nulidad para `evento` en el botón de compartir WhatsApp para resolver error de compilación TypeScript.
+
 ## v1.2.86 (21/01/2026)
 
 - **Compartir WhatsApp Mejorado**: Mensaje de compartir eventos por WhatsApp ahora incluye toda la información del evento formateada profesionalmente con emojis: título, fecha completa (día de la semana), horario completo (inicio-fin), lugar, tipo, estado y descripción. Mucho más claro y visual para compartir eventos con la cuadrilla.
