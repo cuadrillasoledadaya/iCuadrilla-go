@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.96 (22/01/2026)
+
+- **Estabilidad Offline Crítica**:
+  - Corregidos errores de red ("Failed to fetch") en el Sidebar y Dashboard al trabajar sin conexión.
+  - Mayor robustez en la sincronización de asistencia.
+  - Silenciados errores de red en segundo plano para una experiencia fluida.
+
 ## v1.2.95 (22/01/2026)
 
 - **Escritura Offline y Sincronización**:

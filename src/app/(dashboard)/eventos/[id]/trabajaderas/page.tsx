@@ -43,38 +43,41 @@ export default function TrabajaderasAsistencia() {
 
             if (cachedTitulo) setEventoTitulo(cachedTitulo);
             if (cachedCuadrilla) setCuadrilla(cachedCuadrilla);
-            if (cachedCuadrilla) setLoading(false);
 
-            // 1. Fetch Evento
-            const { data: evento } = await supabase.from("eventos").select("*").eq("id", params.id).single();
-            if (evento) {
-                setEventoTitulo(evento.titulo);
-                saveToCache(`event_${params.id}_titulo`, evento.titulo);
+            try {
+                // 1. Fetch Evento
+                const { data: evento } = await supabase.from("eventos").select("*").eq("id", params.id).single();
+                if (evento) {
+                    setEventoTitulo(evento.titulo);
+                    saveToCache(`event_${params.id}_titulo`, evento.titulo);
+                }
+
+                // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
+                const [costalerosRes, asistenciasRes] = await Promise.all([
+                    supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera").order("apellidos"),
+                    supabase.from("asistencias").select("*").eq("evento_id", params.id)
+                ]);
+
+                const allCostaleros = costalerosRes.data || [];
+                const allAsistencias = asistenciasRes.data || [];
+
+                const fullCuadrilla = allCostaleros.map((c) => {
+                    const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
+                    return {
+                        ...c,
+                        estado: asistencia?.estado,
+                        hora: asistencia?.hora,
+                        asistencia_id: asistencia?.id
+                    };
+                }) as Costalero[];
+
+                setCuadrilla(fullCuadrilla);
+                saveToCache(`event_${params.id}_cuadrilla`, fullCuadrilla);
+            } catch (err) {
+                console.log("[Offline] Error fetching data, using cache if available:", err);
+            } finally {
+                setLoading(false);
             }
-
-            // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
-            const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera").order("apellidos"),
-                supabase.from("asistencias").select("*").eq("evento_id", params.id)
-            ]);
-
-            const allCostaleros = costalerosRes.data || [];
-            const allAsistencias = asistenciasRes.data || [];
-
-            const fullCuadrilla = allCostaleros.map((c) => {
-                const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
-                return {
-                    ...c,
-                    estado: asistencia?.estado,
-                    hora: asistencia?.hora,
-                    asistencia_id: asistencia?.id
-                };
-            }) as Costalero[];
-
-            setCuadrilla(fullCuadrilla);
-            saveToCache(`event_${params.id}_cuadrilla`, fullCuadrilla);
-
-            setLoading(false);
         };
         fetchData();
     }, [params.id]);
@@ -102,7 +105,24 @@ export default function TrabajaderasAsistencia() {
 
         setSelectedCostalero(null);
 
-        // 3. Attempt to update DB
+        // 3. Add to sync queue AND attempt DB update only if online
+        const actionPayload = {
+            costalero_id: selectedCostalero.id,
+            evento_id: params.id,
+            estado: dbStatus,
+            isDelete: newStatus === 'delete'
+        };
+
+        if (!navigator.onLine) {
+            console.log("[Offline] App is offline, queueing update...");
+            addToSyncQueue({
+                type: 'attendance_update',
+                payload: actionPayload
+            });
+            return;
+        }
+
+        // 4. Attempt to update DB if online
         try {
             if (newStatus === 'delete') {
                 const { error } = await supabase
@@ -126,17 +146,10 @@ export default function TrabajaderasAsistencia() {
                 if (error) throw error;
             }
         } catch (error) {
-            console.log("[Offline] Database update failed, adding to sync queue...", error);
-
-            // 4. If it fails, add to sync queue
+            console.log("[Offline] Database update failed unexpectedly, queueing...", error);
             addToSyncQueue({
                 type: 'attendance_update',
-                payload: {
-                    costalero_id: selectedCostalero.id,
-                    evento_id: params.id,
-                    estado: dbStatus,
-                    isDelete: newStatus === 'delete'
-                }
+                payload: actionPayload
             });
         }
     };

@@ -73,133 +73,108 @@ export default function DashboardPage() {
         if (roleLoading) return;
 
         const fetchDashboardData = async () => {
-            // Cargar de caché primero
-            const cachedStats = getFromCache<Stats>("dashboard_stats");
-            const cachedProximos = getFromCache<any[]>("dashboard_eventos");
-            const cachedAvisos = getFromCache<any[]>("dashboard_avisos");
-            const cachedSeason = getFromCache<string>("active_season");
-            const cachedUser = getFromCache<string>("user_name");
+            try {
+                // Cargar de caché primero
+                const cachedStats = getFromCache<Stats>("dashboard_stats");
+                const cachedProximos = getFromCache<any[]>("dashboard_eventos");
+                const cachedAvisos = getFromCache<any[]>("dashboard_avisos");
+                const cachedSeason = getFromCache<string>("active_season");
+                const cachedUser = getFromCache<string>("user_name");
 
-            if (cachedStats) setStats(cachedStats);
-            if (cachedProximos) setProximosEventos(cachedProximos);
-            if (cachedAvisos) setAvisos(cachedAvisos);
-            if (cachedSeason) setActiveSeasonName(cachedSeason);
-            if (cachedUser) setUserName(cachedUser);
+                if (cachedStats) setStats(cachedStats);
+                if (cachedProximos) setProximosEventos(cachedProximos);
+                if (cachedAvisos) setAvisos(cachedAvisos);
+                if (cachedSeason) setActiveSeasonName(cachedSeason);
+                if (cachedUser) setUserName(cachedUser);
 
-            // Si hay algo en caché, quitamos el loading inicial (aunque se actualizará en background)
-            if (cachedStats || cachedProximos) setLoading(false);
+                // Si hay algo en caché, quitamos el loading inicial (aunque se actualizará en background)
+                if (cachedStats || cachedProximos) setLoading(false);
 
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                const name = user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario";
-                setUserName(name);
-                saveToCache("user_name", name);
+                try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (user) {
+                        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario";
+                        setUserName(name);
+                        saveToCache("user_name", name);
+                    }
+                } catch (e) {
+                    console.error("[Offline] Error fetching user from auth:", e);
+                }
+
+                // 0. Obtener temporada activa
+                try {
+                    const { data: activeSeason } = await supabase
+                        .from("temporadas")
+                        .select("nombre")
+                        .eq("activa", true)
+                        .single();
+                    if (activeSeason) {
+                        setActiveSeasonName(activeSeason.nombre);
+                        saveToCache("active_season", activeSeason.nombre);
+                    }
+                } catch (e) {
+                    console.error("[Offline] Error fetching active season:", e);
+                }
+
+                // 1. Obtener cuadrilla
+                const { count: total } = await supabase.from("costaleros")
+                    .select("*", { count: 'exact', head: true })
+                    .eq("rol", "costalero");
+
+                // 2. Check for anniversary
+                await checkAnniversaryNotifications();
+
+                // 3. Parallel Fetch
+                const now = new Date().toISOString();
+                const notifPromises = [];
+                if (isAdmin) {
+                    notifPromises.push(
+                        supabase.from("notificaciones").select("id", { count: "exact" }).eq("leido", false).eq("destinatario", "admin")
+                    );
+                }
+                if (isCostalero && costaleroId) {
+                    notifPromises.push(
+                        supabase.from("notificaciones").select("id", { count: "exact" }).eq("leido", false).eq("destinatario", "costalero").eq("costalero_id", costaleroId)
+                    );
+                }
+
+                const [eventosRes, proximosRes, anunciosRes, ...notifResults] = await Promise.all([
+                    supabase.from("eventos").select("*").neq("estado", "finalizado"),
+                    supabase.from("eventos").select("*").gte("fecha_inicio", now).order("fecha_inicio", { ascending: true }).limit(5),
+                    supabase.from("anuncios").select("*").order("created_at", { ascending: false }).limit(5),
+                    ...notifPromises
+                ]);
+
+                const pendientesCount = eventosRes.data?.length || 0;
+                const eventosProximos = proximosRes.data || [];
+                const avisosData = anunciosRes.data || [];
+                const resolvedNotifCount = notifResults.reduce((acc, res) => acc + (res.count || 0), 0);
+                setUnreadCount(resolvedNotifCount);
+
+                // Estadísticas
+                const { data: ultimoEvento } = await supabase.from("eventos").select("*").eq("estado", "finalizado").order("fecha_inicio", { ascending: false }).limit(1).single();
+                let asistenciaStats = { total: total || 35, presentes: 0, porcentaje: 0 };
+                if (ultimoEvento) {
+                    const eventDate = new Date(ultimoEvento.fecha_inicio).toISOString().split('T')[0];
+                    const { data: asistencias } = await supabase.from("asistencias").select("estado").eq("fecha", eventDate);
+                    const presentes = asistencias?.filter(a => a.estado === 'presente').length || 0;
+                    const totalAsistencias = asistencias?.length || total || 1;
+                    asistenciaStats = { total: total || 35, presentes, porcentaje: Math.round((presentes / totalAsistencias) * 100) };
+                }
+
+                const newStats = { totalCostaleros: total || 0, eventosPendientes: pendientesCount, asistencias: asistenciaStats };
+                setStats(newStats);
+                setProximosEventos(eventosProximos);
+                setAvisos(avisosData);
+
+                saveToCache("dashboard_stats", newStats);
+                saveToCache("dashboard_eventos", eventosProximos);
+                saveToCache("dashboard_avisos", avisosData);
+            } catch (err) {
+                console.log("[Offline] Error updating dashboard data:", err);
+            } finally {
+                setLoading(false);
             }
-
-            // 0. Obtener temporada activa
-            const { data: activeSeason } = await supabase
-                .from("temporadas")
-                .select("nombre")
-                .eq("activa", true)
-                .single();
-            if (activeSeason) {
-                setActiveSeasonName(activeSeason.nombre);
-                saveToCache("active_season", activeSeason.nombre);
-            }
-
-            // 1. Obtener cuadrilla (Solo costaleros activos, excluyendo staff)
-            const { count: total } = await supabase.from("costaleros")
-                .select("*", { count: 'exact', head: true })
-                .eq("rol", "costalero");
-
-            // 2. Check for 25-year anniversary costaleros
-            await checkAnniversaryNotifications();
-
-            // 3. Obtener próximo evento y anuncios (Parallel Fetch)
-            const now = new Date().toISOString();
-
-            const notifPromises = [];
-            if (isAdmin) {
-                notifPromises.push(
-                    supabase.from("notificaciones")
-                        .select("id", { count: "exact" })
-                        .eq("leido", false)
-                        .eq("destinatario", "admin")
-                );
-            }
-            if (isCostalero && costaleroId) {
-                notifPromises.push(
-                    supabase.from("notificaciones")
-                        .select("id", { count: "exact" })
-                        .eq("leido", false)
-                        .eq("destinatario", "costalero")
-                        .eq("costalero_id", costaleroId)
-                );
-            }
-
-            const [eventosRes, proximosRes, anunciosRes, ...notifResults] = await Promise.all([
-                supabase.from("eventos").select("*").neq("estado", "finalizado"),
-                supabase.from("eventos")
-                    .select("*")
-                    .gte("fecha_inicio", now)
-                    .order("fecha_inicio", { ascending: true })
-                    .limit(5),
-                supabase.from("anuncios")
-                    .select("*")
-                    .order("created_at", { ascending: false })
-                    .limit(5),
-                ...notifPromises
-            ]);
-
-            const pendientesCount = eventosRes.data?.length || 0;
-            const eventosProximos = proximosRes.data || [];
-            const avisosData = anunciosRes.data || [];
-            const resolvedNotifCount = notifResults.reduce((acc, res) => acc + (res.count || 0), 0);
-            setUnreadCount(resolvedNotifCount);
-
-            // 3. Estadísticas de asistencia (Último evento finalizado)
-            const { data: ultimoEvento } = await supabase
-                .from("eventos")
-                .select("*")
-                .eq("estado", "finalizado")
-                .order("fecha_inicio", { ascending: false })
-                .limit(1)
-                .single();
-
-            let asistenciaStats = { total: total || 35, presentes: 0, porcentaje: 0 };
-
-            if (ultimoEvento) {
-                const eventDate = new Date(ultimoEvento.fecha_inicio).toISOString().split('T')[0];
-                const { data: asistencias } = await supabase
-                    .from("asistencias")
-                    .select("estado")
-                    .eq("fecha", eventDate);
-
-                const presentes = asistencias?.filter(a => a.estado === 'presente').length || 0;
-                const totalAsistencias = asistencias?.length || total || 1;
-                asistenciaStats = {
-                    total: total || 35,
-                    presentes,
-                    porcentaje: Math.round((presentes / totalAsistencias) * 100)
-                };
-            }
-
-            const newStats = {
-                totalCostaleros: total || 0,
-                eventosPendientes: pendientesCount,
-                asistencias: asistenciaStats
-            };
-
-            setStats(newStats);
-            setProximosEventos(eventosProximos);
-            setAvisos(avisosData);
-
-            // Guardar en caché
-            saveToCache("dashboard_stats", newStats);
-            saveToCache("dashboard_eventos", eventosProximos);
-            saveToCache("dashboard_avisos", avisosData);
-
-            setLoading(false);
         };
 
         const checkAnniversaryNotifications = async () => {

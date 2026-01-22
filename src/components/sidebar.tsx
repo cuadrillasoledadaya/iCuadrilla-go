@@ -37,22 +37,31 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     useEffect(() => {
         const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) setUserEmail(user.email || null);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) setUserEmail(user.email || null);
+            } catch (e) {
+                console.log("[Offline] Error getting user in sidebar:", e);
+            }
         };
         getUser();
         fetchSeasons();
     }, []);
 
     const fetchSeasons = async () => {
-        setLoadingSeasons(true);
-        const { data } = await supabase.from("temporadas").select("*").order("created_at", { ascending: false });
-        if (data) {
-            setTemporadasList(data);
-            const active = data.find((t: any) => t.activa);
-            setActiveSeason(active || null);
+        try {
+            setLoadingSeasons(true);
+            const { data } = await supabase.from("temporadas").select("*").order("created_at", { ascending: false });
+            if (data) {
+                setTemporadasList(data);
+                const active = data.find((t: any) => t.activa);
+                setActiveSeason(active || null);
+            }
+        } catch (e) {
+            console.log("[Offline] Error fetching seasons in sidebar:", e);
+        } finally {
+            setLoadingSeasons(false);
         }
-        setLoadingSeasons(false);
     };
 
     const handleSwitchSeason = async (season: any) => {
@@ -235,7 +244,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.95</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.96</p>
                     </div>
                 </div>
             </aside>
