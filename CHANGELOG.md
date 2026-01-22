@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.07 (22/01/2026)
+
+- **Corrección de Iconografía PWA**:
+  - Reconfigurados los metadatos de iconos en `layout.tsx` y `manifest.json`.
+  - Asegurada la visibilidad del escudo de la Hermandad en el icono de la aplicación para iOS y Android.
+  - Añadido soporte explícito para `apple-touch-icon`.
+
 ## v1.3.06 (22/01/2026)
 
 - **Corrección de Lógica de Redirección**:
