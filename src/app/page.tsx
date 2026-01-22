@@ -26,7 +26,7 @@ export default async function Home() {
     // }
 
     return (
-        <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden animate-in fade-in duration-1000 ease-out">
+        <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden animate-in fade-in duration-[2000ms] ease-in-out">
             {/* Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05)_0%,transparent_50%)] pointer-events-none" />
             <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[5000ms]" />
@@ -34,7 +34,7 @@ export default async function Home() {
 
             <div className="max-w-md w-full space-y-12 relative z-10 flex flex-col items-center">
                 {/* Logo Section */}
-                <div className="relative group animate-in fade-in zoom-in duration-[2000ms] delay-500 ease-in-out">
+                <div className="relative group opacity-0 animate-in fade-in duration-[3000ms] delay-[1000ms] ease-in-out fill-mode-forwards">
                     <div className="absolute inset-0 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all duration-[2000ms]" />
                     <div
                         className="relative w-48 h-48 sm:w-56 sm:h-56 transition-transform duration-[2000ms] ease-in-out group-hover:scale-105"
@@ -54,7 +54,7 @@ export default async function Home() {
                 </div>
 
                 {/* Title & Description */}
-                <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-[1500ms] delay-[2500ms] ease-in-out">
+                <div className="text-center space-y-4 opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-[2500ms] delay-[4500ms] ease-in-out fill-mode-forwards">
                     <h1 className="text-5xl font-black tracking-tighter text-white sm:text-7xl italic uppercase">
                         iCuadrilla
                     </h1>
@@ -64,7 +64,7 @@ export default async function Home() {
                 </div>
 
                 {/* Actions */}
-                <div className="w-full space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-[1500ms] delay-[3500ms] ease-in-out text-center">
+                <div className="w-full space-y-6 pt-4 opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-[2000ms] delay-[7000ms] ease-in-out fill-mode-forwards text-center">
                     <Link
                         href="/login"
                         className="group relative flex items-center justify-center w-full rounded-2xl bg-white px-8 py-5 text-xl font-black text-black transition-all hover:bg-neutral-100 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] active:scale-95 overflow-hidden"

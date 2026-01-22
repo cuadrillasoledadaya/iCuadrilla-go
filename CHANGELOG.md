@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.10 (22/01/2026)
+
+- **Intro Cinematográfica Ultra-Lenta**:
+  - Aumentado el tiempo de aparición del escudo a 3 segundos para una entrada majestuosa.
+  - El texto permanece totalmente oculto hasta que el escudo se ha asentado (4.5s de delay).
+  - Eliminado zoom-in y suavizada la entrada de textos para evitar cualquier efecto de rebote.
+  - Asegurada la invisibilidad inicial mediante clases base `opacity-0`.
+
 ## v1.3.09 (22/01/2026)
 
 - **Perfeccionamiento de Intro Cinematográfica**:
