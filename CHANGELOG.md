@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.02 (22/01/2026)
+
+- **Pantalla de Inicio (Splash Screen) Premium**:
+  - Cambiado el color de fondo de la pantalla de carga inicial de blanco a negro profundo.
+  - Sincronización del color de tema para evitar el "destello blanco" al abrir la app desde el móvil.
+
 ## v1.3.01 (22/01/2026)
 
 - **Eliminación de Saltos Visuales**:

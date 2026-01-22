@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-    themeColor: "#165d31",
+    themeColor: "#000000",
 };
 
 import { LayoutProvider } from "@/components/layout-context";
