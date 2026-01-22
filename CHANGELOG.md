@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.93 (22/01/2026)
+
+- **Mejora del Modo Offline**:
+  - Actualización a `@ducanh2912/next-pwa` para mayor estabilidad y rendimiento en Next.js 14.
+  - Implementación de una página de fallback ("Sin Conexión") personalizada.
+  - Añadido un banner de estado de conexión en tiempo real en la parte superior.
+  - Mejoras en el sistema de caché para permitir navegación básica sin internet.
+
 ## v1.2.92 (21/01/2026)
 
 - **Ajuste UI Asistencia Manual**: Movido el indicador de "Suplemento" a la esquina inferior derecha y simplificado el texto (Cantidad + "cm").

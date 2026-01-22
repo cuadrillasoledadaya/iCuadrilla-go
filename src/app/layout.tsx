@@ -25,6 +25,7 @@ export const viewport = {
 import { LayoutProvider } from "@/components/layout-context";
 import { LayoutWrapper } from "@/components/layout-wrapper";
 import { ScrollToTopButton } from "@/components/ui/scroll-to-top";
+import { OfflineBanner } from "@/components/offline-banner";
 
 export default function RootLayout({
     children,
@@ -34,6 +35,7 @@ export default function RootLayout({
     return (
         <html lang="es">
             <body className={inter.className}>
+                <OfflineBanner />
                 <LayoutProvider>
                     <LayoutWrapper>
                         {children}
