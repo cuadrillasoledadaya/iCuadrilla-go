@@ -176,7 +176,7 @@ body {
 
 .intro-logo {
   opacity: 0;
-  animation: fadeInLogo 3s ease-in-out 0.5s forwards;
+  animation: fadeInLogo 3s ease-in-out 0s forwards;
 }
 
 .intro-text {

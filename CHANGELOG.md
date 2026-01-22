@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.13 (22/01/2026)
+
+- **Eliminación de Duplicación de Escudo**:
+  - Eliminado el delay inicial en la animación del escudo para crear continuidad perfecta con el splash screen de la PWA.
+  - El escudo del splash screen ahora "se transforma" directamente en el escudo animado sin duplicación visible.
+
 ## v1.3.12 (22/01/2026)
 
 - **Solución Definitiva: Intro con Animaciones CSS Personalizadas**:
