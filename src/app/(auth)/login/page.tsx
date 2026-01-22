@@ -33,7 +33,7 @@ export default function LoginPage() {
             setMessage(`Credenciales incorrectas. Verifica tu email y contraseña.`);
             console.error(authError);
         } else {
-            router.push("/");
+            router.push("/dashboard");
             router.refresh();
         }
         setLoading(false);

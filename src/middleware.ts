@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
         request.nextUrl.pathname.startsWith('/registro') ||
         request.nextUrl.pathname.startsWith('/recuperar') ||
         request.nextUrl.pathname.startsWith('/auth')
-    const isRootPage = request.nextUrl.pathname === '/'
+    const isRootPage = request.nextUrl.pathname === '/' || request.nextUrl.pathname === ''
 
     // Si no hay usuario y no estamos en login/registro o la raíz, redirigir a login
     if (!user && !isAuthPage && !isRootPage) {

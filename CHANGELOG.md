@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.06 (22/01/2026)
+
+- **Corrección de Lógica de Redirección**:
+  - Corregido el redireccionamiento post-login para ir directamente al Dashboard.
+  - Refinada la entrada PWA para asegurar que la pantalla de bienvenida sea siempre el acceso inicial público.
+  - Asegurado el flujo: Bienvenida -> Login -> Dashboard.
+
 ## v1.3.05 (22/01/2026)
 
 - **Seguridad: Cierre por Inactividad**:
