@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import {
     Home,
     Bell,
@@ -120,11 +121,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         setIsLoggingOut(true);
         onClose(); // Cerrar el sidebar primero
 
-        // Pequeña espera para que el sidebar se cierre suavemente y se vea el mensaje de cierre
-        setTimeout(async () => {
+        try {
             await supabase.auth.signOut();
-            router.push("/");
-        }, 800);
+            // Usamos window.location para asegurar limpieza total de estados y forzar la entrada a "/"
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 1000);
+        } catch (error) {
+            console.error("Error signing out:", error);
+            window.location.href = "/";
+        }
     };
 
     return (
@@ -132,11 +138,26 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Logout Overlay */}
             {isLoggingOut && (
                 <div className="fixed inset-0 z-[100] bg-black animate-in fade-in duration-700 flex flex-col items-center justify-center text-center p-6">
-                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 border border-white/10">
-                        <Calendar className="text-white animate-pulse" size={32} />
+                    <div className="relative mb-8 animate-pulse">
+                        <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full" />
+                        <div className="relative w-32 h-32 opacity-80">
+                            <Image
+                                src="/escudo.png"
+                                alt="Escudo"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
                     </div>
-                    <h3 className="text-xl font-black text-white uppercase tracking-tighter italic">Cerrando Sesión...</h3>
-                    <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest mt-2">Hasta pronto</p>
+                    <div className="space-y-2">
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Cerrando Sesión</h3>
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                        <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-[0.3em] pt-4">Guardando cambios y saliendo...</p>
+                    </div>
                 </div>
             )}
 
@@ -266,7 +287,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.3.02</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.3.03</p>
                     </div>
                 </div>
             </aside>

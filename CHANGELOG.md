@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.03 (22/01/2026)
+
+- **Cierre de Sesión Profesional**:
+  - Añadido el escudo de la hermandad a la pantalla de cierre de sesión.
+  - Mejorado el sistema de redirección para evitar que la pantalla se quede bloqueada.
+  - Añadido indicador visual de carga durante el proceso de salida.
+
 ## v1.3.02 (22/01/2026)
 
 - **Pantalla de Inicio (Splash Screen) Premium**:
