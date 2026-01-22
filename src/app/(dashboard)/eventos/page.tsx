@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
+import { saveToCache, getFromCache } from "@/lib/offline-utils";
 
 interface Evento {
     id: string;
@@ -42,6 +43,14 @@ export default function AgendaEventos() {
 
     useEffect(() => {
         const fetchEventos = async () => {
+            // Cargar de caché
+            const cachedEventos = getFromCache<Evento[]>("eventos_list");
+            const cachedSeason = getFromCache<string>("active_season_events");
+
+            if (cachedEventos) setEventos(cachedEventos);
+            if (cachedSeason) setActiveSeasonName(cachedSeason);
+            if (cachedEventos) setLoading(false);
+
             // 1. Obtener temporada activa
             const { data: activeSeason } = await supabase
                 .from("temporadas")
@@ -49,7 +58,10 @@ export default function AgendaEventos() {
                 .eq("activa", true)
                 .single();
 
-            if (activeSeason) setActiveSeasonName(activeSeason.nombre);
+            if (activeSeason) {
+                setActiveSeasonName(activeSeason.nombre);
+                saveToCache("active_season_events", activeSeason.nombre);
+            }
 
             // 2. Construir query base
             let query = supabase
@@ -73,6 +85,7 @@ export default function AgendaEventos() {
                     return new Date(a.fecha_inicio).getTime() - new Date(b.fecha_inicio).getTime();
                 });
                 setEventos(sorted);
+                saveToCache("eventos_list", sorted);
             }
             setLoading(false);
         };

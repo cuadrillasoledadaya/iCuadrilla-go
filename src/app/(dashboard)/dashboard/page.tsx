@@ -15,6 +15,7 @@ import { useLayout } from "@/components/layout-context";
 import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { saveToCache, getFromCache } from "@/lib/offline-utils";
 
 interface Stats {
     totalCostaleros: number;
@@ -72,9 +73,27 @@ export default function DashboardPage() {
         if (roleLoading) return;
 
         const fetchDashboardData = async () => {
+            // Cargar de caché primero
+            const cachedStats = getFromCache<Stats>("dashboard_stats");
+            const cachedProximos = getFromCache<any[]>("dashboard_eventos");
+            const cachedAvisos = getFromCache<any[]>("dashboard_avisos");
+            const cachedSeason = getFromCache<string>("active_season");
+            const cachedUser = getFromCache<string>("user_name");
+
+            if (cachedStats) setStats(cachedStats);
+            if (cachedProximos) setProximosEventos(cachedProximos);
+            if (cachedAvisos) setAvisos(cachedAvisos);
+            if (cachedSeason) setActiveSeasonName(cachedSeason);
+            if (cachedUser) setUserName(cachedUser);
+
+            // Si hay algo en caché, quitamos el loading inicial (aunque se actualizará en background)
+            if (cachedStats || cachedProximos) setLoading(false);
+
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario");
+                const name = user.user_metadata?.full_name || user.email?.split('@')[0] || "Usuario";
+                setUserName(name);
+                saveToCache("user_name", name);
             }
 
             // 0. Obtener temporada activa
@@ -83,22 +102,23 @@ export default function DashboardPage() {
                 .select("nombre")
                 .eq("activa", true)
                 .single();
-            if (activeSeason) setActiveSeasonName(activeSeason.nombre);
+            if (activeSeason) {
+                setActiveSeasonName(activeSeason.nombre);
+                saveToCache("active_season", activeSeason.nombre);
+            }
 
             // 1. Obtener cuadrilla (Solo costaleros activos, excluyendo staff)
             const { count: total } = await supabase.from("costaleros")
                 .select("*", { count: 'exact', head: true })
                 .eq("rol", "costalero");
 
-            // 2. Check for 25-year anniversary costaleros (Important: Before notification count query)
+            // 2. Check for 25-year anniversary costaleros
             await checkAnniversaryNotifications();
 
             // 3. Obtener próximo evento y anuncios (Parallel Fetch)
             const now = new Date().toISOString();
 
-            // Notification query: Collect counts for all roles the user has
             const notifPromises = [];
-
             if (isAdmin) {
                 notifPromises.push(
                     supabase.from("notificaciones")
@@ -107,7 +127,6 @@ export default function DashboardPage() {
                         .eq("destinatario", "admin")
                 );
             }
-
             if (isCostalero && costaleroId) {
                 notifPromises.push(
                     supabase.from("notificaciones")
@@ -165,16 +184,22 @@ export default function DashboardPage() {
                 };
             }
 
-            setStats({
+            const newStats = {
                 totalCostaleros: total || 0,
                 eventosPendientes: pendientesCount,
                 asistencias: asistenciaStats
-            });
+            };
+
+            setStats(newStats);
             setProximosEventos(eventosProximos);
             setAvisos(avisosData);
+
+            // Guardar en caché
+            saveToCache("dashboard_stats", newStats);
+            saveToCache("dashboard_eventos", eventosProximos);
+            saveToCache("dashboard_avisos", avisosData);
+
             setLoading(false);
-
-
         };
 
         const checkAnniversaryNotifications = async () => {

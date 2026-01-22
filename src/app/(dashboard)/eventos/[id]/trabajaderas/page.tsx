@@ -13,6 +13,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { saveToCache, getFromCache } from "@/lib/offline-utils";
 
 interface Costalero {
     id: string;
@@ -36,13 +37,20 @@ export default function TrabajaderasAsistencia() {
 
     useEffect(() => {
         const fetchData = async () => {
+            // Cargar de caché
+            const cachedTitulo = getFromCache<string>(`event_${params.id}_titulo`);
+            const cachedCuadrilla = getFromCache<Costalero[]>(`event_${params.id}_cuadrilla`);
+
+            if (cachedTitulo) setEventoTitulo(cachedTitulo);
+            if (cachedCuadrilla) setCuadrilla(cachedCuadrilla);
+            if (cachedCuadrilla) setLoading(false);
+
             // 1. Fetch Evento
             const { data: evento } = await supabase.from("eventos").select("*").eq("id", params.id).single();
-            if (!evento) return;
-            setEventoTitulo(evento.titulo);
-
-            const dateObj = new Date(evento.fecha_inicio);
-            const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            if (evento) {
+                setEventoTitulo(evento.titulo);
+                saveToCache(`event_${params.id}_titulo`, evento.titulo);
+            }
 
             // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
             const [costalerosRes, asistenciasRes] = await Promise.all([
@@ -53,7 +61,7 @@ export default function TrabajaderasAsistencia() {
             const allCostaleros = costalerosRes.data || [];
             const allAsistencias = asistenciasRes.data || [];
 
-            setCuadrilla(allCostaleros.map((c) => {
+            const fullCuadrilla = allCostaleros.map((c) => {
                 const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
                 return {
                     ...c,
@@ -61,7 +69,10 @@ export default function TrabajaderasAsistencia() {
                     hora: asistencia?.hora,
                     asistencia_id: asistencia?.id
                 };
-            }) as Costalero[]);
+            }) as Costalero[];
+
+            setCuadrilla(fullCuadrilla);
+            saveToCache(`event_${params.id}_cuadrilla`, fullCuadrilla);
 
             setLoading(false);
         };

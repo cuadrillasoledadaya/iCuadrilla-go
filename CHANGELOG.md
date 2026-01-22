@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.94 (22/01/2026)
+
+- **Caché de Datos Offline**:
+  - Implementado sistema de persistencia local (`localStorage`) para datos de la base de datos.
+  - El Dashboard, la Agenda y la lista de Asistencias ahora son accesibles sin conexión tras la primera carga.
+  - Optimización de caché de imágenes de Supabase para visualización offline.
+
 ## v1.2.93 (22/01/2026)
 
 - **Mejora del Modo Offline**:
