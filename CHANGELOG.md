@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.11 (22/01/2026)
+
+- **Corrección Crítica: Pantalla Negra en Inicio**:
+  - Eliminados conflictos entre clases de opacidad estáticas y animaciones dinámicas.
+  - Asegurada la visibilidad de los elementos delegando el control total al motor de animaciones.
+  - Ajustados los retardos secuenciales para mantener la elegancia sin comprometer la carga visual.
+
 ## v1.3.10 (22/01/2026)
 
 - **Intro Cinematográfica Ultra-Lenta**:
