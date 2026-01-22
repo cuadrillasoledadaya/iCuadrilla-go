@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.95 (22/01/2026)
+
+- **Escritura Offline y Sincronización**:
+  - Añadida "Cola de Sincronización" para guardar cambios realizados sin conexión.
+  - Sincronización automática en segundo plano al recuperar el internet.
+  - Eliminado el error "Failed to fetch" al marcar asistencia offline.
+  - Actualización inmediata del caché local tras cualquier cambio.
+
 ## v1.2.94 (22/01/2026)
 
 - **Caché de Datos Offline**:

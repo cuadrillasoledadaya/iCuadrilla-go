@@ -13,7 +13,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { saveToCache, getFromCache } from "@/lib/offline-utils";
+import { saveToCache, getFromCache, addToSyncQueue } from "@/lib/offline-utils";
 
 interface Costalero {
     id: string;
@@ -82,38 +82,62 @@ export default function TrabajaderasAsistencia() {
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero) return;
 
-        // Optimistic Update
-        if (newStatus === 'delete') {
-            setCuadrilla(prev => prev.map(c =>
-                c.id === selectedCostalero.id ? { ...c, estado: undefined, asistencia_id: undefined } : c
-            ));
-        } else {
-            setCuadrilla(prev => prev.map(c =>
-                c.id === selectedCostalero.id ? { ...c, estado: newStatus === 'justificado' ? 'justificada' : newStatus } : c
-            ));
-        }
+        const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+
+        // 1. Optimistic Update in State
+        const updatedCuadrilla = cuadrilla.map(c => {
+            if (c.id === selectedCostalero.id) {
+                if (newStatus === 'delete') {
+                    return { ...c, estado: undefined, asistencia_id: undefined };
+                }
+                return { ...c, estado: dbStatus as any };
+            }
+            return c;
+        });
+
+        setCuadrilla(updatedCuadrilla);
+
+        // 2. Persist to local cache immediately (so refresh offline works)
+        saveToCache(`event_${params.id}_cuadrilla`, updatedCuadrilla);
+
         setSelectedCostalero(null);
 
-        if (newStatus === 'delete') {
-            const query = supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("evento_id", params.id);
-            await query;
-        } else {
-            const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+        // 3. Attempt to update DB
+        try {
+            if (newStatus === 'delete') {
+                const { error } = await supabase
+                    .from("asistencias")
+                    .delete()
+                    .eq("costalero_id", selectedCostalero.id)
+                    .eq("evento_id", params.id);
 
-            const { error } = await supabase
-                .from("asistencias")
-                .upsert({
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from("asistencias")
+                    .upsert({
+                        costalero_id: selectedCostalero.id,
+                        evento_id: params.id,
+                        estado: dbStatus
+                    }, {
+                        onConflict: 'costalero_id,evento_id'
+                    });
+
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.log("[Offline] Database update failed, adding to sync queue...", error);
+
+            // 4. If it fails, add to sync queue
+            addToSyncQueue({
+                type: 'attendance_update',
+                payload: {
                     costalero_id: selectedCostalero.id,
                     evento_id: params.id,
-                    estado: dbStatus
-                }, {
-                    onConflict: 'costalero_id,evento_id'
-                });
-
-            if (error) {
-                console.error(error);
-                alert("Error: " + error.message);
-            }
+                    estado: dbStatus,
+                    isDelete: newStatus === 'delete'
+                }
+            });
         }
     };
 

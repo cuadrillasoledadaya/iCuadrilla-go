@@ -26,6 +26,7 @@ import { LayoutProvider } from "@/components/layout-context";
 import { LayoutWrapper } from "@/components/layout-wrapper";
 import { ScrollToTopButton } from "@/components/ui/scroll-to-top";
 import { OfflineBanner } from "@/components/offline-banner";
+import { SyncProvider } from "@/components/sync-provider";
 
 export default function RootLayout({
     children,
@@ -36,11 +37,13 @@ export default function RootLayout({
         <html lang="es">
             <body className={inter.className}>
                 <OfflineBanner />
-                <LayoutProvider>
-                    <LayoutWrapper>
-                        {children}
-                    </LayoutWrapper>
-                </LayoutProvider>
+                <SyncProvider>
+                    <LayoutProvider>
+                        <LayoutWrapper>
+                            {children}
+                        </LayoutWrapper>
+                    </LayoutProvider>
+                </SyncProvider>
                 <ScrollToTopButton />
             </body>
         </html>

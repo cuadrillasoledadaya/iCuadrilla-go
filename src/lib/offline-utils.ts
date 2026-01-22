@@ -38,3 +38,60 @@ export const getFromCache = <T>(key: string, maxAgeMs?: number): T | null => {
         return null;
     }
 };
+
+/**
+ * Synchronization Queue Interface
+ */
+export interface SyncAction {
+    id: string;
+    type: 'attendance_update';
+    payload: any;
+    timestamp: number;
+}
+
+/**
+ * Add an action to the sync queue.
+ */
+export const addToSyncQueue = (action: Omit<SyncAction, 'id' | 'timestamp'>) => {
+    if (typeof window === "undefined") return;
+    try {
+        const queue = getSyncQueue();
+        const newAction: SyncAction = {
+            ...action,
+            id: crypto.randomUUID(),
+            timestamp: Date.now(),
+        };
+        queue.push(newAction);
+        localStorage.setItem('icuadrilla_sync_queue', JSON.stringify(queue));
+    } catch (e) {
+        console.error("Error adding to sync queue:", e);
+    }
+};
+
+/**
+ * Get all pending actions in the queue.
+ */
+export const getSyncQueue = (): SyncAction[] => {
+    if (typeof window === "undefined") return [];
+    try {
+        const queue = localStorage.getItem('icuadrilla_sync_queue');
+        return queue ? JSON.parse(queue) : [];
+    } catch (e) {
+        console.error("Error reading sync queue:", e);
+        return [];
+    }
+};
+
+/**
+ * Remove an action from the queue by ID.
+ */
+export const removeFromSyncQueue = (id: string) => {
+    if (typeof window === "undefined") return;
+    try {
+        const queue = getSyncQueue();
+        const filtered = queue.filter(a => a.id !== id);
+        localStorage.setItem('icuadrilla_sync_queue', JSON.stringify(filtered));
+    } catch (e) {
+        console.error("Error removing from sync queue:", e);
+    }
+};
