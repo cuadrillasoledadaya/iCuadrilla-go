@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.01 (22/01/2026)
+
+- **Eliminación de Saltos Visuales**:
+  - Implementada cortinilla negra de seguridad durante el logout para ocultar cambios de layout.
+  - Ajuste cinematográfico de la entrada: animaciones escalonadas y pausadas para una bienvenida fluida.
+
 ## v1.3.00 (22/01/2026)
 
 - **Experiencia de Cierre de Sesión Premium**:

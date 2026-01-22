@@ -114,18 +114,32 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         }] : [])
     ];
 
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
     const handleSignOut = async () => {
+        setIsLoggingOut(true);
         onClose(); // Cerrar el sidebar primero
 
-        // Pequeña espera para que el sidebar se cierre suavemente antes de la redirección
+        // Pequeña espera para que el sidebar se cierre suavemente y se vea el mensaje de cierre
         setTimeout(async () => {
             await supabase.auth.signOut();
             router.push("/");
-        }, 300);
+        }, 800);
     };
 
     return (
         <>
+            {/* Logout Overlay */}
+            {isLoggingOut && (
+                <div className="fixed inset-0 z-[100] bg-black animate-in fade-in duration-700 flex flex-col items-center justify-center text-center p-6">
+                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 border border-white/10">
+                        <Calendar className="text-white animate-pulse" size={32} />
+                    </div>
+                    <h3 className="text-xl font-black text-white uppercase tracking-tighter italic">Cerrando Sesión...</h3>
+                    <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest mt-2">Hasta pronto</p>
+                </div>
+            )}
+
             {/* Backdrop */}
             <div
                 className={cn(
@@ -252,7 +266,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.3.00</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.3.01</p>
                     </div>
                 </div>
             </aside>
