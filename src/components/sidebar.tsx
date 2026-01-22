@@ -15,7 +15,10 @@ import {
     LogOut,
     ChevronDown,
     X,
-    Lock
+    Lock,
+    MoreVertical,
+    Trash2,
+    Music
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -103,6 +106,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 { label: "Nuevo Evento", href: "/eventos/nuevo", icon: PlusCircle },
                 { label: "Cuadrilla", href: "/cuadrilla", icon: Users },
                 { label: "Datos Palio", href: "/datos-palio", icon: Database },
+                { label: "Repertorio Musical", href: "/repertorio", icon: Music },
                 { label: "Exportar Datos", href: "/exportar", icon: Download },
                 { label: "Configurar Temporada", href: "/temporadas", icon: Settings },
                 ...(canManageRoles ? [{ label: "Gestión de Roles", href: "/ajustes/roles", icon: Users }] : []),
@@ -244,7 +248,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.97</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.98</p>
                     </div>
                 </div>
             </aside>
