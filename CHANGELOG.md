@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.08 (22/01/2026)
+
+- **Optimización de Iconografía e Inicio PWA**:
+  - Simplificados los metadatos de iconos para evitar el "encogimiento" y fondos blancos no deseados en Android.
+  - Asegurada la prioridad del escudo de la Hermandad como icono principal.
+  - Verificada la correcta redirección post-login hacia el Dashboard.
+
 ## v1.3.07 (22/01/2026)
 
 - **Corrección de Iconografía PWA**:
@@ -18,8 +25,7 @@
 
 - **Seguridad: Cierre por Inactividad**:
   - Implementado sistema de vigilancia que cierra la sesión automáticamente tras 10 minutos de inactividad.
-- **Flujo de Entrada Forzado**:
-  - Configurada la PWA (`manifest.json`) y Middleware para que el acceso inicial siempre pase por la pantalla de bienvenida, reforzando la identidad visual de la cofradía.
+  - Añadida pantalla de aviso de sesión caducada.
 
 ## v1.3.03 (22/01/2026)
 
