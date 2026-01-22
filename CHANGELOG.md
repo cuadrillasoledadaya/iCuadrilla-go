@@ -1,5 +1,19 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.99 (22/01/2026)
+
+- **Acceso Democrático al Repertorio**:
+  - El menú **Repertorio Musical** ya es visible para todos los usuarios (Costaleros e invitados).
+  - Los costaleros pueden visualizar y descargar los archivos, pero no subirlos ni borrarlos.
+  - Gestión restringida solo a administradores.
+
+## v1.2.98 (22/01/2026)
+
+- **Nueva Función: Repertorio Musical**:
+  - Implementada base de datos y almacenamiento para partituras y listados.
+  - Soporte para archivos PDF y Word.
+  - Organización por temporadas y eventos.
+
 ## v1.2.97 (22/01/2026)
 
 - **Extensión de Robustez Offline**:
