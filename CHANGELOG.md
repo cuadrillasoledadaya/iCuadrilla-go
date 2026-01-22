@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.00 (22/01/2026)
+
+- **Experiencia de Cierre de Sesión Premium**:
+  - Implementada transición suave al cerrar sesión (delay de 300ms para permitir cierre de menú).
+  - Rediseño de las animaciones de la pantalla de bienvenida para eliminar "saltos" y hacerlas más fluidas y elegantes.
+
 ## v1.2.99 (22/01/2026)
 
 - **Acceso Democrático al Repertorio**:

@@ -33,10 +33,10 @@ export default async function Home() {
 
             <div className="max-w-md w-full space-y-12 relative z-10 flex flex-col items-center">
                 {/* Logo Section */}
-                <div className="relative group animate-in fade-in zoom-in duration-1000">
-                    <div className="absolute inset-0 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all duration-700" />
+                <div className="relative group animate-in fade-in zoom-in duration-1000 ease-out">
+                    <div className="absolute inset-0 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all duration-1000" />
                     <div
-                        className="relative w-48 h-48 sm:w-56 sm:h-56"
+                        className="relative w-48 h-48 sm:w-56 sm:h-56 transition-transform duration-700 group-hover:scale-105"
                         style={{
                             maskImage: 'radial-gradient(circle, black 40%, transparent 80%)',
                             WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 80%)'
@@ -53,7 +53,7 @@ export default async function Home() {
                 </div>
 
                 {/* Title & Description */}
-                <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+                <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 ease-out">
                     <h1 className="text-5xl font-black tracking-tighter text-white sm:text-7xl italic uppercase">
                         iCuadrilla
                     </h1>
@@ -63,10 +63,10 @@ export default async function Home() {
                 </div>
 
                 {/* Actions */}
-                <div className="w-full space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 text-center">
+                <div className="w-full space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-700 ease-out text-center">
                     <Link
                         href="/login"
-                        className="group relative flex items-center justify-center w-full rounded-2xl bg-white px-8 py-5 text-xl font-black text-black transition-all hover:bg-neutral-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] active:scale-95 overflow-hidden"
+                        className="group relative flex items-center justify-center w-full rounded-2xl bg-white px-8 py-5 text-xl font-black text-black transition-all hover:bg-neutral-100 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] active:scale-95 overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                         <span className="relative">Entrar en la Aplicación</span>

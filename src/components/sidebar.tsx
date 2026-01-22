@@ -116,8 +116,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const handleSignOut = async () => {
         onClose(); // Cerrar el sidebar primero
-        await supabase.auth.signOut();
-        router.push("/");
+
+        // Pequeña espera para que el sidebar se cierre suavemente antes de la redirección
+        setTimeout(async () => {
+            await supabase.auth.signOut();
+            router.push("/");
+        }, 300);
     };
 
     return (
@@ -248,7 +252,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.2.99</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.3.00</p>
                     </div>
                 </div>
             </aside>
