@@ -68,8 +68,9 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Si hay usuario e intentamos entrar a login/registro o la raíz, redirigir a dashboard
-    if (user && (isAuthPage || isRootPage)) {
+    // Si hay usuario e intentamos entrar a login/registro, redirigir a dashboard
+    // PERO permitimos que el usuario vea la raíz (/) para ver la pantalla de bienvenida
+    if (user && isAuthPage) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 

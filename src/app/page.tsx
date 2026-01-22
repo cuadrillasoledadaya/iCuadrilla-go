@@ -20,9 +20,10 @@ export default async function Home() {
 
     const { data: { session } } = await supabase.auth.getSession();
 
-    if (session) {
-        redirect("/dashboard");
-    }
+    // Permitimos que el usuario vea la bienvenida siempre
+    // if (session) {
+    //     redirect("/dashboard");
+    // }
 
     return (
         <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden animate-in fade-in duration-1000 ease-out">

@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.05 (22/01/2026)
+
+- **Seguridad: Cierre por Inactividad**:
+  - Implementado sistema de vigilancia que cierra la sesión automáticamente tras 10 minutos de inactividad.
+- **Flujo de Entrada Forzado**:
+  - Configurada la PWA (`manifest.json`) y Middleware para que el acceso inicial siempre pase por la pantalla de bienvenida, reforzando la identidad visual de la cofradía.
+
 ## v1.3.03 (22/01/2026)
 
 - **Cierre de Sesión Profesional**:

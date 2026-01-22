@@ -27,6 +27,7 @@ import { LayoutWrapper } from "@/components/layout-wrapper";
 import { ScrollToTopButton } from "@/components/ui/scroll-to-top";
 import { OfflineBanner } from "@/components/offline-banner";
 import { SyncProvider } from "@/components/sync-provider";
+import { SessionTimeout } from "@/components/session-timeout";
 
 export default function RootLayout({
     children,
@@ -36,6 +37,7 @@ export default function RootLayout({
     return (
         <html lang="es">
             <body className={inter.className}>
+                <SessionTimeout />
                 <OfflineBanner />
                 <SyncProvider>
                     <LayoutProvider>

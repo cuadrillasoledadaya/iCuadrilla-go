@@ -2,7 +2,7 @@
     "name": "iCuadrilla - Gestión de Costaleros",
     "short_name": "iCuadrilla",
     "description": "App de Gestión de Cuadrilla de Costaleros",
-    "start_url": "/dashboard",
+    "start_url": "/",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait",
