@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.09 (22/01/2026)
+
+- **Perfeccionamiento de Intro Cinematográfica**:
+  - Ajustados los tiempos de animación para que el escudo sea el protagonista inicial.
+  - Implementado un retraso mayor en la aparición de textos y botones para una entrada secuencial.
+  - Eliminado el efecto "rebote" en los textos mediante suavizado `ease-in-out` y reducción de desplazamiento.
+
 ## v1.3.08 (22/01/2026)
 
 - **Optimización de Iconografía e Inicio PWA**:
