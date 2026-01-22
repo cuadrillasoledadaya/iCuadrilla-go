@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.2.97 (22/01/2026)
+
+- **Extensión de Robustez Offline**:
+  - Implementado soporte offline y caché en la página de **Detalle de Asistentes**.
+  - Ahora todas las vistas de asistencia permiten trabajar sin conexión y sincronizan en segundo plano.
+
 ## v1.2.96 (22/01/2026)
 
 - **Estabilidad Offline Crítica**:

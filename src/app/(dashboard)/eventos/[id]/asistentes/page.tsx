@@ -11,8 +11,9 @@ import {
     Trash2
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { saveToCache, getFromCache, addToSyncQueue } from "@/lib/offline-utils";
 
 interface Costalero {
     id: string;
@@ -34,91 +35,114 @@ export default function AsistentesPage() {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
-            // 1. Fetch Evento
-            const { data: eventData } = await supabase.from("eventos").select("*").eq("id", params.id).single();
-            if (!eventData) return;
-            setEvento(eventData);
+            // Cargar de caché
+            const cachedEvento = getFromCache<any>(`event_${params.id}_data`);
+            const cachedAsistentes = getFromCache<Costalero[]>(`asistentes_list_${params.id}`);
 
-            // 2. Fetch Costaleros & Asistencias
-            const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
-                supabase.from("asistencias").select("*").eq("evento_id", params.id)
-            ]);
+            if (cachedEvento) setEvento(cachedEvento);
+            if (cachedAsistentes) setAsistentes(cachedAsistentes);
+            if (cachedAsistentes) setLoading(false);
 
-            const allCostaleros = costalerosRes.data || [];
-            const allAsistencias = asistenciasRes.data || [];
+            try {
+                // 1. Fetch Evento
+                const { data: eventData } = await supabase.from("eventos").select("*").eq("id", params.id).single();
+                if (eventData) {
+                    setEvento(eventData);
+                    saveToCache(`event_${params.id}_data`, eventData);
+                }
 
-            // 3. Filter Asistentes (Con estado presente, justificada o ausente)
-            const filtered = allCostaleros.map(c => {
-                const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
-                return { ...c, estado: asistencia?.estado || null, asistencia_id: asistencia?.id || undefined };
-            }).filter(c => c.estado && (c.estado === 'presente' || c.estado === 'justificada' || c.estado === 'ausente'));
+                // 2. Fetch Costaleros & Asistencias
+                const [costalerosRes, asistenciasRes] = await Promise.all([
+                    supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera", { ascending: true }).order("apellidos", { ascending: true }),
+                    supabase.from("asistencias").select("*").eq("evento_id", params.id)
+                ]);
 
-            setAsistentes(filtered);
-            setLoading(false);
+                const allCostaleros = costalerosRes.data || [];
+                const allAsistencias = asistenciasRes.data || [];
+
+                // 3. Filter Asistentes
+                const filtered = allCostaleros.map(c => {
+                    const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
+                    return { ...c, estado: asistencia?.estado || null, asistencia_id: asistencia?.id || undefined };
+                }).filter(c => c.estado && (c.estado === 'presente' || c.estado === 'justificada' || c.estado === 'ausente'));
+
+                setAsistentes(filtered);
+                saveToCache(`asistentes_list_${params.id}`, filtered);
+            } catch (err) {
+                console.log("[Offline] Error fetching assistants:", err);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();
 
-        // Re-fetch when window regains focus
-        const handleFocus = () => fetchData();
+        // Re-fetch only if online
+        const handleFocus = () => {
+            if (navigator.onLine) fetchData();
+        };
         window.addEventListener('focus', handleFocus);
         return () => window.removeEventListener('focus', handleFocus);
     }, [params.id]);
 
     const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
         if (!selectedCostalero || !evento) return;
-        // setLoading(true); // Removed to rely on optimistic UI and prevent hanging
 
-        const dateObj = new Date(evento.fecha_inicio);
-        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
         // Optimistic Update
+        let updatedAsistentes = [...asistentes];
         if (newStatus === 'delete') {
-            // Remove from assistants list
-            setAsistentes(prev => prev.filter(c => c.id !== selectedCostalero.id));
+            updatedAsistentes = asistentes.filter(c => c.id !== selectedCostalero.id);
         } else {
-            // Update status in list (including 'ausente')
-            setAsistentes(prev => prev.map(c =>
-                c.id === selectedCostalero.id ? { ...c, estado: newStatus === 'justificado' ? 'justificada' : newStatus } : c
-            ));
+            updatedAsistentes = asistentes.map(c =>
+                c.id === selectedCostalero.id ? { ...c, estado: dbStatus as any } : c
+            );
         }
+
+        setAsistentes(updatedAsistentes);
+        saveToCache(`asistentes_list_${params.id}`, updatedAsistentes);
         setSelectedCostalero(null);
 
-        if (newStatus === 'delete') {
-            // Use record ID if we have it, fallback to costalero_id + fecha
-            const query = supabase.from("asistencias").delete();
-            if (selectedCostalero.asistencia_id) {
-                const { error: deleteError } = await query.eq("id", selectedCostalero.asistencia_id);
-                if (deleteError) {
-                    console.error("Delete Error by ID:", deleteError);
-                    alert("Error al limpiar: " + deleteError.message);
-                }
+        // Sync queue payload
+        const actionPayload = {
+            costalero_id: selectedCostalero.id,
+            evento_id: params.id,
+            estado: dbStatus,
+            isDelete: newStatus === 'delete'
+        };
+
+        if (!navigator.onLine) {
+            addToSyncQueue({
+                type: 'attendance_update',
+                payload: actionPayload
+            });
+            return;
+        }
+
+        try {
+            if (newStatus === 'delete') {
+                const { error } = await supabase.from("asistencias").delete().eq("costalero_id", selectedCostalero.id).eq("evento_id", params.id);
+                if (error) throw error;
             } else {
-                const { error: deleteError } = await query.eq("costalero_id", selectedCostalero.id).eq("evento_id", params.id);
-                if (deleteError) {
-                    console.error("Delete Error by Filter:", deleteError);
-                    alert("Error al limpiar: " + deleteError.message);
-                }
-            }
-        } else {
-            const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+                const { error } = await supabase
+                    .from("asistencias")
+                    .upsert({
+                        costalero_id: selectedCostalero.id,
+                        evento_id: params.id,
+                        estado: dbStatus
+                    }, {
+                        onConflict: 'costalero_id,evento_id'
+                    });
 
-            const { error } = await supabase
-                .from("asistencias")
-                .upsert({
-                    costalero_id: selectedCostalero.id,
-                    evento_id: params.id,
-                    estado: dbStatus
-                }, {
-                    onConflict: 'costalero_id,evento_id'
-                });
-
-            if (error) {
-                console.error(error);
-                alert("Error: " + error.message);
+                if (error) throw error;
             }
+        } catch (error) {
+            console.log("[Offline] Sync Error in assistants:", error);
+            addToSyncQueue({
+                type: 'attendance_update',
+                payload: actionPayload
+            });
         }
     };
 
