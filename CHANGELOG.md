@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.3.12 (22/01/2026)
+
+- **Solución Definitiva: Intro con Animaciones CSS Personalizadas**:
+  - Eliminadas todas las dependencias de las clases de Tailwind para animaciones.
+  - Implementadas animaciones @keyframes personalizadas con control total de timing.
+  - Secuencia cinematográfica: Escudo (3s, delay 0.5s) → Texto (2.5s, delay 4s) → Botones (1.5s, delay 6.5s).
+  - Asegurada la invisibilidad inicial con `opacity: 0` y animación `forwards`.
+
 ## v1.3.11 (22/01/2026)
 
 - **Corrección Crítica: Pantalla Negra en Inicio**:
