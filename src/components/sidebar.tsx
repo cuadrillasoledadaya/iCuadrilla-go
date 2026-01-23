@@ -137,7 +137,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <>
             {/* Logout Overlay */}
             {isLoggingOut && (
-                <div className="fixed inset-0 z-[100] bg-black animate-in fade-in duration-700 flex flex-col items-center justify-center text-center p-6">
+                <div className="fixed inset-0 z-[9999] bg-black animate-in fade-in duration-700 flex flex-col items-center justify-center text-center p-6">
                     <div className="relative mb-8 animate-pulse">
                         <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full" />
                         <div className="relative w-32 h-32 opacity-80">
@@ -287,7 +287,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.4.02</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.4.03</p>
                     </div>
                 </div>
             </aside>
