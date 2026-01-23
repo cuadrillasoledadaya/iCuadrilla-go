@@ -1,5 +1,18 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.4.0 (23/01/2026) - SECURITY RELEASE 🔒
+
+- **Correcciones Críticas de Seguridad**:
+  - **Email Hardcoded Eliminado**: Email de administrador maestro movido a variable de entorno `NEXT_PUBLIC_MASTER_EMAIL`
+  - **Validación Zod Implementada**: Creados esquemas de validación para formularios de autenticación
+    - Login: validación de email y contraseña mínima
+    - Registro: validación robusta con requisitos de complejidad (mayúsculas, números, longitud mínima)
+    - Mensajes de error visuales en formularios
+  - **Autorización en Middleware**: Implementada verificación de roles antes de permitir acceso a rutas
+    - Rutas admin-only: `/ajustes/roles`, `/temporadas`, `/cuadrilla`
+    - Rutas admin/auxiliar: `/asistencia/scanner`
+    - Redirección automática a dashboard si no tiene permisos
+
 ## v1.3.13 (22/01/2026)
 
 - **Eliminación de Duplicación de Escudo**:

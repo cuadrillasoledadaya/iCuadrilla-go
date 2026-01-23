@@ -32,7 +32,11 @@ export function useUserRole() {
                 setUserId(user.id);
 
                 // 1. Identificar por Email Maestro (SUPERADMIN)
-                const isMasterEmail = user.email === 'proyectoszipi@gmail.com';
+                const masterEmail = process.env.NEXT_PUBLIC_MASTER_EMAIL;
+                if (!masterEmail) {
+                    console.error('⚠️ SECURITY WARNING: NEXT_PUBLIC_MASTER_EMAIL not set in environment variables');
+                }
+                const isMasterEmail = !!(masterEmail && user.email === masterEmail);
                 setIsMaster(isMasterEmail);
 
                 // 2. Buscar en tabla costaleros (Incluyendo el nuevo campo ROL)

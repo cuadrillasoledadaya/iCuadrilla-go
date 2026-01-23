@@ -74,6 +74,46 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
+    // 🔒 VERIFICACIÓN DE ROLES (Security Fix)
+    // Rutas que solo pueden acceder usuarios con rol de administrador o superior
+    const adminOnlyRoutes = ['/ajustes/roles', '/temporadas', '/cuadrilla'];
+    const adminOrAuxiliarRoutes = ['/asistencia/scanner'];
+
+    // Verificar si estamos intentando acceder a una ruta protegida
+    const pathname = request.nextUrl.pathname;
+    const isAdminRoute = adminOnlyRoutes.some(route => pathname.startsWith(route));
+    const isAdminOrAuxiliarRoute = adminOrAuxiliarRoutes.some(route => pathname.startsWith(route));
+
+    if (user && (isAdminRoute || isAdminOrAuxiliarRoute)) {
+        // Verificar el rol del usuario en la base de datos
+        const { data: costaleroData } = await supabase
+            .from('costaleros')
+            .select('rol')
+            .eq('user_id', user.id)
+            .single();
+
+        const userRole = costaleroData?.rol || 'costalero';
+        const masterEmail = process.env.NEXT_PUBLIC_MASTER_EMAIL;
+        const isMaster = masterEmail && user.email === masterEmail;
+
+        // Verificar permisos según el tipo de ruta
+        if (isAdminRoute) {
+            // Rutas admin: solo master, capataz o auxiliar
+            const hasAdminAccess = isMaster || userRole === 'capataz' || userRole === 'auxiliar';
+            if (!hasAdminAccess) {
+                return NextResponse.redirect(new URL('/dashboard', request.url));
+            }
+        }
+
+        if (isAdminOrAuxiliarRoute) {
+            // Rutas admin/auxiliar: solo master, capataz o auxiliar
+            const hasAccess = isMaster || userRole === 'capataz' || userRole === 'auxiliar';
+            if (!hasAccess) {
+                return NextResponse.redirect(new URL('/dashboard', request.url));
+            }
+        }
+    }
+
     return response
 }
 

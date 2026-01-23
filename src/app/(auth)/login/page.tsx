@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
+import { loginSchema } from "@/lib/validations/auth";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -15,18 +16,34 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
+        setErrors({});
 
-        const cleanEmail = email.trim().toLowerCase();
+        // Validar con Zod
+        const validation = loginSchema.safeParse({ email, password });
+        if (!validation.success) {
+            const fieldErrors: { email?: string; password?: string } = {};
+            validation.error.issues.forEach((err) => {
+                if (err.path[0]) {
+                    fieldErrors[err.path[0] as 'email' | 'password'] = err.message;
+                }
+            });
+            setErrors(fieldErrors);
+            setLoading(false);
+            return;
+        }
+
+        const cleanEmail = validation.data.email.trim().toLowerCase();
 
         const { error: authError } = await supabase.auth.signInWithPassword({
             email: cleanEmail,
-            password,
+            password: validation.data.password,
         });
 
         if (authError) {
@@ -90,6 +107,9 @@ export default function LoginPage() {
                                     className="bg-[#0A0A0A] border-white/5 h-14 rounded-2xl text-white pl-12 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-neutral-700"
                                 />
                             </div>
+                            {errors.email && (
+                                <p className="text-red-400 text-xs font-medium pl-1">{errors.email}</p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
@@ -114,6 +134,9 @@ export default function LoginPage() {
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
+                            {errors.password && (
+                                <p className="text-red-400 text-xs font-medium pl-1">{errors.password}</p>
+                            )}
                         </div>
 
                         {message && (
