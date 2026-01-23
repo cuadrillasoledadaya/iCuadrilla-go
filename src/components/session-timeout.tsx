@@ -1,92 +1,159 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, ShieldAlert } from "lucide-react";
-import Image from "next/image";
+import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase";
 
-const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos en milisegundos
+// Tiempo de inactividad en milisegundos (10 minutos)
+const INACTIVITY_LIMIT = 10 * 60 * 1000;
+// Tiempo de advertencia antes de cerrar sesión (1 minuto antes)
+const WARNING_THRESHOLD = 1 * 60 * 1000;
 
 export function SessionTimeout() {
+    const [showWarning, setShowWarning] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(60);
+    const lastActivityRef = useRef<number>(Date.now());
     const router = useRouter();
-    const [isExpiring, setIsExpiring] = useState(false);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const supabase = createClient();
 
-    const handleSignOut = async () => {
+    // Referencia para el intervalo del temporizador de cuenta regresiva
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const signOut = useCallback(async () => {
         try {
             await supabase.auth.signOut();
-            window.location.href = "/";
+            router.push("/login?timeout=true");
         } catch (error) {
-            console.error("Error automatic sign-out:", error);
-            window.location.href = "/";
+            console.error("Error signing out:", error);
         }
-    };
+    }, [router, supabase]);
 
-    const resetTimer = () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const checkInactivity = useCallback(() => {
+        const now = Date.now();
+        const timeSinceLastActivity = now - lastActivityRef.current;
 
-        timeoutRef.current = setTimeout(() => {
-            setIsExpiring(true);
-            handleSignOut();
-        }, INACTIVITY_LIMIT);
-    };
+        // Si ha pasado el tiempo límite, cerrar sesión
+        if (timeSinceLastActivity >= INACTIVITY_LIMIT) {
+            signOut();
+        }
+        // Si estamos en el umbral de advertencia y no se está mostrando ya
+        else if (timeSinceLastActivity >= (INACTIVITY_LIMIT - WARNING_THRESHOLD)) {
+            if (!showWarning) {
+                setShowWarning(true);
+                // Calcular tiempo restante exacto en segundos
+                const remaining = Math.ceil((INACTIVITY_LIMIT - timeSinceLastActivity) / 1000);
+                setTimeLeft(remaining > 0 ? remaining : 60);
+            }
+        }
+    }, [signOut, showWarning]);
 
+    // Función para resetear el temporizador de inactividad
+    const resetTimer = useCallback(() => {
+        lastActivityRef.current = Date.now();
+        if (showWarning) {
+            setShowWarning(false);
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        }
+    }, [showWarning]);
+
+    // Efecto para escuchar eventos de actividad
     useEffect(() => {
-        // Eventos a monitorizar
         const events = [
             "mousedown",
             "mousemove",
-            "keypress",
+            "keydown",
             "scroll",
             "touchstart",
             "click"
         ];
 
-        // Verificar si hay sesión activa antes de poner el timer
-        const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
+        // Throttle para no ejecutar resetTimer demasiadas veces
+        let timeout: NodeJS.Timeout;
+        const handleActivity = () => {
+            if (timeout) return;
+            timeout = setTimeout(() => {
                 resetTimer();
-                events.forEach((event) => {
-                    window.addEventListener(event, resetTimer);
-                });
-            }
+                // @ts-ignore
+                timeout = null;
+            }, 500);
         };
 
-        checkSession();
+        // Agregar listeners
+        events.forEach((event) => {
+            window.addEventListener(event, handleActivity);
+        });
+
+        // Intervalo para verificar inactividad periódicamente
+        const intervalId = setInterval(checkInactivity, 1000);
 
         return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             events.forEach((event) => {
-                window.removeEventListener(event, resetTimer);
+                window.removeEventListener(event, handleActivity);
             });
+            clearInterval(intervalId);
+            if (timeout) clearTimeout(timeout);
+            if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, []);
+    }, [resetTimer, checkInactivity]);
 
-    if (!isExpiring) return null;
+    // Efecto para la cuenta regresiva en el modal
+    useEffect(() => {
+        if (showWarning && timeLeft > 0) {
+            timerRef.current = setInterval(() => {
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timerRef.current!);
+                        signOut(); // Forzar cierre si llega a 0
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, [showWarning, signOut]); // Eliminado timeLeft de dependencias para evitar recrear intervalo
+
+    const handleExtendSession = () => {
+        resetTimer();
+    };
 
     return (
-        <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center text-center p-6 animate-in fade-in duration-500">
-            <div className="relative mb-8">
-                <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full animate-pulse" />
-                <div className="relative w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/10 mb-4">
-                    <ShieldAlert className="text-red-500" size={48} />
-                </div>
-            </div>
-            <div className="space-y-4 max-w-xs">
-                <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Sesión Caducada</h3>
-                <p className="text-neutral-400 text-sm font-medium leading-relaxed">
-                    Por seguridad, tu sesión se ha cerrado tras 10 minutos de inactividad.
+        <Modal
+            isOpen={showWarning}
+            onClose={() => { }} // No permitir cerrar con click fuera/esc obligatoriamente
+            title="Inactividad Detectada"
+        >
+            <div className="space-y-4">
+                <p className="text-neutral-300">
+                    Tu sesión expirará en <span className="text-gold font-bold">{timeLeft}</span> segundos por inactividad.
                 </p>
-                <div className="pt-4">
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
+                <p className="text-sm text-neutral-400">
+                    ¿Deseas mantener tu sesión abierta?
+                </p>
+                <div className="flex justify-end gap-3 mt-6">
+                    <Button
+                        variant="outline"
+                        onClick={() => signOut()}
+                        className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                    >
+                        Cerrar Sesión
+                    </Button>
+                    <Button
+                        onClick={handleExtendSession}
+                        className="bg-gold text-black hover:bg-gold/80 font-bold"
+                    >
+                        Mantener Sesión
+                    </Button>
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 }
