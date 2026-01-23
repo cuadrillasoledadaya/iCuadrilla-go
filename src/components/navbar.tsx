@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, QrCode, Users, Repeat, Bell, BarChart, Calendar } from "lucide-react";
+import { Home, Users, BarChart, Calendar } from "lucide-react";
 import { useLayout } from "./layout-context";
 
 const navItems = [

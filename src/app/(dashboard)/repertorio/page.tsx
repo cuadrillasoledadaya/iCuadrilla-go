@@ -1,20 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import {
-    Music,
     Plus,
-    Calendar,
     FileText,
     ExternalLink,
     Trash2,
     X,
     Upload,
     ArrowLeft,
-    ChevronRight,
-    Search
+    Music
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,11 +26,17 @@ interface Repertorio {
     created_at: string;
 }
 
+interface Temporada {
+    id: string;
+    nombre: string;
+    activa: boolean;
+}
+
 export default function RepertorioPage() {
     const router = useRouter();
     const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
     const [repertorios, setRepertorios] = useState<Repertorio[]>([]);
-    const [temporadas, setTemporadas] = useState<any[]>([]);
+    const [temporadas, setTemporadas] = useState<Temporada[]>([]);
     const [selectedTemporada, setSelectedTemporada] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -44,11 +47,19 @@ export default function RepertorioPage() {
     const [newTemporadaId, setNewTemporadaId] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    useEffect(() => {
-        fetchInitialData();
-    }, []);
+    const fetchRepertorios = async () => {
+        try {
+            const { data } = await supabase
+                .from("repertorios")
+                .select("*")
+                .order("created_at", { ascending: false });
+            if (data) setRepertorios(data);
+        } catch (e) {
+            console.error("Error fetching repertoires:", e);
+        }
+    };
 
-    const fetchInitialData = async () => {
+    const fetchInitialData = useCallback(async () => {
         setLoading(true);
         try {
             // Fetch Seasons
@@ -71,19 +82,11 @@ export default function RepertorioPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchRepertorios = async () => {
-        try {
-            const { data } = await supabase
-                .from("repertorios")
-                .select("*")
-                .order("created_at", { ascending: false });
-            if (data) setRepertorios(data);
-        } catch (e) {
-            console.error("Error fetching repertoires:", e);
-        }
-    };
+    useEffect(() => {
+        fetchInitialData();
+    }, [fetchInitialData]);
 
     const handleUpload = async () => {
         if (!selectedFile || !newNombre || !newTemporadaId) {
@@ -120,9 +123,9 @@ export default function RepertorioPage() {
             setNewNombre("");
             setSelectedFile(null);
             await fetchRepertorios();
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Error uploading:", e);
-            alert("Error al subir: " + e.message);
+            alert("Error al subir: " + (e as Error).message);
         } finally {
             setUploading(false);
         }
@@ -148,8 +151,8 @@ export default function RepertorioPage() {
             if (dbError) throw dbError;
 
             setRepertorios(prev => prev.filter(r => r.id !== rep.id));
-        } catch (e: any) {
-            alert("Error al borrar: " + e.message);
+        } catch (e: unknown) {
+            alert("Error al borrar: " + (e as Error).message);
         }
     };
 

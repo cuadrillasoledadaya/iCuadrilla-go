@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { ChevronLeft, Plus, Search, Check, UserPlus, Trash2, ArrowLeftRight, Settings2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -57,15 +57,25 @@ export default function GestionRelevos() {
 
     useEffect(() => {
         fetchInitialData();
-    }, [params.id]);
+    }, [fetchInitialData]);
+
+    // Moved up to avoid hoisting ReferenceError
+    const fetchRelevos = useCallback(async () => {
+        if (!activeMudaId) return;
+        const { data } = await supabase.from("relevos")
+            .select("*, costalero:costaleros(*)")
+            .eq("evento_id", params.id)
+            .eq("muda_id", activeMudaId);
+        setRelevos(data || []);
+    }, [activeMudaId, params.id]);
 
     useEffect(() => {
         if (activeMudaId) {
             fetchRelevos();
         }
-    }, [activeMudaId]);
+    }, [activeMudaId, fetchRelevos]);
 
-    const fetchInitialData = async () => {
+    const fetchInitialData = useCallback(async () => {
         setLoading(true);
         try {
             // 1. Mudas
@@ -120,16 +130,7 @@ export default function GestionRelevos() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const fetchRelevos = async () => {
-        if (!activeMudaId) return;
-        const { data } = await supabase.from("relevos")
-            .select("*, costalero:costaleros(*)")
-            .eq("evento_id", params.id)
-            .eq("muda_id", activeMudaId);
-        setRelevos(data || []);
-    };
+    }, [params.id]); // Added dependency array for useCallback
 
     const getCostaleroAt = (t: number, p: number) => {
         const relevo = relevos.find(r => r.trabajadera === t && r.posicion === p);
@@ -143,7 +144,6 @@ export default function GestionRelevos() {
     };
 
     const handlePosClick = async (t: number, p: number) => {
-        const costalero = getCostaleroAt(t, p);
 
         // Caso 1: Ya hay uno seleccionado (Lógica de SWAP o MOVER)
         if (selectedPos) {
@@ -267,9 +267,9 @@ export default function GestionRelevos() {
             setMudaNameInput("");
             setEditingMuda(null);
             await fetchInitialData();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error managing muda:", error);
-            alert("Error al guardar el relevo: " + (error.message || "Error desconocido"));
+            alert("Error al guardar el relevo: " + ((error as Error).message || "Error desconocido"));
         } finally {
             setLoading(false);
         }
@@ -288,9 +288,9 @@ export default function GestionRelevos() {
             setEditingMuda(null);
             setMudaNameInput("");
             await fetchInitialData();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error deleting muda:", error);
-            alert("Error al borrar el relevo: " + (error.message || "Error desconocido"));
+            alert("Error al borrar el relevo: " + ((error as Error).message || "Error desconocido"));
         } finally {
             setLoading(false);
         }

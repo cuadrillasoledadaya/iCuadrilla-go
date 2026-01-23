@@ -7,7 +7,6 @@ import { FileDown, Table, Users, BarChart3, ChevronLeft, QrCode } from "lucide-r
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import * as XLSX from 'xlsx';
 import QRCodeLib from 'qrcode';
 
@@ -206,29 +205,7 @@ export default function ExportarDatos() {
         generateAndExportCSV(csvContent, `listado_cuadrilla_${temporadaActiva || 'export'}.csv`);
     };
 
-    const generateEstadisticasCSV = (eventsToExport: EventoStats[]) => {
-        let csvContent = "";
 
-        eventsToExport.forEach((evento, index) => {
-            if (index > 0) csvContent += "\n\n\n"; // Triple line break between events
-
-            // === Event Title as Section Header ===
-            csvContent += `=== ${evento.titulo.toUpperCase()} ===\n`;
-            csvContent += `Estado: ${evento.estado}\n`;
-            csvContent += `Fecha: ${new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}\n`;
-            csvContent += `Hora: ${new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}\n`;
-            csvContent += `Presentes: ${evento.presentes} | Ausentes: ${evento.ausentes} | Justificados: ${evento.justificados}\n\n`;
-
-            // Table headers
-            csvContent += "Nombre;Apellidos;Trabajadera;Puesto;Suplemento;Estado\n";
-
-            // Rows
-            evento.asistencias.forEach(a => {
-                csvContent += `${a.nombre};${a.apellidos};${a.trabajadera};${a.puesto};${a.suplemento || '-'};${a.estado}\n`;
-            });
-        });
-        return csvContent;
-    };
 
     // --- EXCEL EXPORT (MULTI-SHEET) ---
     const generateEstadisticasExcel = (eventsToExport: EventoStats[], filename: string) => {
@@ -350,7 +327,7 @@ export default function ExportarDatos() {
                 margin: { left: 14, right: 14 }
             });
 
-            yPos = (doc as any).lastAutoTable.finalY + 15;
+            yPos = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15;
 
             // Add page break between events if multiple and not the last one
             if (index < eventsToExport.length - 1 && yPos > 240) {
@@ -402,7 +379,6 @@ export default function ExportarDatos() {
             // QR Codes grid (2 columns)
             let col = 0;
             const qrSize = 50; // Increased from 35 to 50mm for better scanning
-            const colWidth = 100;
             const rowHeight = 65; // Increased to accommodate larger QR
 
             for (const costalero of costalerosList) {

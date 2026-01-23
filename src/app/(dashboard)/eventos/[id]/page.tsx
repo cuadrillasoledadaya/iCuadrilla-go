@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+// Force lint refresh
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import {
     ArrowLeft,
@@ -53,7 +54,7 @@ export default function DetalleEvento() {
     const [alreadyNotified, setAlreadyNotified] = useState(false);
     const [isNotificationRead, setIsNotificationRead] = useState(false);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         const { data: eventData } = await supabase
             .from("eventos")
             .select("*")
@@ -84,11 +85,11 @@ export default function DetalleEvento() {
             setStats({ presentes, justificados, ausentes, pendientes, total: totalCostaleros });
         }
         setLoading(false);
-    };
+    }, [params.id]);
 
     useEffect(() => {
         fetchData();
-    }, [params.id]);
+    }, [fetchData]);
 
     const calculateStatus = (inicio: string, fin: string | null): 'pendiente' | 'en-curso' | 'finalizado' => {
         const now = new Date();
@@ -155,8 +156,8 @@ export default function DetalleEvento() {
             setAlreadyNotified(true);
             setShowAbsenceModal(false);
             fetchData();
-        } catch (error: any) {
-            alert("Error: " + error.message);
+        } catch (error: unknown) {
+            alert("Error: " + (error as Error).message);
         } finally {
             setLoading(false);
         }

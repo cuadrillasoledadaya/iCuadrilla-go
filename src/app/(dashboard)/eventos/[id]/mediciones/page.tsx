@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Save, Search, Ruler } from "lucide-react";
+import { ArrowLeft, Save, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+
 
 interface Costalero {
     id: string;
@@ -33,11 +33,7 @@ export default function MedicionesPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [eventTitle, setEventTitle] = useState("");
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             // 1. Fetch Event Info
@@ -80,12 +76,16 @@ export default function MedicionesPage() {
                 setOriginalMediciones(JSON.parse(JSON.stringify(map)));
             }
 
-        } catch (e) {
+        } catch (e: unknown) {
             console.error("Error fetching data:", e);
         } finally {
             setLoading(false);
         }
-    };
+    }, [params.id]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleAlturaChange = (costaleroId: string, field: 'altura_pre' | 'altura_post', value: string) => {
         const numValue = value === "" ? null : parseFloat(value);
@@ -132,8 +132,8 @@ export default function MedicionesPage() {
                     [costaleroId]: { ...medicion }
                 }));
                 // Opcional: Feedback visual discreto (toast no tenemos, alert quizás molesto si ya confirmó)
-            } catch (e: any) {
-                alert("Error al guardar: " + e.message);
+            } catch (e: unknown) {
+                alert("Error al guardar: " + (e as Error).message);
             }
         } else {
             // Si cancela, revertir al valor original (opcional, el usuario suele preferir mantener el dato editado por si acaso)
@@ -162,9 +162,9 @@ export default function MedicionesPage() {
             }
 
             alert("¡Mediciones guardadas correctamente!");
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Error saving:", e);
-            alert("Error al guardar: " + e.message);
+            alert("Error al guardar: " + (e as Error).message);
         } finally {
             setSaving(false);
         }

@@ -19,7 +19,7 @@ export function useUserRole() {
     useEffect(() => {
         let mounted = true;
 
-        const checkRole = async (sessionUser?: any) => {
+        const checkRole = async (sessionUser?: { id: string; email?: string } | null) => {
             try {
                 // Si nos pasan un usuario (desde el evento), usamos ese. Si no, fetch.
                 let user = sessionUser;
@@ -57,7 +57,7 @@ export function useUserRole() {
                 setIsMaster(isMasterEmail);
 
                 // 2. Buscar en tabla costaleros
-                const { data: costaleroData, error } = await supabase
+                const { data: costaleroData } = await supabase
                     .from('costaleros')
                     .select('id, rol')
                     .eq('user_id', user.id)

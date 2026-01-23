@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import {
-    ChevronLeft,
+    Check,
+    Trophy,
     ArrowLeft,
     Bell,
     CheckCircle2,
     Clock,
-    Trash2,
-    Check,
-    Trophy
+    Trash2
 } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
@@ -34,67 +33,43 @@ export default function NotificacionesPage() {
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchNotificaciones = async () => {
-        const queries = [];
-
-        if (isAdmin) {
-            queries.push(
-                supabase.from("notificaciones")
-                    .select("*")
-                    .eq("destinatario", "admin")
-            );
-        }
-
-        if (isCostalero && costaleroId) {
-            queries.push(
-                supabase.from("notificaciones")
-                    .select("*")
-                    .eq("destinatario", "costalero")
-                    .eq("costalero_id", costaleroId)
-            );
-        }
-
-        const results = await Promise.all(queries);
-        const allNotifs = results.flatMap(r => r.data || []);
-
-        // Sort by date manually since we fetched from two sources
-        allNotifs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-        setNotificaciones(allNotifs);
-        setLoading(false);
-    };
-
     useEffect(() => {
+        const fetchNotificaciones = async () => {
+            const queries = [];
+
+            if (isAdmin) {
+                queries.push(
+                    supabase.from("notificaciones")
+                        .select("*")
+                        .eq("destinatario", "admin")
+                );
+            }
+
+            if (isCostalero && costaleroId) {
+                queries.push(
+                    supabase.from("notificaciones")
+                        .select("*")
+                        .eq("destinatario", "costalero")
+                        .eq("costalero_id", costaleroId)
+                );
+            }
+
+            const results = await Promise.all(queries);
+            const allNotifs = results.flatMap(r => r.data || []);
+
+            // Sort by date manually since we fetched from two sources
+            allNotifs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+            setNotificaciones(allNotifs);
+            setLoading(false);
+        };
+
         if (!roleLoading) {
             fetchNotificaciones();
         }
-    }, [roleLoading, isCostalero, costaleroId, isAdmin]); // Added isAdmin to dependencies
+    }, [roleLoading, isAdmin, isCostalero, costaleroId]);
 
-    const deleteAll = async () => {
-        if (!confirm("¿Estás seguro de que quieres eliminar todas las notificaciones?")) return;
 
-        setNotificaciones([]);
-
-        const deletePromises = [];
-        if (isAdmin) {
-            deletePromises.push(
-                supabase.from("notificaciones")
-                    .delete()
-                    .eq("destinatario", "admin")
-            );
-        }
-        if (isCostalero && costaleroId) {
-            deletePromises.push(
-                supabase.from("notificaciones")
-                    .delete()
-                    .eq("destinatario", "costalero")
-                    .eq("costalero_id", costaleroId)
-            );
-        }
-
-        await Promise.all(deletePromises);
-        router.refresh();
-    };
 
     const markAsRead = async (id: string) => {
         // Optimistic update

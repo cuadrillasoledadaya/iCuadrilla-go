@@ -11,7 +11,7 @@ import {
     Clock
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 
 interface Costalero {
@@ -26,6 +26,7 @@ interface Costalero {
 export default function PendientesPage() {
     const params = useParams();
     const router = useRouter();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [evento, setEvento] = useState<any>(null);
     const [pendientes, setPendientes] = useState<Costalero[]>([]);
     const [loading, setLoading] = useState(true);
@@ -50,6 +51,7 @@ export default function PendientesPage() {
 
             // 3. Filter Pendientes (NO tiene registro en asistencias)
             const filtered = allCostaleros.filter(c => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
                 return !asistencia; // Si NO tiene asistencia, es pendiente.
             });
@@ -70,8 +72,7 @@ export default function PendientesPage() {
         if (!selectedCostalero || !evento) return;
         // setLoading(true); // Removed to rely on optimistic UI and prevent hanging
 
-        const dateObj = new Date(evento.fecha_inicio);
-        const eventDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+
 
         if (newStatus === 'presente' || newStatus === 'justificado' || newStatus === 'ausente') {
             // Optimistic Update: Remove from list immediately

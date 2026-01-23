@@ -4,15 +4,21 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Calendar, Check, Plus, Trophy } from "lucide-react";
+import { ArrowLeft, Calendar, Plus, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
 
+interface Temporada {
+    id: string;
+    nombre: string;
+    activa: boolean;
+}
+
 export default function GestionTemporadas() {
     const router = useRouter();
-    const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
-    const [temporadas, setTemporadas] = useState<any[]>([]);
+    const { isAdmin, isMaster } = useUserRole();
+    const [temporadas, setTemporadas] = useState<Temporada[]>([]);
     const [nuevaTemporada, setNuevaTemporada] = useState("");
     const [loading, setLoading] = useState(false);
     const [creating, setCreating] = useState(false);
@@ -100,8 +106,8 @@ export default function GestionTemporadas() {
             alert(`Temporada ${nuevaTemporada} creada y activada correctamente.\n\nDatos del palio migrados desde la temporada anterior.`);
             setNuevaTemporada("");
             fetchTemporadas();
-        } catch (e: any) {
-            alert("Error al crear la temporada: " + e.message);
+        } catch (e: unknown) {
+            alert("Error al crear la temporada: " + (e as Error).message);
         } finally {
             setCreating(false);
         }

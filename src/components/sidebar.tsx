@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
     Home,
@@ -17,13 +17,18 @@ import {
     ChevronDown,
     X,
     Lock,
-    MoreVertical,
-    Trash2,
     Music
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
+
+interface Season {
+    id: string;
+    nombre: string;
+    activa: boolean;
+    created_at?: string;
+}
 
 interface SidebarProps {
     isOpen: boolean;
@@ -32,25 +37,12 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
-    const router = useRouter();
-    const [userEmail, setUserEmail] = useState<string | null>(null);
-    const [temporadasList, setTemporadasList] = useState<any[]>([]);
-    const [activeSeason, setActiveSeason] = useState<any | null>(null);
+    const [temporadasList, setTemporadasList] = useState<Season[]>([]);
+    const [activeSeason, setActiveSeason] = useState<Season | null>(null);
     const [seasonsOpen, setSeasonsOpen] = useState(false);
     const [loadingSeasons, setLoadingSeasons] = useState(true);
 
     useEffect(() => {
-        const getUser = async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) setUserEmail(user.email || null);
-            } catch (e) {
-                if (process.env.NODE_ENV === 'development') {
-                    console.log("[Offline] Error getting user in sidebar:", e);
-                }
-            }
-        };
-        getUser();
         fetchSeasons();
     }, []);
 
@@ -60,7 +52,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             const { data } = await supabase.from("temporadas").select("*").order("created_at", { ascending: false });
             if (data) {
                 setTemporadasList(data);
-                const active = data.find((t: any) => t.activa);
+                const active = data.find((t: Season) => t.activa);
                 setActiveSeason(active || null);
             }
         } catch (e) {
@@ -72,7 +64,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         }
     };
 
-    const handleSwitchSeason = async (season: any) => {
+    const handleSwitchSeason = async (season: Season) => {
         if (season.activa) {
             setSeasonsOpen(false);
             return;
@@ -89,7 +81,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         }
     };
 
-    const { isCostalero, isAdmin, canManageSeasons, canManageRoles, loading: roleLoading } = useUserRole();
+    const { isCostalero, isAdmin, canManageRoles } = useUserRole();
 
     const menuGroups = [
         {

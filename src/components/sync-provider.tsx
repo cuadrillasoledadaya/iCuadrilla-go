@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { getSyncQueue, removeFromSyncQueue, SyncAction } from "@/lib/offline-utils";
+import { getSyncQueue, removeFromSyncQueue } from "@/lib/offline-utils";
 
 export function SyncProvider({ children }: { children: React.ReactNode }) {
     const isSyncing = useRef(false);

@@ -7,31 +7,41 @@ import { User, Ruler, MapPin, BadgeCheck, Mail } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export default function PerfilPage() {
-    const { userId, isCostalero } = useUserRole();
-    const [profile, setProfile] = useState<any>(null);
+    interface UserProfile {
+        nombre: string;
+        apellidos: string;
+        email?: string;
+        altura?: string;
+        trabajadera?: number;
+        puesto?: string;
+        qr_code?: string;
+    }
+
+    const { userId } = useUserRole();
+    const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const { data } = await supabase
+                    .from("costaleros")
+                    .select("*")
+                    .eq("user_id", userId)
+                    .single();
+
+                if (data) setProfile(data);
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (userId) {
             fetchProfile();
         }
     }, [userId]);
-
-    const fetchProfile = async () => {
-        try {
-            const { data, error } = await supabase
-                .from("costaleros")
-                .select("*")
-                .eq("user_id", userId)
-                .single();
-
-            if (data) setProfile(data);
-        } catch (error) {
-            console.error("Error fetching profile:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) {
         return (

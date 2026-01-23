@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 
 export default async function Home() {
@@ -18,7 +17,7 @@ export default async function Home() {
         }
     );
 
-    const { data: { session } } = await supabase.auth.getSession();
+    await supabase.auth.getSession();
 
     // Permitimos que el usuario vea la bienvenida siempre
     // if (session) {

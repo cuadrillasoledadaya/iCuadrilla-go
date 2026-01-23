@@ -3,6 +3,7 @@
 /**
  * Utility to save data to localStorage with a prefix.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const saveToCache = (key: string, data: any) => {
     if (typeof window === "undefined") return;
     try {
@@ -45,6 +46,7 @@ export const getFromCache = <T>(key: string, maxAgeMs?: number): T | null => {
 export interface SyncAction {
     id: string;
     type: 'attendance_update';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload: any;
     timestamp: number;
 }

@@ -30,7 +30,6 @@ interface Costalero {
 export default function TrabajaderasAsistencia() {
     const params = useParams();
     const router = useRouter();
-    const [eventoTitulo, setEventoTitulo] = useState("Evento");
     const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCostalero, setSelectedCostalero] = useState<Costalero | null>(null);
@@ -38,19 +37,12 @@ export default function TrabajaderasAsistencia() {
     useEffect(() => {
         const fetchData = async () => {
             // Cargar de caché
-            const cachedTitulo = getFromCache<string>(`event_${params.id}_titulo`);
             const cachedCuadrilla = getFromCache<Costalero[]>(`event_${params.id}_cuadrilla`);
 
-            if (cachedTitulo) setEventoTitulo(cachedTitulo);
             if (cachedCuadrilla) setCuadrilla(cachedCuadrilla);
 
             try {
-                // 1. Fetch Evento
-                const { data: evento } = await supabase.from("eventos").select("*").eq("id", params.id).single();
-                if (evento) {
-                    setEventoTitulo(evento.titulo);
-                    saveToCache(`event_${params.id}_titulo`, evento.titulo);
-                }
+                // 1. Fetch Evento (Removed unused query)
 
                 // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
                 const [costalerosRes, asistenciasRes] = await Promise.all([
@@ -62,6 +54,7 @@ export default function TrabajaderasAsistencia() {
                 const allAsistencias = asistenciasRes.data || [];
 
                 const fullCuadrilla = allCostaleros.map((c) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
                     return {
                         ...c,
@@ -93,6 +86,7 @@ export default function TrabajaderasAsistencia() {
                 if (newStatus === 'delete') {
                     return { ...c, estado: undefined, asistencia_id: undefined };
                 }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return { ...c, estado: dbStatus as any };
             }
             return c;

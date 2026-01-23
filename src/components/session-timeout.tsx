@@ -78,7 +78,7 @@ export function SessionTimeout() {
             if (timeout) return;
             timeout = setTimeout(() => {
                 resetTimer();
-                // @ts-ignore
+                // @ts-expect-error timeout type mismatch
                 timeout = null;
             }, 500);
         };
@@ -103,7 +103,7 @@ export function SessionTimeout() {
 
     // Efecto para la cuenta regresiva en el modal
     useEffect(() => {
-        if (showWarning && timeLeft > 0) {
+        if (showWarning) {
             timerRef.current = setInterval(() => {
                 setTimeLeft((prev) => {
                     if (prev <= 1) {
