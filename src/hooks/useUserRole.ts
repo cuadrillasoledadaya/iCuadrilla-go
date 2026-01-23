@@ -17,14 +17,34 @@ export function useUserRole() {
     const [canManageRoles, setCanManageRoles] = useState(false);
 
     useEffect(() => {
-        const checkRole = async () => {
+        let mounted = true;
+
+        const checkRole = async (sessionUser?: any) => {
             try {
-                const { data: { user } } = await supabase.auth.getUser();
+                // Si nos pasan un usuario (desde el evento), usamos ese. Si no, fetch.
+                let user = sessionUser;
+
+                if (!user) {
+                    const { data } = await supabase.auth.getUser();
+                    user = data.user;
+                }
+
+                if (!mounted) return;
 
                 if (!user) {
                     setIsCostalero(false);
                     setIsAdmin(false);
                     setIsMaster(false);
+                    setRol(null);
+                    setUserId(null);
+                    setCostaleroId(null);
+
+                    // Reset permissions
+                    setCanManageEvents(false);
+                    setCanManageAnnouncements(false);
+                    setCanManageSeasons(false);
+                    setCanManageRoles(false);
+
                     setLoading(false);
                     return;
                 }
@@ -33,18 +53,17 @@ export function useUserRole() {
 
                 // 1. Identificar por Email Maestro (SUPERADMIN)
                 const masterEmail = process.env.NEXT_PUBLIC_MASTER_EMAIL;
-                if (!masterEmail) {
-                    console.error('⚠️ SECURITY WARNING: NEXT_PUBLIC_MASTER_EMAIL not set in environment variables');
-                }
                 const isMasterEmail = !!(masterEmail && user.email === masterEmail);
                 setIsMaster(isMasterEmail);
 
-                // 2. Buscar en tabla costaleros (Incluyendo el nuevo campo ROL)
-                const { data: costaleroData } = await supabase
+                // 2. Buscar en tabla costaleros
+                const { data: costaleroData, error } = await supabase
                     .from('costaleros')
                     .select('id, rol')
                     .eq('user_id', user.id)
                     .single();
+
+                if (!mounted) return;
 
                 let currentRol = 'costalero';
 
@@ -55,6 +74,7 @@ export function useUserRole() {
                     setRol(currentRol);
                 } else {
                     setIsCostalero(false);
+                    setRol(null);
                 }
 
                 // 3. Determinar permisos de Admin
@@ -69,21 +89,30 @@ export function useUserRole() {
 
             } catch (error) {
                 console.error("Error checking role:", error);
-                setIsCostalero(false);
-                setIsAdmin(false);
-                setIsMaster(false);
+                if (mounted) {
+                    setIsCostalero(false);
+                    setIsAdmin(false);
+                    setIsMaster(false);
+                }
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
         };
 
-        checkRole();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            checkRole();
+        // Escuchar cambios de autenticación
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+                checkRole(session?.user);
+            } else if (event === 'SIGNED_OUT') {
+                checkRole(null);
+            }
         });
 
+        // Ejecutar check inicial
+        checkRole();
+
         return () => {
+            mounted = false;
             subscription.unsubscribe();
         };
     }, []);
