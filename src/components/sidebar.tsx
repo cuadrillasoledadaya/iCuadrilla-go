@@ -45,7 +45,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) setUserEmail(user.email || null);
             } catch (e) {
-                console.log("[Offline] Error getting user in sidebar:", e);
+                if (process.env.NODE_ENV === 'development') {
+                    console.log("[Offline] Error getting user in sidebar:", e);
+                }
             }
         };
         getUser();
@@ -62,7 +64,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 setActiveSeason(active || null);
             }
         } catch (e) {
-            console.log("[Offline] Error fetching seasons in sidebar:", e);
+            if (process.env.NODE_ENV === 'development') {
+                console.log("[Offline] Error fetching seasons in sidebar:", e);
+            }
         } finally {
             setLoadingSeasons(false);
         }
@@ -287,7 +291,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.4.05</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.4.07</p>
                     </div>
                 </div>
             </aside>

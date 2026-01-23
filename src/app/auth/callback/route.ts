@@ -7,10 +7,14 @@ export async function GET(request: Request) {
     const code = searchParams.get('code')
     const next = searchParams.get('next') ?? '/'
 
-    console.log('--- Iniciando Intercambio de Código ---');
+    if (process.env.NODE_ENV === 'development') {
+        console.log('--- Iniciando Intercambio de Código ---');
+    }
 
     if (code) {
-        console.log('Code:', code.substring(0, 10) + '...');
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Code:', code.substring(0, 10) + '...');
+        }
         const cookieStore = cookies()
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,7 +45,9 @@ export async function GET(request: Request) {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
         if (!error) {
-            console.log('Intercambio exitoso. Usuario:', data.user?.email);
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Intercambio exitoso. Usuario:', data.user?.email);
+            }
             // Handle password recovery redirect
             const redirectPath = next.startsWith('/nueva-contrasena') ? '/nueva-contrasena' : next;
             return NextResponse.redirect(`${origin}${redirectPath}`)
@@ -49,7 +55,9 @@ export async function GET(request: Request) {
 
         console.error('Error Supabase exchangeCodeForSession:', error.message, error.status);
     } else {
-        console.warn('Callback alcanzado sin parámetro "code".');
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('Callback alcanzado sin parámetro "code".');
+        }
     }
 
     // Si hay error o no hay código, redirigir al login con error
