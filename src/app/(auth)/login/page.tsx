@@ -50,8 +50,8 @@ export default function LoginPage() {
             setMessage(`Credenciales incorrectas. Verifica tu email y contraseña.`);
             console.error(authError);
         } else {
-            router.push("/dashboard");
-            router.refresh();
+            // Force hard reload to ensure all UI components (Navbar/Sidebar) initialize correctly
+            window.location.href = "/dashboard";
         }
         setLoading(false);
     };
