@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowLeft, Check, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { getSiteUrl } from "@/lib/utils";
+
 
 export default function RecuperarPage() {
     const [email, setEmail] = useState("");

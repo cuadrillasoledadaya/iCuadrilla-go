@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
-    ChevronLeft,
     ArrowLeft,
     Calendar,
-    Clock,
     Type,
     MapPin,
     AlignLeft,
@@ -15,7 +13,6 @@ import {
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function NuevoEvento() {
     const router = useRouter();

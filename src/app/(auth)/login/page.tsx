@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Kept if needed, but router var is unused. Actually, removing the var line is enough.
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
@@ -17,7 +17,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-    const router = useRouter();
+    // const router = useRouter(); // Unused
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();

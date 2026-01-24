@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, EyeOff, Lock, Mail, AlertCircle, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
 import { getSiteUrl } from "@/lib/utils";
 
 export default function RegistroPage() {

@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import {
-    ChevronLeft,
     ArrowLeft,
-    Users,
     UserCog,
     Search,
     ShieldCheck,
@@ -27,7 +25,7 @@ interface Costalero {
 
 export default function RolesPage() {
     const router = useRouter();
-    const { isMaster, loading: roleLoading, canManageRoles } = useUserRole();
+    const { loading: roleLoading, canManageRoles } = useUserRole();
     const [costaleros, setCostaleros] = useState<Costalero[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -39,7 +37,7 @@ export default function RolesPage() {
             return;
         }
         fetchCostaleros();
-    }, [roleLoading, canManageRoles]);
+    }, [roleLoading, canManageRoles, router]);
 
     const fetchCostaleros = async () => {
         const { data, error } = await supabase

@@ -170,7 +170,7 @@ export default function AgendaEventos() {
         syncStatuses();
         const interval = setInterval(syncStatuses, 60000);
         return () => clearInterval(interval);
-    }, [eventos.length]);
+    }, [eventos]);
 
     if (loading) return (
         <div className="flex min-h-screen items-center justify-center bg-background">

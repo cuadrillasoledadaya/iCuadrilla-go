@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function NuevaContrasenaPage() {
-    const router = useRouter();
+    // const router = useRouter();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPasswords, setShowPasswords] = useState(false);
