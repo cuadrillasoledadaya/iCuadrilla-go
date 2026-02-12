@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { checkIsMaster } from '@/app/actions';
 
 export function useUserRole() {
     const [isCostalero, setIsCostalero] = useState<boolean | null>(null);
@@ -51,9 +52,8 @@ export function useUserRole() {
 
                 setUserId(user.id);
 
-                // 1. Identificar por Email Maestro (SUPERADMIN)
-                const masterEmail = process.env.NEXT_PUBLIC_MASTER_EMAIL;
-                const isMasterEmail = !!(masterEmail && user.email === masterEmail);
+                // 1. Identificar por Email Maestro (SUPERADMIN) - Validación segura servidor
+                const isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
                 setIsMaster(isMasterEmail);
 
                 // 2. Buscar en tabla costaleros

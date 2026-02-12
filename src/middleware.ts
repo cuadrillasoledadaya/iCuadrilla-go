@@ -93,7 +93,7 @@ export async function middleware(request: NextRequest) {
             .single();
 
         const userRole = costaleroData?.rol || 'costalero';
-        const masterEmail = process.env.NEXT_PUBLIC_MASTER_EMAIL;
+        const masterEmail = process.env.MASTER_EMAIL;
         const isMaster = masterEmail && user.email === masterEmail;
 
         // Verificar permisos según el tipo de ruta
