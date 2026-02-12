@@ -5,9 +5,7 @@ export const eventoSchema = z.object({
     fecha_inicio: z.string().datetime({ message: "Fecha de inicio inválida" }),
     fecha_fin: z.string().datetime().nullable().optional(),
     ubicacion: z.string().min(2, "La ubicación es obligatoria"),
-    tipo: z.enum(["Ensayo", "Salida", "Igualá", "Otro"], {
-        errorMap: () => ({ message: "Tipo de evento no válido" })
-    }),
+    tipo: z.enum(["Ensayo", "Salida", "Igualá", "Otro"]),
     descripcion: z.string().optional(),
 });
 
