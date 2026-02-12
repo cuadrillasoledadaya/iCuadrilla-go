@@ -9,6 +9,7 @@ export async function checkIsMaster(email: string | undefined | null): Promise<b
 
     // Acceder a variable de entorno de servidor (sin NEXT_PUBLIC_)
     const masterEmail = process.env.MASTER_EMAIL;
+    console.log("Server Action: Checking", email, "against", masterEmail); // DEBUG
 
     return !!(masterEmail && email === masterEmail);
 }

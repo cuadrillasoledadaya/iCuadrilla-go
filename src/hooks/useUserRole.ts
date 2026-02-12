@@ -53,7 +53,9 @@ export function useUserRole() {
                 setUserId(user.id);
 
                 // 1. Identificar por Email Maestro (SUPERADMIN) - Validación segura servidor
+                console.log("Checking master email for:", user.email);
                 const isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
+                console.log("Is Master Email Result:", isMasterEmail);
                 setIsMaster(isMasterEmail);
 
                 // 2. Buscar en tabla costaleros
@@ -74,6 +76,7 @@ export function useUserRole() {
 
                     // Si es Master Email, forzamos el rol a superadmin visualmente
                     if (isMasterEmail) {
+                        console.log("--> FORCE SUPERADMIN: User matched master email logic");
                         currentRol = 'superadmin';
                     }
 
