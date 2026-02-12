@@ -37,7 +37,12 @@ const withPWA = require('@ducanh2912/next-pwa').default({
 });
 
 /** @type {import('next').NextConfig} */
+const pkg = require('./package.json');
+
 const nextConfig = {
+    env: {
+        NEXT_PUBLIC_APP_VERSION: pkg.version,
+    },
     reactStrictMode: true,
     images: {
         remotePatterns: [

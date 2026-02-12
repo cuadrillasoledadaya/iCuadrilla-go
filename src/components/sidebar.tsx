@@ -287,7 +287,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Cerrar Sesión
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v1.4.06</p>
+                        <p className="text-[10px] text-neutral-300 font-black tracking-widest uppercase">v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
                     </div>
                 </div>
             </aside>
