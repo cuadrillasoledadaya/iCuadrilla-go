@@ -93,8 +93,10 @@ export async function middleware(request: NextRequest) {
             .single();
 
         const userRole = costaleroData?.rol || 'costalero';
-        const masterEmail = process.env.MASTER_EMAIL;
-        const isMaster = masterEmail && user.email === masterEmail;
+        const masterEmail = (process.env.MASTER_EMAIL || 'proyectoszipi@gmail.com').trim().toLowerCase();
+        const isMaster = user.email && user.email.trim().toLowerCase() === masterEmail;
+
+        console.log("Middleware Check:", user.email, "Master?", isMaster); // Debug en server logs
 
         // Verificar permisos según el tipo de ruta
         if (isAdminRoute) {

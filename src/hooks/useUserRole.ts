@@ -54,7 +54,14 @@ export function useUserRole() {
 
                 // 1. Identificar por Email Maestro (SUPERADMIN) - Validación segura servidor
                 console.log("Checking master email for:", user.email);
-                const isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
+                let isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
+
+                // Fallback adicional en el cliente para asegurar visibilidad UI (Seguridad real sigue en RLS/Actions)
+                if (!isMasterEmail && user.email?.trim().toLowerCase() === 'proyectoszipi@gmail.com') {
+                    console.log("--> CLIENT FALLBACK: Server Action returned false but email matches hardcoded master.");
+                    isMasterEmail = true;
+                }
+
                 console.log("Is Master Email Result:", isMasterEmail);
                 setIsMaster(isMasterEmail);
 

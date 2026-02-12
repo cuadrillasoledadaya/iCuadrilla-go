@@ -7,10 +7,11 @@
 export async function checkIsMaster(email: string | undefined | null): Promise<boolean> {
     if (!email) return false;
 
-    // Acceder a variable de entorno de servidor (sin NEXT_PUBLIC_)
     // Fallback hardcoded de emergencia para asegurar acceso
-    const masterEmail = process.env.MASTER_EMAIL || 'proyectoszipi@gmail.com';
-    console.log("Server Action: Checking", email, "against", masterEmail); // DEBUG
+    const masterEmail = (process.env.MASTER_EMAIL || 'proyectoszipi@gmail.com').trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
-    return !!(masterEmail && email === masterEmail);
+    console.log("Server Action: Checking", normalizedEmail, "against", masterEmail); // DEBUG
+
+    return normalizedEmail === masterEmail;
 }
