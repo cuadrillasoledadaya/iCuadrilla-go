@@ -308,6 +308,61 @@ export default function ExportarDatos() {
         handleExport(blob, `listado_cuadrilla_${temporadaActiva || 'export'}.pdf`);
     };
 
+    const exportCostalerosExtendidoPDF = () => {
+        const doc = new jsPDF();
+
+        // --- PÁGINA 1+: DATOS REALES ---
+        doc.setFontSize(18);
+        doc.text("Listado Cuadrilla Extendido", 14, 20);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Temporada ${temporadaActiva || '-'} - Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+
+        const tableRows = costaleros.map(c => [
+            `${c.nombre} ${c.apellidos}`,
+            String(c.trabajadera),
+            c.puesto,
+            c.altura ? `${c.altura}m` : '-',
+            c.suplemento ? `${c.suplemento}cm` : '-'
+        ]);
+
+        autoTable(doc, {
+            head: [["Nombre Completo", "Trab.", "Puesto", "Altura", "Supl."]],
+            body: tableRows,
+            startY: 35,
+            theme: 'grid',
+            headStyles: { fillColor: [0, 128, 90], textColor: 255 },
+            styles: { fontSize: 9 }
+        });
+
+        // --- ÚLTIMA PÁGINA: PLANTILLA VACÍA ---
+        doc.addPage();
+        doc.setFontSize(18);
+        doc.setTextColor(0);
+        doc.text("Plantilla para Anotaciones", 14, 20);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Estructura vacía para completar a mano`, 14, 28);
+
+        // Generamos filas vacías (aprox 20 filas para que quepan bien)
+        const blankRows = Array(20).fill(["", "", "", "", ""]);
+
+        autoTable(doc, {
+            head: [["Nombre Completo", "Trab.", "Puesto", "Altura", "Supl."]],
+            body: blankRows,
+            startY: 35,
+            theme: 'grid',
+            headStyles: { fillColor: [70, 70, 70], textColor: 255 },
+            styles: {
+                fontSize: 9,
+                minCellHeight: 11 // Más altas para facilitar escribir a mano
+            }
+        });
+
+        const blob = doc.output('blob');
+        handleExport(blob, `listado_extendido_${temporadaActiva || 'export'}.pdf`);
+    };
+
     const generateEstadisticasPDF = (eventsToExport: EventoStats[], filename: string) => {
         const doc = new jsPDF();
         let yPos = 15;
@@ -516,6 +571,19 @@ export default function ExportarDatos() {
                         <span className="text-[10px] uppercase tracking-widest">PDF</span>
                     </Button>
                 </div>
+                {/* Nueva exportación extendida */}
+                <Button
+                    onClick={exportCostalerosExtendidoPDF}
+                    className="w-full h-16 bg-white border-2 border-dashed border-neutral-200 hover:border-primary/50 text-neutral-600 hover:text-primary font-black rounded-2xl flex items-center justify-center gap-3 transition-all group"
+                >
+                    <div className="p-2 bg-neutral-50 rounded-lg group-hover:bg-primary/5 transition-colors">
+                        <FileDown size={18} />
+                    </div>
+                    <div className="text-left">
+                        <p className="text-[10px] uppercase tracking-[0.2em] leading-none mb-1">Listado Cuadrilla</p>
+                        <p className="text-sm uppercase tracking-tighter italic">Extendido (Con Hojas en Blanco)</p>
+                    </div>
+                </Button>
             </section>
 
             <div className="h-px bg-black/5" />
