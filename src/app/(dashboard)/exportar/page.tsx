@@ -574,14 +574,14 @@ export default function ExportarDatos() {
                 {/* Nueva exportación extendida */}
                 <Button
                     onClick={exportCostalerosExtendidoPDF}
-                    className="w-full h-16 bg-white border-2 border-dashed border-neutral-200 hover:border-primary/50 text-neutral-600 hover:text-primary font-black rounded-2xl flex items-center justify-center gap-3 transition-all group"
+                    className="w-full h-16 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black rounded-2xl flex items-center justify-center gap-4 transition-all shadow-lg shadow-emerald-900/10 active:scale-[0.98]"
                 >
-                    <div className="p-2 bg-neutral-50 rounded-lg group-hover:bg-primary/5 transition-colors">
-                        <FileDown size={18} />
+                    <div className="p-2 bg-white/10 rounded-xl">
+                        <FileDown size={22} className="text-white" />
                     </div>
                     <div className="text-left">
-                        <p className="text-[10px] uppercase tracking-[0.2em] leading-none mb-1">Listado Cuadrilla</p>
-                        <p className="text-sm uppercase tracking-tighter italic">Extendido (Con Hojas en Blanco)</p>
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/80 leading-none mb-1 font-bold">Listado Cuadrilla</p>
+                        <p className="text-sm uppercase tracking-tight text-white italic">Extendido (Con Hojas en Blanco)</p>
                     </div>
                 </Button>
             </section>
