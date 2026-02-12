@@ -71,6 +71,12 @@ export function useUserRole() {
                     setIsCostalero(true);
                     setCostaleroId(costaleroData.id);
                     currentRol = costaleroData.rol || 'costalero';
+
+                    // Si es Master Email, forzamos el rol a superadmin visualmente
+                    if (isMasterEmail) {
+                        currentRol = 'superadmin';
+                    }
+
                     setRol(currentRol);
                 } else {
                     setIsCostalero(false);
