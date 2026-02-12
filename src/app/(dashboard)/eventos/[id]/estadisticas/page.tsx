@@ -22,6 +22,7 @@ interface CostaleroInfo {
     id: string;
     nombre: string;
     apellidos: string;
+    apodo?: string;
     puesto: string;
     estado?: string;
 }
@@ -57,7 +58,7 @@ function EstadisticasContent() {
             setEvento(eventData);
 
             const [costalerosRes, asistenciasRes] = await Promise.all([
-                supabase.from("costaleros").select("id, nombre, apellidos, puesto, trabajadera").eq("rol", "costalero"),
+                supabase.from("costaleros").select("id, nombre, apellidos, apodo, puesto, trabajadera").eq("rol", "costalero"),
                 supabase.from("asistencias").select("estado, costalero_id").eq("evento_id", params.id)
             ]);
 
@@ -94,6 +95,7 @@ function EstadisticasContent() {
                         id: c.id,
                         nombre: c.nombre,
                         apellidos: c.apellidos,
+                        apodo: c.apodo,
                         puesto: c.puesto,
                         estado: asis?.estado
                     };
@@ -280,7 +282,9 @@ function EstadisticasContent() {
                                                 getStatusColor(c.estado)
                                             )}
                                         >
-                                            <span className="text-[11px] font-black uppercase leading-tight line-clamp-1">{c.nombre}</span>
+                                            <span className="text-[11px] font-black uppercase leading-tight line-clamp-1">
+                                                {c.apodo || c.nombre}
+                                            </span>
                                             <span className="text-[9px] font-bold opacity-80 tracking-tighter uppercase">{c.puesto || 'Costalero'}</span>
                                         </div>
                                     ))}

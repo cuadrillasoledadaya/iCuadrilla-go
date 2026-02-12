@@ -16,11 +16,13 @@ import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getDisplayName } from "@/lib/utils";
 
 interface Costalero {
     id: string;
     nombre: string;
     apellidos: string;
+    apodo?: string;
     email: string;
     altura: number;
     trabajadera: number;
@@ -94,7 +96,10 @@ export default function FichaCostalero() {
 
                     <div className="relative flex justify-center">
                         <div className="h-32 w-32 rounded-full bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center text-primary text-5xl font-black border-2 border-primary/20 shadow-[0_0_40px_rgba(234,179,8,0.1)] group-hover:scale-105 transition-transform duration-500">
-                            {costalero.nombre[0]}{costalero.apellidos[0]}
+                            {costalero.apodo && costalero.apodo.length >= 2
+                                ? costalero.apodo.substring(0, 2).toUpperCase()
+                                : `${costalero.nombre[0]}${costalero.apellidos[0]}`
+                            }
                         </div>
                         <div className="absolute -bottom-3 px-4 py-1.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg border-2 border-neutral-900">
                             Trabajadera {costalero.trabajadera}
@@ -103,7 +108,15 @@ export default function FichaCostalero() {
 
                     <div className="space-y-2 pt-2">
                         <h2 className="text-3xl font-black text-white leading-tight uppercase tracking-tight">
-                            {costalero.nombre} <span className="text-neutral-500">{costalero.apellidos}</span>
+                            {costalero.apodo ? (
+                                <>
+                                    {costalero.apodo} <span className="text-neutral-600 text-sm">({costalero.nombre} {costalero.apellidos})</span>
+                                </>
+                            ) : (
+                                <>
+                                    {costalero.nombre} <span className="text-neutral-500">{costalero.apellidos}</span>
+                                </>
+                            )}
                         </h2>
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/5">
                             <Shield size={12} className="text-primary" />

@@ -15,11 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
+import { getDisplayName } from "@/lib/utils";
 
 interface Costalero {
     id: string;
     nombre: string;
     apellidos: string;
+    apodo?: string;
     trabajadera: number;
     puesto: string;
 }
@@ -46,7 +48,7 @@ export default function CuadrillaList() {
     }, []);
 
     const filtered = costaleros.filter(c =>
-        `${c.nombre} ${c.apellidos}`.toLowerCase().includes(search.toLowerCase())
+        `${c.apodo || ''} ${c.nombre} ${c.apellidos}`.toLowerCase().includes(search.toLowerCase())
     );
 
     if (loading) return (
@@ -126,7 +128,7 @@ export default function CuadrillaList() {
                                                 {c.trabajadera}
                                             </div>
                                             <div className="text-left">
-                                                <p className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{c.nombre} {c.apellidos}</p>
+                                                <p className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{getDisplayName(c)}</p>
                                                 <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">{c.puesto || 'Costalero'}</p>
                                             </div>
                                         </div>

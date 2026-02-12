@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useUserRole } from "@/hooks/useUserRole";
 import { User, Ruler, MapPin, BadgeCheck, Mail } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { getDisplayName } from "@/lib/utils";
 
 export default function PerfilPage() {
     const { userId, isCostalero } = useUserRole();
@@ -73,9 +74,14 @@ export default function PerfilPage() {
 
                     <div className="space-y-1">
                         <h2 className="text-2xl font-black text-neutral-900 leading-none">
-                            {profile.nombre} {profile.apellidos}
+                            {getDisplayName(profile)}
                         </h2>
-                        <div className="flex items-center justify-center gap-2 text-neutral-400 text-sm font-medium">
+                        {profile.apodo && (
+                            <p className="text-sm font-medium text-neutral-500">
+                                {profile.nombre} {profile.apellidos}
+                            </p>
+                        )}
+                        <div className="flex items-center justify-center gap-2 text-neutral-400 text-sm font-medium pt-1">
                             <Mail size={14} />
                             <span>{profile.email}</span>
                         </div>

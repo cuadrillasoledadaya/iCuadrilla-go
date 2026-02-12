@@ -17,3 +17,17 @@ export function getSiteUrl() {
     url = url.charAt(url.length - 1) === "/" ? url : `${url}/`;
     return url;
 }
+
+/**
+ * Retorna el nombre de visualización de un costalero.
+ * Prioriza el apodo si está disponible, sino retorna nombre completo.
+ * 
+ * @param costalero - Objeto con datos del costalero
+ * @returns Nombre para mostrar (apodo o nombre+apellidos)
+ */
+export function getDisplayName(costalero: { apodo?: string | null; nombre: string; apellidos: string }): string {
+    if (costalero.apodo && costalero.apodo.trim() !== '') {
+        return costalero.apodo.trim();
+    }
+    return `${costalero.nombre} ${costalero.apellidos}`;
+}

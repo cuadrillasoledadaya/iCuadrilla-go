@@ -13,6 +13,7 @@ import { ChevronLeft, Save, Trash2 } from "lucide-react";
 const formSchema = z.object({
     nombre: z.string().min(2, "El nombre es obligatorio"),
     apellidos: z.string().min(2, "Los apellidos son obligatorios"),
+    apodo: z.string().optional(),
     email: z.string().email("Email inválido").optional().or(z.literal("")).nullable(),
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
@@ -43,6 +44,7 @@ export default function EditarCostalero() {
             if (data) {
                 reset({
                     ...data,
+                    apodo: data.apodo || "",
                     altura: data.altura?.toString(),
                     trabajadera: data.trabajadera?.toString(),
                     suplemento: data.suplemento != null ? data.suplemento.toFixed(1) : "",
@@ -63,6 +65,7 @@ export default function EditarCostalero() {
             .from("costaleros")
             .update({
                 ...values,
+                apodo: values.apodo || null,
                 altura: values.altura ? parseFloat(values.altura) : null,
                 trabajadera: parseInt(values.trabajadera),
                 email: values.email ? values.email.toLowerCase() : null,
@@ -129,6 +132,11 @@ export default function EditarCostalero() {
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Apellidos</label>
                         <Input {...register("apellidos")} className="bg-white border-black/10 h-12 rounded-xl text-neutral-900 placeholder:text-neutral-400" />
                         {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Apodo (Opcional)</label>
+                        <Input {...register("apodo")} placeholder="Ej: El Rubio, Pepe..." className="bg-white border-black/10 h-12 rounded-xl text-neutral-900 placeholder:text-neutral-400" />
+                        <p className="text-[10px] text-neutral-500 italic">Si se especifica, se mostrará en lugar del nombre completo</p>
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Email</label>

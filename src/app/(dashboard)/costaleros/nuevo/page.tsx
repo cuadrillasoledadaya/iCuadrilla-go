@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 const formSchema = z.object({
     nombre: z.string().min(2, "El nombre es obligatorio"),
     apellidos: z.string().min(2, "Los apellidos son obligatorios"),
+    apodo: z.string().optional(),
     email: z.string().email("Email inválido").optional().or(z.literal("")),
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
@@ -43,6 +44,7 @@ export default function AltaCostalero() {
 
         const { error } = await supabase.from("costaleros").insert([{
             ...values,
+            apodo: values.apodo || null,
             altura: values.altura ? parseFloat(values.altura) : null,
             trabajadera: parseInt(values.trabajadera),
             qr_code: qrCode,
@@ -89,6 +91,11 @@ export default function AltaCostalero() {
                         <label className="text-sm font-medium text-neutral-400">Apellidos</label>
                         <Input {...register("apellidos")} className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                         {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-neutral-400">Apodo (Opcional)</label>
+                        <Input {...register("apodo")} placeholder="Ej: El Rubio, Pepe..." className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
+                        <p className="text-[10px] text-neutral-500 italic">Si se especifica, se mostrará en lugar del nombre completo</p>
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Email (Opcional)</label>

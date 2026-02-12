@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import { getDisplayName } from "@/lib/utils";
 
 interface Costalero {
     id: string;
     nombre: string;
     apellidos: string;
+    apodo?: string;
     trabajadera: number;
     posicion_trabajadera: number;
     puesto: string;
@@ -72,7 +74,7 @@ export default function GestionRelevos() {
                 <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5">Selecciona dos para intercambiar</p>
                 {selected && (
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest animate-pulse shadow-lg shadow-primary/20">
-                        Intercambiar con: {selected.nombre}
+                        Intercambiar con: {selected.apodo || selected.nombre}
                     </div>
                 )}
             </header>
@@ -104,7 +106,7 @@ export default function GestionRelevos() {
                                         {c ? (
                                             <div>
                                                 <div className="text-xs font-bold leading-tight line-clamp-2">
-                                                    {c.nombre} {c.apellidos}
+                                                    {getDisplayName(c)}
                                                 </div>
                                                 <div className={cn(
                                                     "text-[9px] uppercase mt-1",

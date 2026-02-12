@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { ChevronLeft, Plus, Search, Check, UserPlus, Trash2, ArrowLeftRight, Settings2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, getDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -12,6 +12,7 @@ interface Costalero {
     id: string;
     nombre: string;
     apellidos: string;
+    apodo?: string;
     trabajadera: number;
     puesto: string;
     estadoAsistencia: 'presente' | 'ausente' | 'justificado' | 'pendiente';
@@ -311,7 +312,7 @@ export default function GestionRelevos() {
             }
 
             if (searchTerm) {
-                const fullName = `${c.nombre} ${c.apellidos}`.toLowerCase();
+                const fullName = `${c.nombre} ${c.apellidos} ${c.apodo || ''}`.toLowerCase();
                 return fullName.includes(searchTerm.toLowerCase());
             }
             return true;
@@ -496,7 +497,7 @@ export default function GestionRelevos() {
                                             "font-black text-[13px] leading-tight line-clamp-2",
                                             costalero ? "text-neutral-900" : "text-neutral-300 font-medium"
                                         )}>
-                                            {costalero ? `${costalero.nombre} ${costalero.apellidos}` : 'Asignar...'}
+                                            {costalero ? getDisplayName(costalero) : 'Asignar...'}
                                         </span>
                                         {isSelected && <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-pulse" />}
                                         {isOutOfPlace && costalero && (
@@ -557,7 +558,7 @@ export default function GestionRelevos() {
                                                 "font-black text-[13px] leading-tight min-h-[1.2em]",
                                                 costaleroCorriente ? "text-neutral-900" : "text-neutral-300 font-medium"
                                             )}>
-                                                {costaleroCorriente ? `${costaleroCorriente.nombre} ${costaleroCorriente.apellidos}` : 'Sin asignar'}
+                                                {costaleroCorriente ? getDisplayName(costaleroCorriente) : 'Sin asignar'}
                                             </span>
                                             {isCorrienteOutOfPlace && costaleroCorriente && (
                                                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
@@ -640,7 +641,7 @@ export default function GestionRelevos() {
                                                 )}
                                             >
                                                 <div className="text-left">
-                                                    <p className="font-extrabold text-neutral-900 group-hover:text-primary">{c.nombre} {c.apellidos}</p>
+                                                    <p className="font-extrabold text-neutral-900 group-hover:text-primary">{getDisplayName(c)}</p>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">T-{c.trabajadera} • {c.puesto}</p>
                                                         <span className={cn("text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase", label.color)}>
@@ -710,7 +711,7 @@ export default function GestionRelevos() {
                                     <ArrowLeftRight size={20} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-black uppercase tracking-tight truncate">{getCostaleroAt(selectedPos.t, selectedPos.p)?.nombre || 'Hueco'}</p>
+                                    <p className="text-xs font-black uppercase tracking-tight truncate">{getCostaleroAt(selectedPos.t, selectedPos.p) ? getDisplayName(getCostaleroAt(selectedPos.t, selectedPos.p)!) : 'Hueco'}</p>
                                     <p className="text-[8px] text-neutral-400 font-bold leading-tight">Toca otro hueco para intercambio</p>
                                 </div>
                             </div>
