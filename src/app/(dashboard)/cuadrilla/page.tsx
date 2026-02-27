@@ -9,14 +9,23 @@ import {
     Users,
     Filter,
     ChevronLeft,
-    History
+    History,
+    MoreVertical,
+    Plus
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
 import { getDisplayName } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface Costalero {
     id: string;
@@ -73,22 +82,32 @@ export default function CuadrillaList() {
                     <h1 className="text-2xl font-black tracking-tighter uppercase text-neutral-900 italic">La Cuadrilla</h1>
                     <p className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">Listado de Hermanos Costaleros</p>
                 </div>
-                <div className="absolute right-0 flex items-center gap-2">
-                    <button
-                        onClick={() => router.push('/cuadrilla/movimientos')}
-                        className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-all active:scale-95"
-                        title="Historial de Altas/Bajas"
-                    >
-                        <History size={24} />
-                    </button>
-                    {(isAdmin || isMaster) && (
-                        <button
-                            onClick={() => router.push('/costaleros/nuevo')}
-                            className="p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
-                        >
-                            <UserPlus size={24} />
-                        </button>
-                    )}
+                <div className="absolute right-0">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center justify-center">
+                                <Plus size={24} />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56 bg-white rounded-3xl border-black/5 shadow-2xl p-2 animate-in zoom-in-95 duration-200">
+                            <DropdownMenuItem
+                                onClick={() => router.push('/cuadrilla/movimientos')}
+                                className="flex items-center gap-3 p-4 rounded-2xl focus:bg-primary/5 text-neutral-600 focus:text-primary cursor-pointer transition-colors"
+                            >
+                                <History size={20} className="text-neutral-400 group-focus:text-primary" />
+                                <span className="font-bold uppercase tracking-widest text-[10px]">Ver Historial</span>
+                            </DropdownMenuItem>
+                            {(isAdmin || isMaster) && (
+                                <DropdownMenuItem
+                                    onClick={() => router.push('/costaleros/nuevo')}
+                                    className="flex items-center gap-3 p-4 rounded-2xl focus:bg-primary/5 text-neutral-600 focus:text-primary cursor-pointer transition-colors"
+                                >
+                                    <UserPlus size={20} className="text-neutral-400 group-focus:text-primary" />
+                                    <span className="font-bold uppercase tracking-widest text-[10px]">Nueva Alta</span>
+                                </DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </header>
 
