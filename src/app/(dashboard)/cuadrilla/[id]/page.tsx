@@ -10,7 +10,9 @@ import {
     User,
     Shield,
     Calendar,
-    ArrowUpRight
+    ArrowUpRight,
+    Phone,
+    MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
@@ -29,6 +31,7 @@ interface Costalero {
     puesto: string;
     suplemento?: number;
     ano_ingreso?: number;
+    telefono?: string;
     qr_code: string;
 }
 
@@ -166,8 +169,25 @@ export default function FichaCostalero() {
                             <Mail size={20} />
                         </div>
                         <div className="text-center w-full">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1">Contacto</p>
-                            <p className="text-xs font-bold text-white truncate px-2">{costalero.email}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1">Email</p>
+                            <p className="text-xs font-bold text-white truncate px-2">{costalero.email || '---'}</p>
+                        </div>
+                    </div>
+
+                    <div className="col-span-2 grid grid-cols-2 gap-4">
+                        <div
+                            className="bg-primary/10 p-5 rounded-[24px] border border-primary/20 flex flex-col items-center justify-center gap-2 hover:bg-primary/20 transition-all active:scale-95 cursor-pointer group"
+                            onClick={() => costalero.telefono && (window.location.href = `tel:${costalero.telefono}`)}
+                        >
+                            <Phone size={24} className="text-primary group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Llamar</span>
+                        </div>
+                        <div
+                            className="bg-green-500/10 p-5 rounded-[24px] border border-green-500/20 flex flex-col items-center justify-center gap-2 hover:bg-green-500/20 transition-all active:scale-95 cursor-pointer group"
+                            onClick={() => costalero.telefono && window.open(`https://wa.me/34${costalero.telefono.replace(/\s+/g, '')}`, '_blank')}
+                        >
+                            <MessageCircle size={24} className="text-green-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-green-500">WhatsApp</span>
                         </div>
                     </div>
                 </div>
