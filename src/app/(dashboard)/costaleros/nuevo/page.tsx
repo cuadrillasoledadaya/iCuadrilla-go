@@ -17,6 +17,7 @@ const formSchema = z.object({
     apellidos: z.string().min(2, "Los apellidos son obligatorios"),
     apodo: z.string().optional(),
     email: z.string().email("Email inválido").optional().or(z.literal("")),
+    telefono: z.string().optional(),
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
     puesto: z.string().min(2, "El puesto es obligatorio"),
@@ -49,6 +50,7 @@ export default function AltaCostalero() {
             trabajadera: parseInt(values.trabajadera),
             qr_code: qrCode,
             email: values.email ? values.email.toLowerCase() : null,
+            telefono: values.telefono || null,
             suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
             ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
         }]);
@@ -101,6 +103,10 @@ export default function AltaCostalero() {
                         <label className="text-sm font-medium text-neutral-400">Email (Opcional)</label>
                         <Input {...register("email")} type="email" className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-neutral-400">Teléfono (Opcional)</label>
+                        <Input {...register("telefono")} type="tel" className="bg-white border-black/10 text-neutral-900 placeholder:text-neutral-400 h-12 rounded-xl" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-neutral-400">Altura (m)</label>
