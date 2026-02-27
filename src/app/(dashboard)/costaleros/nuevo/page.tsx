@@ -43,26 +43,55 @@ export default function AltaCostalero() {
         // Generar un código QR aleatorio
         const qrCode = `${values.nombre.toLowerCase()}-${Math.random().toString(36).substring(7)}`;
 
-        const { error } = await supabase.from("costaleros").insert([{
-            ...values,
-            apodo: values.apodo || null,
-            altura: values.altura ? parseFloat(values.altura) : null,
-            trabajadera: parseInt(values.trabajadera),
-            qr_code: qrCode,
-            email: values.email ? values.email.toLowerCase() : null,
-            telefono: values.telefono || null,
-            suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
-            ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
-        }]);
+        try {
+            // 1. Obtener temporada activa
+            const { data: temporadaActiva } = await supabase
+                .from("temporadas")
+                .select("id")
+                .eq("activa", true)
+                .single();
 
-        if (error) {
-            console.error(error);
-            setMessage(`Error: ${error.message}`);
-        } else {
+            if (!temporadaActiva) throw new Error("No hay una temporada activa para registrar el alta.");
+
+            // 2. Insertar costalero
+            const { data: newCostalero, error: costError } = await supabase
+                .from("costaleros")
+                .insert([{
+                    ...values,
+                    apodo: values.apodo || null,
+                    altura: values.altura ? parseFloat(values.altura) : null,
+                    trabajadera: parseInt(values.trabajadera),
+                    qr_code: qrCode,
+                    email: values.email ? values.email.toLowerCase() : null,
+                    telefono: values.telefono || null,
+                    suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
+                    ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
+                    estado: 'activo'
+                }])
+                .select()
+                .single();
+
+            if (costError) throw costError;
+
+            // 3. Registrar movimiento de alta
+            const { error: moveError } = await supabase
+                .from("movimientos_cuadrilla")
+                .insert([{
+                    costalero_id: newCostalero.id,
+                    temporada_id: temporadaActiva.id,
+                    tipo: 'alta',
+                    motivo: 'Alta inicial en la cuadrilla'
+                }]);
+
+            if (moveError) console.error("Error al registrar movimiento:", moveError);
+
             setQrValue(qrCode);
             setNewCostaleroName(`${values.nombre} ${values.apellidos}`);
             setShowSuccessModal(true);
             reset();
+        } catch (error: any) {
+            console.error(error);
+            setMessage(`Error: ${error.message}`);
         }
         setLoading(false);
     };
