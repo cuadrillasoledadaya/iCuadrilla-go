@@ -180,7 +180,9 @@ export default function FichaCostalero() {
                             onClick={() => costalero.telefono && (window.location.href = `tel:${costalero.telefono}`)}
                         >
                             <Phone size={24} className="text-primary group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Llamar</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-full px-2">
+                                {costalero.telefono || "Llamar"}
+                            </span>
                         </div>
                         <div
                             className="bg-green-500/10 p-5 rounded-[24px] border border-green-500/20 flex flex-col items-center justify-center gap-2 hover:bg-green-500/20 transition-all active:scale-95 cursor-pointer group"
