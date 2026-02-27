@@ -8,7 +8,8 @@ import {
     ChevronRight,
     Users,
     Filter,
-    ChevronLeft
+    ChevronLeft,
+    History
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ export default function CuadrillaList() {
             const { data } = await supabase.from("costaleros")
                 .select("*")
                 .eq("rol", "costalero")
+                .eq("estado", "activo")
                 .order("trabajadera", { ascending: true })
                 .order("apellidos", { ascending: true });
             if (data) setCostaleros(data);
@@ -71,14 +73,23 @@ export default function CuadrillaList() {
                     <h1 className="text-2xl font-black tracking-tighter uppercase text-neutral-900 italic">La Cuadrilla</h1>
                     <p className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">Listado de Hermanos Costaleros</p>
                 </div>
-                {(isAdmin || isMaster) && (
+                <div className="absolute right-0 flex items-center gap-2">
                     <button
-                        onClick={() => router.push('/costaleros/nuevo')}
-                        className="absolute right-0 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
+                        onClick={() => router.push('/cuadrilla/movimientos')}
+                        className="p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-all active:scale-95"
+                        title="Historial de Altas/Bajas"
                     >
-                        <UserPlus size={24} />
+                        <History size={24} />
                     </button>
-                )}
+                    {(isAdmin || isMaster) && (
+                        <button
+                            onClick={() => router.push('/costaleros/nuevo')}
+                            className="p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-90 transition-all"
+                        >
+                            <UserPlus size={24} />
+                        </button>
+                    )}
+                </div>
             </header>
 
             {/* Búsqueda y Filtros */}
@@ -163,12 +174,20 @@ export default function CuadrillaList() {
                         Ver Ficha Detallada
                     </button>
                     {(isAdmin || isMaster) && (
-                        <button
-                            onClick={() => router.push(`/cuadrilla/${selectedCostalero}/editar`)}
-                            className="w-full h-14 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg shadow-primary/20 transition-all"
-                        >
-                            Editar Información
-                        </button>
+                        <>
+                            <button
+                                onClick={() => router.push(`/cuadrilla/${selectedCostalero}/editar`)}
+                                className="w-full h-14 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg shadow-primary/20 transition-all"
+                            >
+                                Editar Información
+                            </button>
+                            <button
+                                onClick={() => router.push(`/cuadrilla/${selectedCostalero}/baja`)}
+                                className="w-full h-14 rounded-2xl bg-red-600/10 border border-red-600/30 text-red-500 font-bold flex items-center justify-center gap-3 hover:bg-red-600/20 transition-all"
+                            >
+                                Tramitar Baja
+                            </button>
+                        </>
                     )}
                 </div>
             </Modal>
