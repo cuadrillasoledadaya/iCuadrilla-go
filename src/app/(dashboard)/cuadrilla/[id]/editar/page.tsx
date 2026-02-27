@@ -15,6 +15,7 @@ const formSchema = z.object({
     apellidos: z.string().min(2, "Los apellidos son obligatorios"),
     apodo: z.string().optional(),
     email: z.string().email("Email inválido").optional().or(z.literal("")).nullable(),
+    telefono: z.string().optional().nullable(),
     altura: z.string().optional(),
     trabajadera: z.string().regex(/^[1-7]$/, "Debe ser del 1 al 7"),
     puesto: z.string().min(2, "El puesto es obligatorio"),
@@ -50,6 +51,7 @@ export default function EditarCostalero() {
                     suplemento: data.suplemento != null ? data.suplemento.toFixed(1) : "",
                     ano_ingreso: data.ano_ingreso?.toString(),
                     email: data.email || "",
+                    telefono: data.telefono || "",
                 });
             }
             setLoading(false);
@@ -69,6 +71,7 @@ export default function EditarCostalero() {
                 altura: values.altura ? parseFloat(values.altura) : null,
                 trabajadera: parseInt(values.trabajadera),
                 email: values.email ? values.email.toLowerCase() : null,
+                telefono: values.telefono || null,
                 suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
                 ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
             })
@@ -142,6 +145,10 @@ export default function EditarCostalero() {
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Email</label>
                         <Input {...register("email")} type="email" className="bg-white border-black/10 h-12 rounded-xl text-neutral-900 placeholder:text-neutral-400" />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Teléfono</label>
+                        <Input {...register("telefono")} type="tel" className="bg-white border-black/10 h-12 rounded-xl text-neutral-900 placeholder:text-neutral-400" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-widest text-neutral-500">Altura (m)</label>
