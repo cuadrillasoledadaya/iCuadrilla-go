@@ -80,53 +80,53 @@ export default function BajaCostalero() {
     };
 
     if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-neutral-950">
+        <div className="flex min-h-screen items-center justify-center bg-background">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-neutral-950 pb-32 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-700">
             {/* Header */}
             <header className="relative p-6 flex items-center justify-center">
                 <button
                     onClick={() => router.back()}
-                    className="absolute left-6 p-3 bg-neutral-900/50 border border-white/5 rounded-2xl text-neutral-400 hover:text-white transition-colors"
+                    className="absolute left-6 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
                 >
                     <ChevronLeft size={24} />
                 </button>
                 <div className="text-center space-y-1">
-                    <h1 className="text-lg font-black tracking-tight uppercase text-white tracking-[0.2em]">Tramitar Baja</h1>
+                    <h1 className="text-lg font-black tracking-tight uppercase text-neutral-900 tracking-[0.2em]">Tramitar Baja</h1>
                 </div>
             </header>
 
             <main className="px-6 space-y-8">
-                <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-[32px] space-y-4">
-                    <div className="flex items-center gap-3 text-red-500">
+                <div className="bg-red-50 p-6 rounded-[32px] border border-red-100 space-y-4 shadow-sm">
+                    <div className="flex items-center gap-3 text-red-600">
                         <AlertTriangle size={24} />
                         <h2 className="text-xl font-black uppercase tracking-tight italic">Advertencia</h2>
                     </div>
-                    <p className="text-xs text-red-400 font-medium leading-relaxed">
-                        Estás a punto de tramitar la baja de <span className="font-black underline text-white">
+                    <p className="text-xs text-red-500/80 font-bold leading-relaxed">
+                        Estás a punto de tramitar la baja de <span className="font-black underline text-neutral-900">
                             {costalero?.apodo ? `${costalero.apodo} (${costalero.nombre})` : `${costalero?.nombre} ${costalero?.apellidos}`}
                         </span>. Esta acción lo retirará del listado activo de la cuadrilla.
                     </p>
                 </div>
 
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-2">Motivo de la Baja</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-2">Motivo de la Baja</label>
                     <textarea
                         value={motivo}
                         onChange={(e) => setMotivo(e.target.value)}
                         placeholder="Ej: Motivos laborales, salud, decisión personal..."
-                        className="w-full bg-neutral-900 border border-white/5 rounded-[24px] p-5 text-sm text-white focus:border-primary/50 transition-colors min-h-[150px] outline-none"
+                        className="w-full bg-white border border-black/5 shadow-sm rounded-[24px] p-5 text-sm text-neutral-900 focus:border-primary/50 transition-colors min-h-[150px] outline-none font-bold"
                     />
                 </div>
 
                 <Button
                     onClick={handleBaja}
                     disabled={saving || !motivo.trim()}
-                    className="w-full h-16 bg-primary text-black font-black uppercase tracking-[0.2em] rounded-[24px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                    className="w-full h-16 bg-primary text-white font-black uppercase tracking-[0.2em] rounded-[24px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
                 >
                     <Save size={20} />
                     {saving ? "Tramitando..." : "Confirmar Baja"}
