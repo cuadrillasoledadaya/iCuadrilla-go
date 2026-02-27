@@ -65,15 +65,15 @@ export default function MovimientosCuadrilla() {
     }, []);
 
     if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-background">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#16a34a]"></div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-[#f8fafc] pb-32 animate-in fade-in duration-700">
             {/* Header */}
-            <header className="relative p-6 flex items-center justify-center">
+            <header className="relative p-6 flex items-center justify-center bg-[#f8fafc]">
                 <button
                     onClick={() => router.back()}
                     className="absolute left-6 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
@@ -82,7 +82,7 @@ export default function MovimientosCuadrilla() {
                 </button>
                 <div className="text-center space-y-1">
                     <h1 className="text-lg font-black tracking-tight uppercase text-neutral-900 tracking-[0.2em]">Movimientos</h1>
-                    <p className="text-[10px] text-primary font-black uppercase tracking-widest">Altas y Bajas de la Temporada</p>
+                    <p className="text-[10px] text-[#16a34a] font-black uppercase tracking-widest">Altas y Bajas de la Temporada</p>
                 </div>
             </header>
 

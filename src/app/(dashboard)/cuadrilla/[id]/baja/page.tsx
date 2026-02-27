@@ -80,15 +80,15 @@ export default function BajaCostalero() {
     };
 
     if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-background">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#16a34a]"></div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-[#f8fafc] pb-32 animate-in fade-in duration-700">
             {/* Header */}
-            <header className="relative p-6 flex items-center justify-center">
+            <header className="relative p-6 flex items-center justify-center bg-[#f8fafc]">
                 <button
                     onClick={() => router.back()}
                     className="absolute left-6 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
