@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 
 interface Movimiento {
     id: string;
@@ -126,7 +124,7 @@ export default function MovimientosCuadrilla() {
                                         <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/5">
                                             <Calendar size={10} className="text-neutral-500" />
                                             <span className="text-[9px] font-black text-neutral-400 uppercase">
-                                                {format(new Date(m.fecha), "dd MMM yyyy", { locale: es })}
+                                                {new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(m.fecha))}
                                             </span>
                                         </div>
                                     </div>
