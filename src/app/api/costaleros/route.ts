@@ -37,10 +37,11 @@ export async function GET(request: Request) {
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-  // 5. Recuperar solo los datos solicitados
+  // 5. Recuperar solo los datos solicitados (activos únicamente)
   const { data, error } = await supabase
     .from('costaleros')
-    .select('nombre, apellidos, apodo, trabajadera, email');
+    .select('nombre, apellidos, apodo, trabajadera, email')
+    .eq('estado', 'activo');
 
   if (error) {
     return NextResponse.json(
