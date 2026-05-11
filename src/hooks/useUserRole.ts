@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { checkIsMaster } from '@/app/actions';
+import type { User } from '@supabase/supabase-js';
 
 export function useUserRole() {
   const [isCostalero, setIsCostalero] = useState<boolean | null>(null);
@@ -21,7 +22,7 @@ export function useUserRole() {
   useEffect(() => {
     let mounted = true;
 
-    const checkRole = async (sessionUser?: any) => {
+    const checkRole = async (sessionUser?: User | null) => {
       try {
         // Si nos pasan un usuario (desde el evento), usamos ese. Si no, fetch.
         let user = sessionUser;
@@ -58,7 +59,6 @@ export function useUserRole() {
         // 1. Identificar por Email Maestro (SUPERADMIN) - Validación segura servidor
         const isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
 
-        console.log('Is Master Email Result:', isMasterEmail);
         setIsMaster(isMasterEmail);
 
         // 2. Buscar en tabla costaleros
@@ -79,7 +79,6 @@ export function useUserRole() {
 
           // Si es Master Email, forzamos el rol a superadmin visualmente
           if (isMasterEmail) {
-            console.log('--> FORCE SUPERADMIN: User matched master email logic');
             currentRol = 'superadmin';
           }
 

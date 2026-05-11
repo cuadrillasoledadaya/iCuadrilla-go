@@ -14,7 +14,6 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     if (queue.length === 0) return;
 
     isSyncing.current = true;
-    console.log(`[Sync] Processing ${queue.length} pending actions...`);
 
     for (const action of queue) {
       try {
@@ -41,7 +40,6 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
           }
 
           removeFromSyncQueue(action.id);
-          console.log(`[Sync] Action ${action.id} synced successfully.`);
         }
       } catch (error) {
         console.error(`[Sync] Failed to sync action ${action.id}:`, error);
@@ -55,7 +53,6 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleOnline = () => {
-      console.log('[Sync] Connection restored, processing queue...');
       processQueue();
     };
 

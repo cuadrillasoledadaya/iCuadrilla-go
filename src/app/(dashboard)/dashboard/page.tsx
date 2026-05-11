@@ -102,8 +102,8 @@ export default function DashboardPage() {
             setUserName(name);
             saveToCache('user_name', name);
           }
-        } catch (e) {
-          console.error('[Offline] Error fetching user from auth:', e);
+        } catch {
+          // Error fetching user from auth — non-critical
         }
 
         // 0. Obtener temporada activa
@@ -117,8 +117,8 @@ export default function DashboardPage() {
             setActiveSeasonName(activeSeason.nombre);
             saveToCache('active_season', activeSeason.nombre);
           }
-        } catch (e) {
-          console.error('[Offline] Error fetching active season:', e);
+        } catch {
+          // Error fetching active season — non-critical
         }
 
         // 1. Obtener cuadrilla
@@ -207,8 +207,8 @@ export default function DashboardPage() {
         saveToCache('dashboard_stats', newStats);
         saveToCache('dashboard_eventos', eventosProximos);
         saveToCache('dashboard_avisos', avisosData);
-      } catch (err) {
-        console.log('[Offline] Error updating dashboard data:', err);
+      } catch {
+        // Error updating dashboard data — using cache if available
       } finally {
         setLoading(false);
       }

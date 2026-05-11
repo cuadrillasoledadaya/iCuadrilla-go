@@ -46,8 +46,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           data: { user },
         } = await supabase.auth.getUser();
         if (user) setUserEmail(user.email || null);
-      } catch (e) {
-        console.log('[Offline] Error getting user in sidebar:', e);
+      } catch {
+        // Error getting user in sidebar — non-critical
       }
     };
     getUser();
@@ -66,8 +66,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         const active = data.find((t: any) => t.activa);
         setActiveSeason(active || null);
       }
-    } catch (e) {
-      console.log('[Offline] Error fetching seasons in sidebar:', e);
+    } catch {
+      // Error fetching seasons in sidebar — non-critical
     } finally {
       setLoadingSeasons(false);
     }

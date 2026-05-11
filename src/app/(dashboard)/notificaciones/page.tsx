@@ -134,8 +134,6 @@ export default function NotificacionesPage() {
       return;
     }
 
-    console.log('handleJustify called with:', { notificationId, eventoId, costaleroId });
-
     // 1. Update Asistencia to 'justificado'
     const { data, error: updateError } = await supabase
       .from('asistencias')
@@ -144,16 +142,12 @@ export default function NotificacionesPage() {
       .eq('costalero_id', costaleroId)
       .select();
 
-    console.log('Update result:', { data, updateError });
-
     if (updateError) {
-      console.error('Error updating asistencia:', updateError);
       alert('Error al justificar la asistencia: ' + updateError.message);
       return;
     }
 
     if (!data || data.length === 0) {
-      console.warn('No rows updated - check IDs');
       alert('No se encontró la asistencia para actualizar. Verifica los IDs.');
       return;
     }
@@ -180,8 +174,6 @@ export default function NotificacionesPage() {
       return;
     }
 
-    console.log('handleConfirmAbsence called with:', { notificationId, eventoId, costaleroId });
-
     // 1. Update Asistencia to 'ausente'
     const { data, error: updateError } = await supabase
       .from('asistencias')
@@ -190,10 +182,7 @@ export default function NotificacionesPage() {
       .eq('costalero_id', costaleroId)
       .select();
 
-    console.log('Update result:', { data, updateError });
-
     if (updateError) {
-      console.error('Error updating asistencia:', updateError);
       alert('Error al marcar la ausencia: ' + updateError.message);
       return;
     }

@@ -75,8 +75,8 @@ export default function TrabajaderasAsistencia() {
 
         setCuadrilla(fullCuadrilla);
         saveToCache(`event_${params.id}_cuadrilla`, fullCuadrilla);
-      } catch (err) {
-        console.log('[Offline] Error fetching data, using cache if available:', err);
+      } catch {
+        // Error fetching data — using cache if available
       } finally {
         setLoading(false);
       }
@@ -116,7 +116,6 @@ export default function TrabajaderasAsistencia() {
     };
 
     if (!navigator.onLine) {
-      console.log('[Offline] App is offline, queueing update...');
       addToSyncQueue({
         type: 'attendance_update',
         payload: actionPayload,
@@ -148,8 +147,7 @@ export default function TrabajaderasAsistencia() {
 
         if (error) throw error;
       }
-    } catch (error) {
-      console.log('[Offline] Database update failed unexpectedly, queueing...', error);
+    } catch {
       addToSyncQueue({
         type: 'attendance_update',
         payload: actionPayload,

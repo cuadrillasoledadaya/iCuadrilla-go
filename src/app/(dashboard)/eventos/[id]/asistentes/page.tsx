@@ -80,8 +80,8 @@ export default function AsistentesPage() {
 
         setAsistentes(filtered);
         saveToCache(`asistentes_list_${params.id}`, filtered);
-      } catch (err) {
-        console.log('[Offline] Error fetching assistants:', err);
+      } catch {
+        // Error fetching assistants — using cache if available
       } finally {
         setLoading(false);
       }
@@ -154,8 +154,7 @@ export default function AsistentesPage() {
 
         if (error) throw error;
       }
-    } catch (error) {
-      console.log('[Offline] Sync Error in assistants:', error);
+    } catch {
       addToSyncQueue({
         type: 'attendance_update',
         payload: actionPayload,
