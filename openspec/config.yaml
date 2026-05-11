@@ -1,0 +1,52 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Next.js 14.2.35 (App Router), React 18.3.1, TypeScript 5.9.3, Tailwind CSS 3.4.1, Supabase (SSR + JS), PWA (@ducanh2912/next-pwa)
+  Architecture: App Router with group routes, API routes, Server Actions, Middleware auth+RBAC, Client components with hooks
+  Testing: No test runner detected. No jest, vitest, cypress, playwright, or test files.
+  Style: Conventional Commits, ESLint via next lint, TypeScript strict mode, src/ directory with @/* alias
+
+strict_tdd: false
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns (App Router, Server Actions, Zod validations, Radix UI + Tailwind)
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: "npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
+
+testing:
+  strict_tdd: false
+  runner:
+    command: ""
+    framework: ""
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage:
+    available: false
+    command: ""
+  quality:
+    linter: true
+    linter_command: "npm run lint"
+    type_checker: true
+    type_checker_command: "tsc --noEmit (via next build)"
+    formatter: false
+    formatter_command: ""

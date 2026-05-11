@@ -1,0 +1,8 @@
+.next/
+node_modules/
+out/
+public/sw*.js
+public/fallback-*.js
+package-lock.json
+*.min.js
+*.min.css

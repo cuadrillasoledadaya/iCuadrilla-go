@@ -1,302 +1,372 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import {
-    ChevronLeft,
-    CheckCircle2,
-    XCircle,
-    FileText,
-    Trash2,
-    AlertCircle
-} from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { saveToCache, getFromCache, addToSyncQueue } from "@/lib/offline-utils";
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { ChevronLeft, CheckCircle2, XCircle, FileText, Trash2, AlertCircle } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { saveToCache, getFromCache, addToSyncQueue } from '@/lib/offline-utils';
 
 interface Costalero {
-    id: string;
-    nombre: string;
-    apellidos: string;
-    trabajadera: number;
-    puesto: string;
-    estado?: 'presente' | 'ausente' | 'justificado' | 'justificada' | null;
-    asistencia_id?: string;
-    hora?: string;
-    suplemento?: number;
+  id: string;
+  nombre: string;
+  apellidos: string;
+  trabajadera: number;
+  puesto: string;
+  estado?: 'presente' | 'ausente' | 'justificado' | 'justificada' | null;
+  asistencia_id?: string;
+  hora?: string;
+  suplemento?: number;
 }
 
 export default function TrabajaderasAsistencia() {
-    const params = useParams();
-    const router = useRouter();
-    const [eventoTitulo, setEventoTitulo] = useState("Evento");
-    const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedCostalero, setSelectedCostalero] = useState<Costalero | null>(null);
+  const params = useParams();
+  const router = useRouter();
+  const [eventoTitulo, setEventoTitulo] = useState('Evento');
+  const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCostalero, setSelectedCostalero] = useState<Costalero | null>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            // Cargar de caché
-            const cachedTitulo = getFromCache<string>(`event_${params.id}_titulo`);
-            const cachedCuadrilla = getFromCache<Costalero[]>(`event_${params.id}_cuadrilla`);
+  useEffect(() => {
+    const fetchData = async () => {
+      // Cargar de caché
+      const cachedTitulo = getFromCache<string>(`event_${params.id}_titulo`);
+      const cachedCuadrilla = getFromCache<Costalero[]>(`event_${params.id}_cuadrilla`);
 
-            if (cachedTitulo) setEventoTitulo(cachedTitulo);
-            if (cachedCuadrilla) setCuadrilla(cachedCuadrilla);
+      if (cachedTitulo) setEventoTitulo(cachedTitulo);
+      if (cachedCuadrilla) setCuadrilla(cachedCuadrilla);
 
-            try {
-                // 1. Fetch Evento
-                const { data: evento } = await supabase.from("eventos").select("*").eq("id", params.id).single();
-                if (evento) {
-                    setEventoTitulo(evento.titulo);
-                    saveToCache(`event_${params.id}_titulo`, evento.titulo);
-                }
+      try {
+        // 1. Fetch Evento
+        const { data: evento } = await supabase
+          .from('eventos')
+          .select('*')
+          .eq('id', params.id)
+          .single();
+        if (evento) {
+          setEventoTitulo(evento.titulo);
+          saveToCache(`event_${params.id}_titulo`, evento.titulo);
+        }
 
-                // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
-                const [costalerosRes, asistenciasRes] = await Promise.all([
-                    supabase.from("costaleros").select("*").eq("rol", "costalero").order("trabajadera").order("apellidos"),
-                    supabase.from("asistencias").select("*").eq("evento_id", params.id)
-                ]);
+        // 2. Fetch Costaleros & Asistencias (Real Data con filtro evento_id)
+        const [costalerosRes, asistenciasRes] = await Promise.all([
+          supabase
+            .from('costaleros')
+            .select('*')
+            .eq('rol', 'costalero')
+            .order('trabajadera')
+            .order('apellidos'),
+          supabase.from('asistencias').select('*').eq('evento_id', params.id),
+        ]);
 
-                const allCostaleros = costalerosRes.data || [];
-                const allAsistencias = asistenciasRes.data || [];
+        const allCostaleros = costalerosRes.data || [];
+        const allAsistencias = asistenciasRes.data || [];
 
-                const fullCuadrilla = allCostaleros.map((c) => {
-                    const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
-                    return {
-                        ...c,
-                        estado: asistencia?.estado,
-                        hora: asistencia?.hora,
-                        asistencia_id: asistencia?.id
-                    };
-                }) as Costalero[];
+        const fullCuadrilla = allCostaleros.map((c) => {
+          const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
+          return {
+            ...c,
+            estado: asistencia?.estado,
+            hora: asistencia?.hora,
+            asistencia_id: asistencia?.id,
+          };
+        }) as Costalero[];
 
-                setCuadrilla(fullCuadrilla);
-                saveToCache(`event_${params.id}_cuadrilla`, fullCuadrilla);
-            } catch (err) {
-                console.log("[Offline] Error fetching data, using cache if available:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [params.id]);
+        setCuadrilla(fullCuadrilla);
+        saveToCache(`event_${params.id}_cuadrilla`, fullCuadrilla);
+      } catch (err) {
+        console.log('[Offline] Error fetching data, using cache if available:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [params.id]);
 
-    const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
-        if (!selectedCostalero) return;
+  const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
+    if (!selectedCostalero) return;
 
-        const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+    const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
 
-        // 1. Optimistic Update in State
-        const updatedCuadrilla = cuadrilla.map(c => {
-            if (c.id === selectedCostalero.id) {
-                if (newStatus === 'delete') {
-                    return { ...c, estado: undefined, asistencia_id: undefined };
-                }
-                return { ...c, estado: dbStatus as any };
-            }
-            return c;
-        });
+    // 1. Optimistic Update in State
+    const updatedCuadrilla = cuadrilla.map((c) => {
+      if (c.id === selectedCostalero.id) {
+        if (newStatus === 'delete') {
+          return { ...c, estado: undefined, asistencia_id: undefined };
+        }
+        return { ...c, estado: dbStatus as any };
+      }
+      return c;
+    });
 
-        setCuadrilla(updatedCuadrilla);
+    setCuadrilla(updatedCuadrilla);
 
-        // 2. Persist to local cache immediately (so refresh offline works)
-        saveToCache(`event_${params.id}_cuadrilla`, updatedCuadrilla);
+    // 2. Persist to local cache immediately (so refresh offline works)
+    saveToCache(`event_${params.id}_cuadrilla`, updatedCuadrilla);
 
-        setSelectedCostalero(null);
+    setSelectedCostalero(null);
 
-        // 3. Add to sync queue AND attempt DB update only if online
-        const actionPayload = {
+    // 3. Add to sync queue AND attempt DB update only if online
+    const actionPayload = {
+      costalero_id: selectedCostalero.id,
+      evento_id: params.id,
+      estado: dbStatus,
+      isDelete: newStatus === 'delete',
+    };
+
+    if (!navigator.onLine) {
+      console.log('[Offline] App is offline, queueing update...');
+      addToSyncQueue({
+        type: 'attendance_update',
+        payload: actionPayload,
+      });
+      return;
+    }
+
+    // 4. Attempt to update DB if online
+    try {
+      if (newStatus === 'delete') {
+        const { error } = await supabase
+          .from('asistencias')
+          .delete()
+          .eq('costalero_id', selectedCostalero.id)
+          .eq('evento_id', params.id);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('asistencias').upsert(
+          {
             costalero_id: selectedCostalero.id,
             evento_id: params.id,
             estado: dbStatus,
-            isDelete: newStatus === 'delete'
-        };
+          },
+          {
+            onConflict: 'costalero_id,evento_id',
+          }
+        );
 
-        if (!navigator.onLine) {
-            console.log("[Offline] App is offline, queueing update...");
-            addToSyncQueue({
-                type: 'attendance_update',
-                payload: actionPayload
-            });
-            return;
-        }
+        if (error) throw error;
+      }
+    } catch (error) {
+      console.log('[Offline] Database update failed unexpectedly, queueing...', error);
+      addToSyncQueue({
+        type: 'attendance_update',
+        payload: actionPayload,
+      });
+    }
+  };
 
-        // 4. Attempt to update DB if online
-        try {
-            if (newStatus === 'delete') {
-                const { error } = await supabase
-                    .from("asistencias")
-                    .delete()
-                    .eq("costalero_id", selectedCostalero.id)
-                    .eq("evento_id", params.id);
+  const groups = [1, 2, 3, 4, 5, 6, 7];
 
-                if (error) throw error;
-            } else {
-                const { error } = await supabase
-                    .from("asistencias")
-                    .upsert({
-                        costalero_id: selectedCostalero.id,
-                        evento_id: params.id,
-                        estado: dbStatus
-                    }, {
-                        onConflict: 'costalero_id,evento_id'
-                    });
-
-                if (error) throw error;
-            }
-        } catch (error) {
-            console.log("[Offline] Database update failed unexpectedly, queueing...", error);
-            addToSyncQueue({
-                type: 'attendance_update',
-                payload: actionPayload
-            });
-        }
-    };
-
-    const groups = [1, 2, 3, 4, 5, 6, 7];
-
-    if (loading) return (
-        <div className="flex min-h-screen items-center justify-center bg-background">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
-        </div>
+  if (loading)
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+      </div>
     );
 
-    return (
-        <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
-            <style jsx global>{`
-                @keyframes pulse-glow {
-                    0%, 100% { box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), 0 0 5px rgba(0, 0, 0, 0.1); border-color: rgba(0, 0, 0, 0.6); }
-                    50% { box-shadow: 0 0 25px rgba(64, 64, 64, 0.4), 0 0 10px rgba(64, 64, 64, 0.2); border-color: rgba(64, 64, 64, 0.8); }
-                }
-                @keyframes float-alert {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-4px); }
-                }
-                @keyframes pulse-text {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.6; }
-                }
-                .pending-card {
-                    animation: pulse-glow 2.5s infinite ease-in-out;
-                    border-width: 1.5px !important;
-                }
-                .alert-dot {
-                    animation: float-alert 2s infinite ease-in-out;
-                }
-                .pending-badge {
-                    animation: pulse-text 2s infinite ease-in-out;
-                }
-            `}</style>
+  return (
+    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
+      <style jsx global>{`
+        @keyframes pulse-glow {
+          0%,
+          100% {
+            box-shadow:
+              0 0 15px rgba(0, 0, 0, 0.2),
+              0 0 5px rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 0, 0, 0.6);
+          }
+          50% {
+            box-shadow:
+              0 0 25px rgba(64, 64, 64, 0.4),
+              0 0 10px rgba(64, 64, 64, 0.2);
+            border-color: rgba(64, 64, 64, 0.8);
+          }
+        }
+        @keyframes float-alert {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-4px);
+          }
+        }
+        @keyframes pulse-text {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.6;
+          }
+        }
+        .pending-card {
+          animation: pulse-glow 2.5s infinite ease-in-out;
+          border-width: 1.5px !important;
+        }
+        .alert-dot {
+          animation: float-alert 2s infinite ease-in-out;
+        }
+        .pending-badge {
+          animation: pulse-text 2s infinite ease-in-out;
+        }
+      `}</style>
 
-            {/* Header */}
-            <header className="relative flex items-center justify-center min-h-[64px]">
-                <button
-                    onClick={() => router.back()}
-                    className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-                >
-                    <ChevronLeft size={24} />
-                </button>
-                <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 line-clamp-1">Trabajaderas</h1>
-            </header>
+      {/* Header */}
+      <header className="relative flex items-center justify-center min-h-[64px]">
+        <button
+          onClick={() => router.back()}
+          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 line-clamp-1">
+          Trabajaderas
+        </h1>
+      </header>
 
-            {/* Secciones por Trabajadera */}
-            <div className="space-y-12">
-                {groups.map(t => {
-                    const members = cuadrilla.filter(c => c.trabajadera === t);
-                    const presentes = members.filter(m => m.estado === 'presente').length;
-                    const pct = members.length > 0 ? Math.round((presentes / members.length) * 100) : 0;
-                    if (members.length === 0) return null;
+      {/* Secciones por Trabajadera */}
+      <div className="space-y-12">
+        {groups.map((t) => {
+          const members = cuadrilla.filter((c) => c.trabajadera === t);
+          const presentes = members.filter((m) => m.estado === 'presente').length;
+          const pct = members.length > 0 ? Math.round((presentes / members.length) * 100) : 0;
+          if (members.length === 0) return null;
 
-                    return (
-                        <div key={t} className="space-y-5">
-                            <div className="flex justify-between items-end px-2">
-                                <div className="space-y-1">
-                                    <h2 className="text-xl font-black text-primary uppercase tracking-tighter italic">TRABAJADERA {t}</h2>
-                                    <p className="text-[10px] text-neutral-400 font-black tracking-widest uppercase">{presentes}/{members.length} PRESENTES</p>
-                                </div>
-                                <div className="px-4 py-1.5 bg-white border border-black/5 rounded-full text-neutral-400 font-black text-[10px] shadow-sm">
-                                    {pct}%
-                                </div>
-                            </div>
+          return (
+            <div key={t} className="space-y-5">
+              <div className="flex justify-between items-end px-2">
+                <div className="space-y-1">
+                  <h2 className="text-xl font-black text-primary uppercase tracking-tighter italic">
+                    TRABAJADERA {t}
+                  </h2>
+                  <p className="text-[10px] text-neutral-400 font-black tracking-widest uppercase">
+                    {presentes}/{members.length} PRESENTES
+                  </p>
+                </div>
+                <div className="px-4 py-1.5 bg-white border border-black/5 rounded-full text-neutral-400 font-black text-[10px] shadow-sm">
+                  {pct}%
+                </div>
+              </div>
 
-                            <div className="space-y-3">
-                                {members.map((m) => (
-                                    <button
-                                        key={m.id}
-                                        onClick={() => setSelectedCostalero(m)}
-                                        className={cn(
-                                            "w-full bg-white p-5 rounded-[24px] flex justify-between items-center transition-all border shadow-sm active:scale-[0.98] relative overflow-hidden",
-                                            m.estado === 'presente' ? "border-emerald-500/20 shadow-emerald-500/5" :
-                                                !m.estado ? "pending-card" : "border-black/5"
-                                        )}
-                                    >
-                                        {!m.estado && (
-                                            <div className="absolute top-3.5 right-3.5 alert-dot">
-                                                <div className="bg-neutral-900 w-2.5 h-2.5 rounded-full shadow-lg shadow-black/20" />
-                                            </div>
-                                        )}
-                                        <div className="space-y-3 text-left">
-                                            <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">{m.nombre} {m.apellidos}</h3>
+              <div className="space-y-3">
+                {members.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedCostalero(m)}
+                    className={cn(
+                      'w-full bg-white p-5 rounded-[24px] flex justify-between items-center transition-all border shadow-sm active:scale-[0.98] relative overflow-hidden',
+                      m.estado === 'presente'
+                        ? 'border-emerald-500/20 shadow-emerald-500/5'
+                        : !m.estado
+                          ? 'pending-card'
+                          : 'border-black/5'
+                    )}
+                  >
+                    {!m.estado && (
+                      <div className="absolute top-3.5 right-3.5 alert-dot">
+                        <div className="bg-neutral-900 w-2.5 h-2.5 rounded-full shadow-lg shadow-black/20" />
+                      </div>
+                    )}
+                    <div className="space-y-3 text-left">
+                      <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">
+                        {m.nombre} {m.apellidos}
+                      </h3>
 
-                                            <div className={cn(
-                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest",
-                                                m.estado === 'presente' && "bg-emerald-50 text-emerald-600 border-emerald-100",
-                                                (m.estado === 'justificado' || m.estado === 'justificada') && "bg-amber-50 text-amber-600 border-amber-100",
-                                                m.estado === 'ausente' && "bg-red-50 text-red-600 border-red-100",
-                                                !m.estado && "bg-neutral-900 text-white border-black pending-badge shadow-lg"
-                                            )}>
-                                                {m.estado === 'presente' && <CheckCircle2 size={10} />}
-                                                {(m.estado === 'justificado' || m.estado === 'justificada') && <FileText size={10} />}
-                                                {m.estado === 'ausente' && <XCircle size={10} />}
-                                                {!m.estado && <AlertCircle size={10} className="animate-bounce" />}
-                                                {m.estado || "PENDIENTE REGISTRO"}
-                                            </div>
-                                        </div>
+                      <div
+                        className={cn(
+                          'inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest',
+                          m.estado === 'presente' &&
+                            'bg-emerald-50 text-emerald-600 border-emerald-100',
+                          (m.estado === 'justificado' || m.estado === 'justificada') &&
+                            'bg-amber-50 text-amber-600 border-amber-100',
+                          m.estado === 'ausente' && 'bg-red-50 text-red-600 border-red-100',
+                          !m.estado &&
+                            'bg-neutral-900 text-white border-black pending-badge shadow-lg'
+                        )}
+                      >
+                        {m.estado === 'presente' && <CheckCircle2 size={10} />}
+                        {(m.estado === 'justificado' || m.estado === 'justificada') && (
+                          <FileText size={10} />
+                        )}
+                        {m.estado === 'ausente' && <XCircle size={10} />}
+                        {!m.estado && <AlertCircle size={10} className="animate-bounce" />}
+                        {m.estado || 'PENDIENTE REGISTRO'}
+                      </div>
+                    </div>
 
-                                        <div className="text-right flex flex-col items-end gap-1">
-                                            {m.hora && <span className="text-[10px] font-bold text-neutral-300 font-mono italic">{m.hora}</span>}
-                                            {m.suplemento && (
-                                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-black uppercase rounded-md border border-purple-200 shadow-sm">
-                                                    {m.suplemento} cm
-                                                </span>
-                                            )}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+                    <div className="text-right flex flex-col items-end gap-1">
+                      {m.hora && (
+                        <span className="text-[10px] font-bold text-neutral-300 font-mono italic">
+                          {m.hora}
+                        </span>
+                      )}
+                      {m.suplemento && (
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-black uppercase rounded-md border border-purple-200 shadow-sm">
+                          {m.suplemento} cm
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Modal de Cambio de Estado */}
+      {selectedCostalero && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setSelectedCostalero(null)}
+        >
+          <div
+            className="w-full max-w-md bg-white rounded-t-[32px] p-8 pb-32 space-y-6 animate-in slide-in-from-bottom duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center space-y-2">
+              <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight">
+                {selectedCostalero.nombre} {selectedCostalero.apellidos}
+              </h3>
+              <p className="text-sm font-medium text-neutral-400">
+                ¿Qué ha pasado con este costalero?
+              </p>
             </div>
 
-            {/* Modal de Cambio de Estado */}
-            {selectedCostalero && (
-                <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedCostalero(null)}>
-                    <div className="w-full max-w-md bg-white rounded-t-[32px] p-8 pb-32 space-y-6 animate-in slide-in-from-bottom duration-300" onClick={e => e.stopPropagation()}>
-                        <div className="text-center space-y-2">
-                            <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tight">{selectedCostalero.nombre} {selectedCostalero.apellidos}</h3>
-                            <p className="text-sm font-medium text-neutral-400">¿Qué ha pasado con este costalero?</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-3">
-                            <Button className="h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg rounded-2xl" onClick={() => updateStatus('presente')}>
-                                <CheckCircle2 className="mr-2" /> PRESENTE
-                            </Button>
-                            <Button className="h-14 bg-amber-500 hover:bg-amber-600 text-white font-black text-lg rounded-2xl" onClick={() => updateStatus('justificado')}>
-                                <FileText className="mr-2" /> JUSTIFICADO
-                            </Button>
-                            <Button className="h-14 bg-red-500 hover:bg-red-600 text-white font-black text-lg rounded-2xl" onClick={() => updateStatus('ausente')}>
-                                <XCircle className="mr-2" /> AUSENTE
-                            </Button>
-                            <div className="h-px bg-neutral-100 my-2" />
-                            <Button variant="outline" className="h-14 border-red-100 text-red-500 hover:bg-red-50 font-black text-sm rounded-2xl" onClick={() => updateStatus('delete')}>
-                                <Trash2 className="mr-2" size={16} /> LIMPIAR ESTADO
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <div className="grid grid-cols-1 gap-3">
+              <Button
+                className="h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg rounded-2xl"
+                onClick={() => updateStatus('presente')}
+              >
+                <CheckCircle2 className="mr-2" /> PRESENTE
+              </Button>
+              <Button
+                className="h-14 bg-amber-500 hover:bg-amber-600 text-white font-black text-lg rounded-2xl"
+                onClick={() => updateStatus('justificado')}
+              >
+                <FileText className="mr-2" /> JUSTIFICADO
+              </Button>
+              <Button
+                className="h-14 bg-red-500 hover:bg-red-600 text-white font-black text-lg rounded-2xl"
+                onClick={() => updateStatus('ausente')}
+              >
+                <XCircle className="mr-2" /> AUSENTE
+              </Button>
+              <div className="h-px bg-neutral-100 my-2" />
+              <Button
+                variant="outline"
+                className="h-14 border-red-100 text-red-500 hover:bg-red-50 font-black text-sm rounded-2xl"
+                onClick={() => updateStatus('delete')}
+              >
+                <Trash2 className="mr-2" size={16} /> LIMPIAR ESTADO
+              </Button>
+            </div>
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 }

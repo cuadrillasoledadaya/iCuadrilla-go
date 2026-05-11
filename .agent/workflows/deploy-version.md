@@ -16,22 +16,19 @@ Este workflow se debe ejecutar **SIEMPRE** después de actualizar la versión en
 git add .
 ```
 
-// turbo-all
-2. **Crear commit con mensaje de versión**
+// turbo-all 2. **Crear commit con mensaje de versión**
 
 ```bash
 git commit -m "release: v[VERSION] - [DESCRIPCIÓN BREVE]"
 ```
 
-// turbo-all
-3. **Crear tag con la versión**
+// turbo-all 3. **Crear tag con la versión**
 
 ```bash
 git tag v[VERSION]
 ```
 
-// turbo-all
-4. **Subir cambios y tags**
+// turbo-all 4. **Subir cambios y tags**
 
 ```bash
 git push origin main --tags

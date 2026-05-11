@@ -19,5 +19,5 @@ Este workflow facilita la gestión de la base de datos de manera consistente y s
    ```
 
 5. Ejecutar la generación de tipos de Supabase para mantener el tipado en el frontend:
-// turbo
-`npx supabase gen types typescript --project-id SEU_ID_PROJETO > src/types/supabase.ts` (Ajustar ruta si es necesario).
+   // turbo
+   `npx supabase gen types typescript --project-id SEU_ID_PROJETO > src/types/supabase.ts` (Ajustar ruta si es necesario).

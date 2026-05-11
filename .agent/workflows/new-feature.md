@@ -26,7 +26,7 @@ export default function [FeatureName]Page() {
     return (
         <div className="min-h-screen bg-neutral-50 flex">
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            
+
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 <header className="h-16 bg-white border-b border-black/5 flex items-center px-4 shrink-0">
                     <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-neutral-500 sm:hidden">

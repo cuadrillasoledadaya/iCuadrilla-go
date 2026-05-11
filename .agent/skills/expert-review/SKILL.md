@@ -18,7 +18,7 @@ Este skill permite realizar análisis profundos del código para asegurar que cu
 ### 2. Rendimiento y Arquitectura
 
 - **Next.js App Router:** Verificar el uso correcto de `Server Components` vs `Client Components`.
-- **Supabase Queries:** Buscar patrones de "Select *" innecesarios o queries que podrían causar fugas de memoria o lentitud (ej. n+1 queries).
+- **Supabase Queries:** Buscar patrones de "Select \*" innecesarios o queries que podrían causar fugas de memoria o lentitud (ej. n+1 queries).
 - **Offline First:** Auditar cómo se manejan los estados de carga y errores de red en sincronización con `SyncProvider`.
 
 ### 3. UX y Estética Premium

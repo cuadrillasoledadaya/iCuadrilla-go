@@ -10,31 +10,27 @@ Este workflow genera componentes de interfaz que mantienen la línea de diseño 
 2. Crear el archivo en `src/components/ui/` con la siguiente estructura base:
 
 ```tsx
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-const componentVariants = cva(
-  "transition-all duration-300 ease-out active:scale-95",
-  {
-    variants: {
-      variant: {
-        premium: "bg-white border border-black/5 shadow-sm hover:shadow-md rounded-3xl",
-        glass: "bg-white/60 backdrop-blur-md border border-white/20 shadow-lg",
-        primary: "bg-primary text-white font-bold rounded-2xl",
-      },
+const componentVariants = cva('transition-all duration-300 ease-out active:scale-95', {
+  variants: {
+    variant: {
+      premium: 'bg-white border border-black/5 shadow-sm hover:shadow-md rounded-3xl',
+      glass: 'bg-white/60 backdrop-blur-md border border-white/20 shadow-lg',
+      primary: 'bg-primary text-white font-bold rounded-2xl',
     },
-    defaultVariants: {
-      variant: "premium",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'premium',
+  },
+});
 
-interface ComponentProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof componentVariants> {}
+interface ComponentProps
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof componentVariants> {}
 
 export function MyComponent({ className, variant, ...props }: ComponentProps) {
-  return (
-    <div className={cn(componentVariants({ variant }), className)} {...props} />
-  );
+  return <div className={cn(componentVariants({ variant }), className)} {...props} />;
 }
 ```
 

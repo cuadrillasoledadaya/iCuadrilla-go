@@ -49,7 +49,7 @@ La aplicación **iCuadrilla** es una **PWA moderna y funcional** construida con 
 
 1. **CRÍTICO:** Todas las páginas marcadas como `"use client"` - Se pierde el beneficio de Server Components en Next.js 14
 2. No hay separación entre lógica de negocio y presentación en componentes grandes
-3. Componentes con más de 300 líneas de código (ej: [`repertorio/page.tsx`](file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/repertorio/page.tsx))
+3. Componentes con más de 300 líneas de código (ej: [`repertorio/page.tsx`](<file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/repertorio/page.tsx>))
 4. No hay patrón de atomic design ni component library documentada
 
 #### Recomendaciones
@@ -81,10 +81,10 @@ import { EventForm } from './event-form'; // Client Component
 export default async function EventoPage({ params }) {
 -   const [evento, setEvento] = useState(null);
 -   useEffect(() => { fetchEvento(); }, []);
-  
+
 +   // Fetch en servidor
 +   const evento = await supabase.from('eventos').select('*').eq('id', params.id).single();
-  
+
     return (
         <div>
             <h1>{evento.titulo}</h1>
@@ -142,7 +142,7 @@ export default async function EventoPage({ params }) {
 
 **🟡 Validación Inconsistente:**
 
-Solo los formularios de [`costaleros/nuevo/page.tsx`](file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/costaleros/nuevo/page.tsx:L34) y [`cuadrilla/[id]/editar/page.tsx`](file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/cuadrilla/[id]/editar/page.tsx:L32) utilizan Zod. El resto de formularios **no tienen validación tipada**.
+Solo los formularios de [`costaleros/nuevo/page.tsx`](<file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/costaleros/nuevo/page.tsx:L34>) y [`cuadrilla/[id]/editar/page.tsx`](<file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/cuadrilla/[id]/editar/page.tsx:L32>) utilizan Zod. El resto de formularios **no tienen validación tipada**.
 
 #### Recomendaciones Priorizadas
 
@@ -155,10 +155,10 @@ ALTER TABLE costaleros ENABLE ROW LEVEL SECURITY;
 -- Política: Solo ver su propio perfil o ser admin
 CREATE POLICY "costaleros_select_policy" ON costaleros
 FOR SELECT USING (
-    auth.uid() = user_id 
+    auth.uid() = user_id
     OR EXISTS (
-        SELECT 1 FROM costaleros 
-        WHERE user_id = auth.uid() 
+        SELECT 1 FROM costaleros
+        WHERE user_id = auth.uid()
         AND rol IN ('capataz', 'auxiliar')
     )
 );
@@ -167,8 +167,8 @@ FOR SELECT USING (
 CREATE POLICY "costaleros_update_policy" ON costaleros
 FOR UPDATE USING (
     EXISTS (
-        SELECT 1 FROM costaleros 
-        WHERE user_id = auth.uid() 
+        SELECT 1 FROM costaleros
+        WHERE user_id = auth.uid()
         AND rol IN ('capataz', 'auxiliar')
     )
 );
@@ -182,18 +182,18 @@ Crear `src/lib/validations/forms.ts`:
 import { z } from 'zod';
 
 export const eventoSchema = z.object({
-    titulo: z.string().min(3, 'Mínimo 3 caracteres'),
-    fecha_inicio: z.string().datetime(),
-    ubicacion: z.string().min(1, 'Campo obligatorio'),
-    tipo: z.enum(['ensayo', 'estacion', 'salida']),
+  titulo: z.string().min(3, 'Mínimo 3 caracteres'),
+  fecha_inicio: z.string().datetime(),
+  ubicacion: z.string().min(1, 'Campo obligatorio'),
+  tipo: z.enum(['ensayo', 'estacion', 'salida']),
 });
 
 export const costaleroSchema = z.object({
-    nombre: z.string().min(2),
-    apellidos: z.string().min(2),
-    trabajadera: z.number().int().positive(),
-    rol: z.enum(['costalero', 'auxiliar', 'capataz']),
-    email: z.string().email().optional(),
+  nombre: z.string().min(2),
+  apellidos: z.string().min(2),
+  trabajadera: z.number().int().positive(),
+  rol: z.enum(['costalero', 'auxiliar', 'capataz']),
+  email: z.string().email().optional(),
 });
 ```
 
@@ -227,13 +227,13 @@ export const costaleroSchema = z.object({
 3. **Listeners duplicados** - Múltiples suscripciones a `supabase.auth.onAuthStateChange`
 4. **Re-renders innecesarios** en componentes con lógica de estado compleja
 
-**Ejemplo de problema detectado** en [`eventos/[id]/page.tsx`](file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/eventos/[id]/page.tsx:L71-74):
+**Ejemplo de problema detectado** en [`eventos/[id]/page.tsx`](<file:///c:/Users/chiqui/iCuadrilla/src/app/(dashboard)/eventos/[id]/page.tsx:L71-74>):
 
 ```typescript
 // ⚠️ Potencial N+1 query
 const [costalerosRes, asistenciasRes] = await Promise.all([
-    supabase.from("costaleros").select("id", { count: "exact", head: true }),
-    supabase.from("asistencias").select("estado, costalero_id").eq("evento_id", params.id)
+  supabase.from('costaleros').select('id', { count: 'exact', head: true }),
+  supabase.from('asistencias').select('estado, costalero_id').eq('evento_id', params.id),
 ]);
 ```
 
@@ -255,7 +255,7 @@ export default async function EventosPage() {
         .from('eventos')
         .select('*, asistencias(count)')  // JOIN agregado
         .order('fecha_inicio', { ascending: false });
-    
+
     return <EventosClientList eventos={eventos} />; // Hydrate en cliente
 }
 ```
@@ -298,8 +298,12 @@ const QRScanner = dynamic(() => import('@/components/qr-scanner'), {
 **Animaciones cinematográficas** en pantalla de inicio:
 
 ```css
-.intro-logo { animation: fadeInLogo 3s ease-in-out 0s forwards; }
-.intro-text { animation: fadeInUp 2.5s ease-in-out 4s forwards; }
+.intro-logo {
+  animation: fadeInLogo 3s ease-in-out 0s forwards;
+}
+.intro-text {
+  animation: fadeInUp 2.5s ease-in-out 4s forwards;
+}
 ```
 
 **🟡 Áreas de Mejora:**
@@ -319,12 +323,12 @@ const QRScanner = dynamic(() => import('@/components/qr-scanner'), {
 ```tsx
 // components/ui/skeleton.tsx
 export function EventCardSkeleton() {
-    return (
-        <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-neutral-200 rounded-full w-3/4" />
-            <div className="h-4 bg-neutral-100 rounded w-1/2" />
-        </div>
-    );
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-6 bg-neutral-200 rounded-full w-3/4" />
+      <div className="h-4 bg-neutral-100 rounded w-1/2" />
+    </div>
+  );
 }
 ```
 
@@ -340,13 +344,13 @@ export function EventCardSkeleton() {
 ```tsx
 // components/theme-toggle.tsx
 export function ThemeToggle() {
-    const [theme, setTheme] = useState('light');
-    
-    useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-    }, [theme]);
-    
-    // ... implementación
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  // ... implementación
 }
 ```
 
@@ -388,9 +392,9 @@ export function ThemeToggle() {
 ```typescript
 // ⚠️ Sin validación RLS, cualquiera puede hacer:
 await supabase
-    .from('costaleros')
-    .update({ rol: 'capataz' })  // Escalación de privilegios!
-    .eq('id', 'any-user-id');
+  .from('costaleros')
+  .update({ rol: 'capataz' }) // Escalación de privilegios!
+  .eq('id', 'any-user-id');
 ```
 
 #### Recomendaciones
@@ -465,11 +469,11 @@ CREATE INDEX idx_temporadas_activa ON temporadas(activa) WHERE activa = true;
 
 ```typescript
 // Repetido en múltiples archivos
-new Date(evento.fecha_inicio).toLocaleDateString('es-ES', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'long' 
-})
+new Date(evento.fecha_inicio).toLocaleDateString('es-ES', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+});
 ```
 
 #### Recomendaciones
@@ -479,19 +483,19 @@ new Date(evento.fecha_inicio).toLocaleDateString('es-ES', {
 ```typescript
 // lib/date-utils.ts
 export function formatEventDate(date: string): string {
-    return new Date(date).toLocaleDateString('es-ES', { 
-        weekday: 'long', 
-        day: 'numeric', 
-        month: 'long',
-        year: 'numeric'
-    });
+  return new Date(date).toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 export function formatEventTime(date: string): string {
-    return new Date(date).toLocaleTimeString('es-ES', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
+  return new Date(date).toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 ```
 
@@ -506,7 +510,7 @@ npm install sonner  # Toast library moderna
 import { Toaster } from 'sonner';
 
 export function ToastProvider() {
-    return <Toaster position="top-center" richColors />;
+  return <Toaster position="top-center" richColors />;
 }
 
 // Uso en componentes
@@ -542,9 +546,9 @@ import { renderHook } from '@testing-library/react';
 import { useUserRole } from '@/hooks/useUserRole';
 
 test('returns costalero role for standard user', async () => {
-    const { result } = renderHook(() => useUserRole());
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.isCostalero).toBe(true);
+  const { result } = renderHook(() => useUserRole());
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(result.current.isCostalero).toBe(true);
 });
 ```
 
@@ -569,18 +573,18 @@ test('returns costalero role for standard user', async () => {
 
 ```javascript
 workboxOptions: {
-    runtimeCaching: [
-        {
-            urlPattern: /supabase\.co\/storage/,
-            handler: 'CacheFirst',
-            options: { maxAgeSeconds: 30 * 24 * 60 * 60 }
-        },
-        {
-            urlPattern: /supabase\.co\/rest/,
-            handler: 'NetworkFirst',
-            options: { networkTimeoutSeconds: 5 }
-        }
-    ]
+  runtimeCaching: [
+    {
+      urlPattern: /supabase\.co\/storage/,
+      handler: 'CacheFirst',
+      options: { maxAgeSeconds: 30 * 24 * 60 * 60 },
+    },
+    {
+      urlPattern: /supabase\.co\/rest/,
+      handler: 'NetworkFirst',
+      options: { networkTimeoutSeconds: 5 },
+    },
+  ];
 }
 ```
 
@@ -598,19 +602,19 @@ workboxOptions: {
 ```javascript
 // sw.js (custom service worker)
 self.addEventListener('sync', (event) => {
-    if (event.tag === 'sync-queue') {
-        event.waitUntil(syncPendingActions());
-    }
+  if (event.tag === 'sync-queue') {
+    event.waitUntil(syncPendingActions());
+  }
 });
 
 async function syncPendingActions() {
-    const queue = await getQueueFromIndexedDB();
-    for (const action of queue) {
-        await fetch('/api/sync', { 
-            method: 'POST', 
-            body: JSON.stringify(action) 
-        });
-    }
+  const queue = await getQueueFromIndexedDB();
+  for (const action of queue) {
+    await fetch('/api/sync', {
+      method: 'POST',
+      body: JSON.stringify(action),
+    });
+  }
 }
 ```
 
@@ -619,23 +623,23 @@ async function syncPendingActions() {
 ```tsx
 // components/pwa-install-prompt.tsx
 export function PWAInstallPrompt() {
-    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-    
-    useEffect(() => {
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
-        });
-    }, []);
-    
-    const handleInstall = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User ${outcome} the install`);
-    };
-    
-    // UI para mostrar botón de instalación
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User ${outcome} the install`);
+  };
+
+  // UI para mostrar botón de instalación
 }
 ```
 
@@ -675,16 +679,16 @@ export function PWAInstallPrompt() {
 
 ## 📈 MÉTRICAS DETALLADAS
 
-| Categoría | Puntuación | Notas |
-|-----------|------------|-------|
-| **Seguridad** | 6.5/10 | ⚠️ RLS crítico pendiente |
-| **Arquitectura** | 7.5/10 | ✅ Sólida pero mejorable |
-| **Rendimiento** | 7.0/10 | 🟡 Client Components excesivos |
-| **UI/UX** | 8.5/10 | ⭐ Excelente diseño premium |
-| **Base de Datos** | 6.0/10 | 🔴 RLS no implementado |
-| **Código** | 7.5/10 | ✅ Buenas prácticas generales |
-| **PWA** | 8.0/10 | ✅ Offline-first funcional |
-| **TOTAL** | **7.8/10** | 🟢 Buena pero mejorable |
+| Categoría         | Puntuación | Notas                          |
+| ----------------- | ---------- | ------------------------------ |
+| **Seguridad**     | 6.5/10     | ⚠️ RLS crítico pendiente       |
+| **Arquitectura**  | 7.5/10     | ✅ Sólida pero mejorable       |
+| **Rendimiento**   | 7.0/10     | 🟡 Client Components excesivos |
+| **UI/UX**         | 8.5/10     | ⭐ Excelente diseño premium    |
+| **Base de Datos** | 6.0/10     | 🔴 RLS no implementado         |
+| **Código**        | 7.5/10     | ✅ Buenas prácticas generales  |
+| **PWA**           | 8.0/10     | ✅ Offline-first funcional     |
+| **TOTAL**         | **7.8/10** | 🟢 Buena pero mejorable        |
 
 ---
 
