@@ -4,11 +4,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { FileDown, Table, Users, BarChart3, ChevronLeft, QrCode } from 'lucide-react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import * as XLSX from 'xlsx';
 import QRCodeLib from 'qrcode';
 
 interface Costalero {
@@ -168,8 +165,8 @@ export default function ExportarDatos() {
         });
         return; // Successfully shared
       }
-    } catch (error) {
-      console.log('Sharing cancelled or failed, falling back to download', error);
+    } catch {
+      // Sharing cancelled or failed, falling back to download
     }
 
     // Fallback for mobile if share fails or is not available
@@ -246,7 +243,8 @@ export default function ExportarDatos() {
   };
 
   // --- EXCEL EXPORT (MULTI-SHEET) ---
-  const generateEstadisticasExcel = (eventsToExport: EventoStats[], filename: string) => {
+  const generateEstadisticasExcel = async (eventsToExport: EventoStats[], filename: string) => {
+    const XLSX = await import('xlsx');
     const workbook = XLSX.utils.book_new();
 
     eventsToExport.forEach((evento) => {
@@ -298,7 +296,9 @@ export default function ExportarDatos() {
   };
 
   // --- PDF EXPORTS ---
-  const exportCostalerosPDF = () => {
+  const exportCostalerosPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
 
     doc.setFontSize(18);
@@ -333,7 +333,9 @@ export default function ExportarDatos() {
     handleExport(blob, `listado_cuadrilla_${temporadaActiva || 'export'}.pdf`);
   };
 
-  const exportCostalerosExtendidoPDF = () => {
+  const exportCostalerosExtendidoPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
 
     // --- PÁGINA 1+: DATOS REALES ---
@@ -392,7 +394,9 @@ export default function ExportarDatos() {
     handleExport(blob, `listado_extendido_${temporadaActiva || 'export'}.pdf`);
   };
 
-  const generateEstadisticasPDF = (eventsToExport: EventoStats[], filename: string) => {
+  const generateEstadisticasPDF = async (eventsToExport: EventoStats[], filename: string) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     let yPos = 15;
 
@@ -458,6 +462,8 @@ export default function ExportarDatos() {
 
   // --- QR CODE EXPORT ---
   const exportQRCodesPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
 
     // Group costaleros by trabajadera
@@ -539,8 +545,8 @@ export default function ExportarDatos() {
             maxWidth: qrSize,
           });
           doc.setTextColor(0);
-        } catch (error) {
-          console.error(`Error generating QR for ${costalero.nombre}:`, error);
+        } catch {
+          // QR generation failed silently — non-critical
         }
 
         col++;
