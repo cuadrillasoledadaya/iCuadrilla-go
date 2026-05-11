@@ -3,147 +3,149 @@ import { supabase } from '@/lib/supabase';
 import { checkIsMaster } from '@/app/actions';
 
 export function useUserRole() {
-    const [isCostalero, setIsCostalero] = useState<boolean | null>(null);
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-    const [isMaster, setIsMaster] = useState<boolean | null>(null);
-    const [rol, setRol] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [userId, setUserId] = useState<string | null>(null);
-    const [costaleroId, setCostaleroId] = useState<string | null>(null);
+  const [isCostalero, setIsCostalero] = useState<boolean | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isMaster, setIsMaster] = useState<boolean | null>(null);
+  const [rol, setRol] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [costaleroId, setCostaleroId] = useState<string | null>(null);
 
-    // Permission flags
-    const [canManageEvents, setCanManageEvents] = useState(false);
-    const [canManageAnnouncements, setCanManageAnnouncements] = useState(false);
-    const [canManageSeasons, setCanManageSeasons] = useState(false);
-    const [canManageRoles, setCanManageRoles] = useState(false);
+  // Permission flags
+  const [canManageEvents, setCanManageEvents] = useState(false);
+  const [canManageAnnouncements, setCanManageAnnouncements] = useState(false);
+  const [canManageSeasons, setCanManageSeasons] = useState(false);
+  const [canManageRoles, setCanManageRoles] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
-    useEffect(() => {
-        let mounted = true;
+  useEffect(() => {
+    let mounted = true;
 
-        const checkRole = async (sessionUser?: any) => {
-            try {
-                // Si nos pasan un usuario (desde el evento), usamos ese. Si no, fetch.
-                let user = sessionUser;
+    const checkRole = async (sessionUser?: any) => {
+      try {
+        // Si nos pasan un usuario (desde el evento), usamos ese. Si no, fetch.
+        let user = sessionUser;
 
-                if (!user) {
-                    const { data } = await supabase.auth.getUser();
-                    user = data.user;
-                }
+        if (!user) {
+          const { data } = await supabase.auth.getUser();
+          user = data.user;
+        }
 
-                if (!mounted) return;
+        if (!mounted) return;
 
-                if (!user) {
-                    setIsCostalero(false);
-                    setIsAdmin(false);
-                    setIsMaster(false);
-                    setRol(null);
-                    setUserId(null);
-                    setCostaleroId(null);
+        if (!user) {
+          setIsCostalero(false);
+          setIsAdmin(false);
+          setIsMaster(false);
+          setRol(null);
+          setUserId(null);
+          setCostaleroId(null);
+          setUserEmail(null);
 
-                    // Reset permissions
-                    setCanManageEvents(false);
-                    setCanManageAnnouncements(false);
-                    setCanManageSeasons(false);
-                    setCanManageRoles(false);
+          // Reset permissions
+          setCanManageEvents(false);
+          setCanManageAnnouncements(false);
+          setCanManageSeasons(false);
+          setCanManageRoles(false);
 
-                    setLoading(false);
-                    return;
-                }
+          setLoading(false);
+          return;
+        }
 
-                setUserId(user.id);
+        setUserId(user.id);
+        setUserEmail(user.email ?? null);
 
-                // 1. Identificar por Email Maestro (SUPERADMIN) - Validación segura servidor
-                console.log("Checking master email for:", user.email);
-                let isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
+        // 1. Identificar por Email Maestro (SUPERADMIN) - Validación segura servidor
+        const isMasterEmail = user.email ? await checkIsMaster(user.email) : false;
 
-                // Fallback adicional en el cliente para asegurar visibilidad UI (Seguridad real sigue en RLS/Actions)
-                if (!isMasterEmail && user.email?.trim().toLowerCase() === 'proyectoszipi@gmail.com') {
-                    console.log("--> CLIENT FALLBACK: Server Action returned false but email matches hardcoded master.");
-                    isMasterEmail = true;
-                }
+        console.log('Is Master Email Result:', isMasterEmail);
+        setIsMaster(isMasterEmail);
 
-                console.log("Is Master Email Result:", isMasterEmail);
-                setIsMaster(isMasterEmail);
+        // 2. Buscar en tabla costaleros
+        const { data: costaleroData, error } = await supabase
+          .from('costaleros')
+          .select('id, rol')
+          .eq('user_id', user.id)
+          .single();
 
-                // 2. Buscar en tabla costaleros
-                const { data: costaleroData, error } = await supabase
-                    .from('costaleros')
-                    .select('id, rol')
-                    .eq('user_id', user.id)
-                    .single();
+        if (!mounted) return;
 
-                if (!mounted) return;
+        let currentRol = 'costalero';
 
-                let currentRol = 'costalero';
+        if (costaleroData) {
+          setIsCostalero(true);
+          setCostaleroId(costaleroData.id);
+          currentRol = costaleroData.rol || 'costalero';
 
-                if (costaleroData) {
-                    setIsCostalero(true);
-                    setCostaleroId(costaleroData.id);
-                    currentRol = costaleroData.rol || 'costalero';
+          // Si es Master Email, forzamos el rol a superadmin visualmente
+          if (isMasterEmail) {
+            console.log('--> FORCE SUPERADMIN: User matched master email logic');
+            currentRol = 'superadmin';
+          }
 
-                    // Si es Master Email, forzamos el rol a superadmin visualmente
-                    if (isMasterEmail) {
-                        console.log("--> FORCE SUPERADMIN: User matched master email logic");
-                        currentRol = 'superadmin';
-                    }
+          setRol(currentRol);
+        } else {
+          setIsCostalero(false);
+          setRol(null);
+        }
 
-                    setRol(currentRol);
-                } else {
-                    setIsCostalero(false);
-                    setRol(null);
-                }
+        // 3. Determinar permisos de Admin
+        const isEffectiveAdmin =
+          isMasterEmail || !costaleroData || currentRol === 'capataz' || currentRol === 'auxiliar';
+        setIsAdmin(isEffectiveAdmin);
 
-                // 3. Determinar permisos de Admin
-                const isEffectiveAdmin = isMasterEmail || !costaleroData || currentRol === 'capataz' || currentRol === 'auxiliar';
-                setIsAdmin(isEffectiveAdmin);
-
-                // 4. Configurar Flags de Permisos
-                setCanManageEvents(isMasterEmail || currentRol === 'capataz' || currentRol === 'auxiliar');
-                setCanManageAnnouncements(isMasterEmail || currentRol === 'capataz' || currentRol === 'auxiliar');
-                setCanManageSeasons(isMasterEmail);
-                setCanManageRoles(isMasterEmail);
-
-            } catch (error) {
-                console.error("Error checking role:", error);
-                if (mounted) {
-                    setIsCostalero(false);
-                    setIsAdmin(false);
-                    setIsMaster(false);
-                }
-            } finally {
-                if (mounted) setLoading(false);
-            }
-        };
-
-        // Escuchar cambios de autenticación
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
-                checkRole(session?.user);
-            } else if (event === 'SIGNED_OUT') {
-                checkRole(null);
-            }
-        });
-
-        // Ejecutar check inicial
-        checkRole();
-
-        return () => {
-            mounted = false;
-            subscription.unsubscribe();
-        };
-    }, []);
-
-    return {
-        isCostalero,
-        isAdmin,
-        isMaster,
-        rol,
-        loading,
-        userId,
-        costaleroId,
-        canManageEvents,
-        canManageAnnouncements,
-        canManageSeasons,
-        canManageRoles
+        // 4. Configurar Flags de Permisos
+        setCanManageEvents(isMasterEmail || currentRol === 'capataz' || currentRol === 'auxiliar');
+        setCanManageAnnouncements(
+          isMasterEmail || currentRol === 'capataz' || currentRol === 'auxiliar'
+        );
+        setCanManageSeasons(isMasterEmail);
+        setCanManageRoles(isMasterEmail);
+      } catch (error) {
+        console.error('Error checking role:', error);
+        if (mounted) {
+          setIsCostalero(false);
+          setIsAdmin(false);
+          setIsMaster(false);
+          setUserEmail(null);
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
+
+    // Escuchar cambios de autenticación
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+        checkRole(session?.user);
+      } else if (event === 'SIGNED_OUT') {
+        checkRole(null);
+      }
+    });
+
+    // Ejecutar check inicial
+    checkRole();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return {
+    isCostalero,
+    isAdmin,
+    isMaster,
+    rol,
+    loading,
+    userId,
+    costaleroId,
+    canManageEvents,
+    canManageAnnouncements,
+    canManageSeasons,
+    canManageRoles,
+    userEmail,
+  };
 }
