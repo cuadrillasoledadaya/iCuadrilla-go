@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Eye, EyeOff, Lock, Mail, AlertCircle, UserPlus } from 'lucide-react';
 import { getSiteUrl } from '@/lib/utils';
+import { registroSchema } from '@/lib/validations/auth';
 
 export default function RegistroPage() {
   const [email, setEmail] = useState('');
@@ -16,6 +17,8 @@ export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [lockUntil, setLockUntil] = useState<number>(0);
   const router = useRouter();
 
   const handleRegistro = async (e: React.FormEvent) => {
@@ -23,16 +26,53 @@ export default function RegistroPage() {
     setLoading(true);
     setMessage('');
 
-    const cleanEmail = email.trim().toLowerCase();
+    // Rate limiting: prevenir fuerza bruta
+    if (lockUntil > Date.now()) {
+      setMessage(`Demasiados intentos. Espera ${Math.ceil((lockUntil - Date.now()) / 1000)} segundos.`);
+      setLoading(false);
+      return;
+    }
+
+    // Validar con Zod antes de cualquier llamada a Supabase
+    const validation = registroSchema.safeParse({ email, password });
+    if (!validation.success) {
+      const newCount = attemptCount + 1;
+      setAttemptCount(newCount);
+      if (newCount >= 5) {
+        const lockTime = Date.now() + 60000;
+        setLockUntil(lockTime);
+        setMessage('Demasiados intentos. Espera 60 segundos.');
+      } else {
+        setMessage(validation.error.issues[0]?.message || 'Datos inválidos.');
+      }
+      setLoading(false);
+      return;
+    }
+
+    const cleanEmail = validation.data.email.trim().toLowerCase();
 
     // Paso 1: Verificar Whitelist
+    // NOTA DE SEGURIDAD: Esta RPC expone el resultado booleano en el cliente,
+    // lo que en teoría permitiría enumeración de emails autorizados.
+    // La mitigación real requiere mover esta verificación a un Edge Function
+    // o trigger del lado del servidor (server-side check post-signUp).
+    // Mientras tanto, el mensaje de error es el mismo para ambos casos
+    // (whitelistError y !isAuthorized) para no filtrar información en la UI.
     const { data: isAuthorized, error: whitelistError } = await supabase.rpc(
       'es_email_autorizado',
       { email_input: cleanEmail }
     );
 
     if (whitelistError || !isAuthorized) {
-      setMessage('Este email no tiene permiso para registrarse. Contacta con el Capataz.');
+      const newCount = attemptCount + 1;
+      setAttemptCount(newCount);
+      if (newCount >= 5) {
+        const lockTime = Date.now() + 60000;
+        setLockUntil(lockTime);
+        setMessage('Demasiados intentos. Espera 60 segundos.');
+      } else {
+        setMessage('Este email no tiene permiso para registrarse. Contacta con el Capataz.');
+      }
       setLoading(false);
       return;
     }
@@ -40,14 +80,22 @@ export default function RegistroPage() {
     // Paso 2: Registro en Supabase Auth
     const { error: signUpError } = await supabase.auth.signUp({
       email: cleanEmail,
-      password,
+      password: validation.data.password,
       options: {
         emailRedirectTo: `${getSiteUrl()}auth/callback`,
       },
     });
 
     if (signUpError) {
-      setMessage(`Error: ${signUpError.message}`);
+      const newCount = attemptCount + 1;
+      setAttemptCount(newCount);
+      if (newCount >= 5) {
+        const lockTime = Date.now() + 60000;
+        setLockUntil(lockTime);
+        setMessage('Demasiados intentos. Espera 60 segundos.');
+      } else {
+        setMessage(`Error: ${signUpError.message}`);
+      }
     } else {
       setMessage('¡Registro completado! Te redirigiendo...');
       setTimeout(() => router.push('/login'), 2000);
@@ -147,10 +195,14 @@ export default function RegistroPage() {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || (lockUntil > Date.now())}
               className="w-full h-14 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm uppercase tracking-widest shadow-lg shadow-emerald-900/20 transition-all active:scale-[0.98]"
             >
-              {loading ? 'Verificando...' : 'Crear Cuenta'}
+              {loading
+                ? 'Verificando...'
+                : lockUntil > Date.now()
+                  ? `Espera ${Math.ceil((lockUntil - Date.now()) / 1000)}s`
+                  : 'Crear Cuenta'}
             </Button>
           </form>
         </div>

@@ -13,6 +13,8 @@ export default function RecuperarPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [lockUntil, setLockUntil] = useState<number>(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,15 @@ export default function RecuperarPage() {
     });
 
     if (rpcError || !isAuthorized) {
-      setError('Este email no figura en nuestra base de datos de hermanos.');
+      const newCount = attemptCount + 1;
+      setAttemptCount(newCount);
+      if (newCount >= 5) {
+        const lockTime = Date.now() + 60000;
+        setLockUntil(lockTime);
+        setError('Demasiados intentos. Espera 60 segundos.');
+      } else {
+        setError('Este email no figura en nuestra base de datos de hermanos.');
+      }
       setLoading(false);
       return;
     }
@@ -121,10 +131,14 @@ export default function RecuperarPage() {
 
           <Button
             type="submit"
-            disabled={loading}
+            disabled={loading || (lockUntil > Date.now())}
             className="w-full h-12 text-lg font-bold bg-white text-black hover:bg-neutral-200"
           >
-            {loading ? 'Enviando...' : 'Enviar Enlace'}
+            {loading
+              ? 'Enviando...'
+              : lockUntil > Date.now()
+                ? `Espera ${Math.ceil((lockUntil - Date.now()) / 1000)}s`
+                : 'Enviar Enlace'}
           </Button>
         </form>
 

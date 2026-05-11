@@ -17,6 +17,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [lockUntil, setLockUntil] = useState<number>(0);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -47,8 +49,15 @@ export default function LoginPage() {
     });
 
     if (authError) {
-      setMessage(`Credenciales incorrectas. Verifica tu email y contraseña.`);
-      console.error(authError);
+      const newCount = attemptCount + 1;
+      setAttemptCount(newCount);
+      if (newCount >= 5) {
+        const lockTime = Date.now() + 60000; // 60 segundos
+        setLockUntil(lockTime);
+        setMessage('Demasiados intentos. Espera 60 segundos.');
+      } else {
+        setMessage(`Credenciales incorrectas. Verifica tu email y contraseña.`);
+      }
     } else {
       // Force hard reload to ensure all UI components (Navbar/Sidebar) initialize correctly
       window.location.href = '/dashboard';
@@ -150,10 +159,14 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || (lockUntil > Date.now())}
               className="w-full h-14 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm uppercase tracking-widest shadow-lg shadow-emerald-900/20 transition-all active:scale-[0.98]"
             >
-              {loading ? 'Entrando...' : 'Iniciar Sesión'}
+              {loading
+                ? 'Entrando...'
+                : lockUntil > Date.now()
+                  ? `Espera ${Math.ceil((lockUntil - Date.now()) / 1000)}s`
+                  : 'Iniciar Sesión'}
             </Button>
           </form>
         </div>
