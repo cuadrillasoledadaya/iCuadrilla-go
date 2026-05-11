@@ -80,8 +80,7 @@ export function useFetch<T = unknown>(
 
     try {
       // 2. Build Supabase query
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let query: any = supabase.from(table).select('*');
+      let query = supabase.from(table).select('*');
 
       if (filters) {
         for (const [col, val] of Object.entries(filters)) {

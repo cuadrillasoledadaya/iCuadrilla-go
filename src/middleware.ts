@@ -99,7 +99,7 @@ export async function middleware(request: NextRequest) {
     const masterEmail = process.env.MASTER_EMAIL?.trim().toLowerCase(); // fail closed: undefined when unset → isMaster = false
     const isMaster = user.email && user.email.trim().toLowerCase() === masterEmail;
 
-    console.log('Middleware Check:', user.email, 'Master?', isMaster); // Debug en server logs
+    // Debug logging removed for production — master check happens silently
 
     // Verificar permisos según el tipo de ruta
     if (isAdminRoute) {

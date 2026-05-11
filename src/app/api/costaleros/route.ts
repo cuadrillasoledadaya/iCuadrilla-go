@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { timingSafeEqual } from 'crypto';
 
 // Configurar el endpoint para no cachearse y servir datos en tiempo real
 export const dynamic = 'force-dynamic';
@@ -19,8 +20,18 @@ export async function GET(request: Request) {
   const token = authHeader.split(' ')[1];
   const secretKey = process.env.API_SECRET_KEY;
 
-  // 3. Validar el token contra nuestra variable de entorno
-  if (!secretKey || token !== secretKey) {
+  // 3. Validar el token contra nuestra variable de entorno (timing-safe)
+  if (!secretKey) {
+    return NextResponse.json({ error: 'No autorizado. Token inválido.' }, { status: 401 });
+  }
+
+  try {
+    const tokenBuf = Buffer.from(token);
+    const secretBuf = Buffer.from(secretKey);
+    if (tokenBuf.length !== secretBuf.length || !timingSafeEqual(tokenBuf, secretBuf)) {
+      return NextResponse.json({ error: 'No autorizado. Token inválido.' }, { status: 401 });
+    }
+  } catch {
     return NextResponse.json({ error: 'No autorizado. Token inválido.' }, { status: 401 });
   }
 
