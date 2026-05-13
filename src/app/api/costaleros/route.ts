@@ -51,7 +51,7 @@ export async function GET(request: Request) {
   // 5. Recuperar solo los datos solicitados (activos únicamente)
   const { data, error } = await supabase
     .from('costaleros')
-    .select('nombre, apellidos, apodo, trabajadera, email')
+    .select('id, nombre, apellidos, apodo, trabajadera, email')
     .eq('estado', 'activo');
 
   if (error) {
