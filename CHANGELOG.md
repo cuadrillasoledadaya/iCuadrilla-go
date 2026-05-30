@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.07 (30/01/2026) - Testing Framework
+
+- **Testing**:
+  - Jest configurado con Next.js
+  - Testing Library instalado
+  - Scripts `npm test` y `npm run test:watch` agregados
+  - Tests de referencia en `/tests/validation.test.ts`
+
 ## v1.6.06 (30/01/2026) - Documentación
 
 - **Documentación**:
