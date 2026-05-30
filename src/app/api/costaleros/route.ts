@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'crypto';
+import { rateLimit } from '@/lib/rate-limit';
 
 // Configurar el endpoint para no cachearse y servir datos en tiempo real
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  // 0. Rate limiting por IP
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const { success } = await rateLimit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Demasiadas peticiones. Inténtelo más tarde.' },
+      { status: 429 }
+    );
+  }
+
   // 1. Obtener la cabecera de Autorización
   const authHeader = request.headers.get('Authorization');
 
