@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.05 (30/01/2026) - Validación Puesto Secundario
+
+- **Mejoras**:
+  - Validación cruzada: el puesto secundario no puede ser igual al puesto principal
+  - Mensaje de error visual cuando se viola la regla
+
 ## v1.6.04 (30/01/2026) - Puesto Secundario
 
 - **Nuevas Funcionalidades**:
