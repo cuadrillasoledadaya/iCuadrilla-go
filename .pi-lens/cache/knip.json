@@ -13,6 +13,11 @@
     },
     {
       "type": "file",
+      "name": "src/components/ui/puesto-select.tsx",
+      "file": "src/components/ui/puesto-select.tsx"
+    },
+    {
+      "type": "file",
       "name": "src/lib/validations/forms.ts",
       "file": "src/lib/validations/forms.ts"
     },
@@ -200,6 +205,11 @@
     },
     {
       "type": "file",
+      "name": "src/components/ui/puesto-select.tsx",
+      "file": "src/components/ui/puesto-select.tsx"
+    },
+    {
+      "type": "file",
       "name": "src/lib/validations/forms.ts",
       "file": "src/lib/validations/forms.ts"
     }
@@ -243,5 +253,5 @@
     }
   ],
   "unlistedDeps": [],
-  "summary": "Found 20 issues"
+  "summary": "Found 21 issues"
 }

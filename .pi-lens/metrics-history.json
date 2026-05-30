@@ -53,8 +53,8 @@
     },
     "src/middleware.ts": {
       "latest": {
-        "commit": "238facb",
-        "timestamp": "2026-05-29T08:38:06.677Z",
+        "commit": "b9e9e27",
+        "timestamp": "2026-05-30T14:18:17.104Z",
         "mi": 41.3,
         "cognitive": 35,
         "nesting": 4,
@@ -66,6 +66,16 @@
         {
           "commit": "238facb",
           "timestamp": "2026-05-29T08:38:06.677Z",
+          "mi": 41.3,
+          "cognitive": 35,
+          "nesting": 4,
+          "lines": 109,
+          "maxCyclomatic": 46,
+          "entropy": 5.67
+        },
+        {
+          "commit": "b9e9e27",
+          "timestamp": "2026-05-30T14:18:17.104Z",
           "mi": 41.3,
           "cognitive": 35,
           "nesting": 4,
@@ -577,5 +587,5 @@
       "trend": "stable"
     }
   },
-  "capturedAt": "2026-05-30T13:43:42.843Z"
+  "capturedAt": "2026-05-30T14:18:22.104Z"
 }
