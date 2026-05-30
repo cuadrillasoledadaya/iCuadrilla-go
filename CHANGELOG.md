@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.06 (30/01/2026) - Documentación
+
+- **Documentación**:
+  - README.md para desarrolladores creado
+  - Tests de referencia agregados en `/tests/validation.test.ts`
+  - Guía de despliegue y API incluida
+
 ## v1.6.05 (30/01/2026) - Validación Puesto Secundario
 
 - **Mejoras**:
