@@ -72,6 +72,7 @@ export default function AltaCostalero() {
             telefono: values.telefono || null,
             suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
             ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
+            puesto_secundario: values.puesto_secundario || null,
             estado: 'activo',
           },
         ])

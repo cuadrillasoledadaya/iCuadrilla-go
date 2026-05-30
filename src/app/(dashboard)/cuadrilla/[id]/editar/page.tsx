@@ -54,6 +54,7 @@ export default function EditarCostalero() {
           ano_ingreso: data.ano_ingreso?.toString(),
           email: data.email || '',
           telefono: data.telefono || '',
+          puesto_secundario: data.puesto_secundario || '',
         });
       }
       setLoading(false);
@@ -76,6 +77,7 @@ export default function EditarCostalero() {
         telefono: values.telefono || null,
         suplemento: values.suplemento ? parseFloat(values.suplemento) : null,
         ano_ingreso: values.ano_ingreso ? parseInt(values.ano_ingreso) : null,
+        puesto_secundario: values.puesto_secundario || null,
       })
       .eq('id', params.id);
 
