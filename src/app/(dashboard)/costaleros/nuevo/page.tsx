@@ -11,22 +11,24 @@ import { QRCodeSVG } from 'qrcode.react';
 import { CheckCircle2, UserPlus, X, ExternalLink, ArrowRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
-const formSchema = z.object({
-  nombre: z.string().min(2, 'El nombre es obligatorio'),
-  apellidos: z.string().min(2, 'Los apellidos son obligatorios'),
-  apodo: z.string().optional(),
-  email: z.string().email('Email inválido').optional().or(z.literal('')),
-  telefono: z.string().optional(),
-  altura: z.string().optional(),
-  trabajadera: z.string().regex(/^[1-7]$/, 'Debe ser del 1 al 7'),
-  puesto: z.string().min(2, 'El puesto es obligatorio'),
-  puesto_secundario: z.string().optional(),
-  suplemento: z.string().optional(),
-  ano_ingreso: z.string().optional(),
-}).refine((data) => !data.puesto_secundario || data.puesto_secundario !== data.puesto, {
-  message: 'El puesto secundario no puede ser igual al puesto principal',
-  path: ['puesto_secundario'],
-});
+const formSchema = z
+  .object({
+    nombre: z.string().min(2, 'El nombre es obligatorio'),
+    apellidos: z.string().min(2, 'Los apellidos son obligatorios'),
+    apodo: z.string().optional(),
+    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    telefono: z.string().optional(),
+    altura: z.string().optional(),
+    trabajadera: z.string().regex(/^[1-7]$/, 'Debe ser del 1 al 7'),
+    puesto: z.string().min(2, 'El puesto es obligatorio'),
+    puesto_secundario: z.string().optional(),
+    suplemento: z.string().optional(),
+    ano_ingreso: z.string().optional(),
+  })
+  .refine((data) => !data.puesto_secundario || data.puesto_secundario !== data.puesto, {
+    message: 'El puesto secundario no puede ser igual al puesto principal',
+    path: ['puesto_secundario'],
+  });
 
 export default function AltaCostalero() {
   const [loading, setLoading] = useState(false);

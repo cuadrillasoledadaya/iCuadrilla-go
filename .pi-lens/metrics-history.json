@@ -525,7 +525,32 @@
         }
       ],
       "trend": "stable"
+    },
+    "src/app/api/costaleros/route.ts": {
+      "latest": {
+        "commit": "a644031",
+        "timestamp": "2026-05-30T13:40:30.953Z",
+        "mi": 49.7,
+        "cognitive": 17,
+        "nesting": 3,
+        "lines": 47,
+        "maxCyclomatic": 12,
+        "entropy": 4.85
+      },
+      "history": [
+        {
+          "commit": "a644031",
+          "timestamp": "2026-05-30T13:40:30.953Z",
+          "mi": 49.7,
+          "cognitive": 17,
+          "nesting": 3,
+          "lines": 47,
+          "maxCyclomatic": 12,
+          "entropy": 4.85
+        }
+      ],
+      "trend": "stable"
     }
   },
-  "capturedAt": "2026-05-30T08:42:53.220Z"
+  "capturedAt": "2026-05-30T13:40:35.955Z"
 }
