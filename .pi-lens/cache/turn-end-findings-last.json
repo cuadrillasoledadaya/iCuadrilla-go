@@ -1,6 +1,6 @@
 {
-  "signature": "CHANGELOG.md::ℹ️ Advisory — no action required this turn:\nCode-quality warnings introduced/touched this turn: 1 across 1 file(s).\nTop rules: pi-lens×1\nDetails written to .pi-lens/cache/code-quality-warnings.json\nNo action required unless you are already refactoring these areas.",
+  "signature": "README.md|tests/tsconfig.json|tests/validation.test.ts::🔴 New unresolved imports/deps in modified code (Knip):\n  tests/validation.test.ts:7 — unlisted: @jest/globals\n  First location: tests/validation.test.ts\n",
   "sessionId": "lens-mps3fsp7-9d74e3e0",
-  "projectSeqStart": 14,
-  "projectSeqEnd": 15
+  "projectSeqStart": 38,
+  "projectSeqEnd": 38
 }

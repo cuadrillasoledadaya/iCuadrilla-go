@@ -24,12 +24,12 @@ API_SECRET_KEY=clave-segura-api
 
 ## Roles de usuario
 
-| Rol | Permisos |
-|-----|----------|
+| Rol          | Permisos                           |
+| ------------ | ---------------------------------- |
 | `superadmin` | Control total (desde MASTER_EMAIL) |
-| `capataz` | Editar costaleros, crear eventos |
-| `auxiliar` | Scanner de asistencia |
-| `costalero` | Ver dashboard personal |
+| `capataz`    | Editar costaleros, crear eventos   |
+| `auxiliar`   | Scanner de asistencia              |
+| `costalero`  | Ver dashboard personal             |
 
 ## Estructura de archivos
 
@@ -52,11 +52,13 @@ src/
 ### GET /api/costaleros
 
 **Headers:**
+
 ```
 Authorization: Bearer API_SECRET_KEY
 ```
 
 **Response (200):**
+
 ```json
 [
   {
@@ -77,17 +79,21 @@ Authorization: Bearer API_SECRET_KEY
 ## Despliegue
 
 ### Requisitos
+
 - Node.js 18+
 - Cuenta Supabase configurada
 - Variables de entorno en `.env.local`
 
 ### Build
+
 ```bash
 npm run build
 npm start
 ```
 
 ### Migraciones
+
 Ejecutar en Supabase SQL Editor:
+
 1. `supabase/migrations/20260212_enable_rls.sql`
 2. `supabase/migrations/20240101_add_puesto_secundario.sql`

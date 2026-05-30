@@ -585,7 +585,32 @@
         }
       ],
       "trend": "stable"
+    },
+    "tests/validation.test.ts": {
+      "latest": {
+        "commit": "a255f73",
+        "timestamp": "2026-05-30T14:46:47.748Z",
+        "mi": 52.1,
+        "cognitive": 0,
+        "nesting": 3,
+        "lines": 54,
+        "maxCyclomatic": 1,
+        "entropy": 3.06
+      },
+      "history": [
+        {
+          "commit": "a255f73",
+          "timestamp": "2026-05-30T14:46:47.748Z",
+          "mi": 52.1,
+          "cognitive": 0,
+          "nesting": 3,
+          "lines": 54,
+          "maxCyclomatic": 1,
+          "entropy": 3.06
+        }
+      ],
+      "trend": "stable"
     }
   },
-  "capturedAt": "2026-05-30T14:18:22.104Z"
+  "capturedAt": "2026-05-30T14:46:52.748Z"
 }

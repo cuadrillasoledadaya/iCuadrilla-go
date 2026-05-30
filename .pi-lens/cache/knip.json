@@ -25,37 +25,43 @@
       "type": "dependency",
       "name": "@radix-ui/react-checkbox",
       "file": "package.json",
-      "line": 16
+      "line": 18
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-dialog",
       "file": "package.json",
-      "line": 17
+      "line": 19
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-label",
       "file": "package.json",
-      "line": 19
+      "line": 21
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-scroll-area",
       "file": "package.json",
-      "line": 20
+      "line": 22
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-tabs",
       "file": "package.json",
-      "line": 22
+      "line": 24
     },
     {
       "type": "dependency",
       "name": "csv-parse",
       "file": "package.json",
-      "line": 32
+      "line": 34
+    },
+    {
+      "type": "devDependency",
+      "name": "@testing-library/react",
+      "file": "package.json",
+      "line": 55
     },
     {
       "type": "export",
@@ -219,39 +225,45 @@
       "type": "dependency",
       "name": "@radix-ui/react-checkbox",
       "file": "package.json",
-      "line": 16
+      "line": 18
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-dialog",
       "file": "package.json",
-      "line": 17
+      "line": 19
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-label",
       "file": "package.json",
-      "line": 19
+      "line": 21
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-scroll-area",
       "file": "package.json",
-      "line": 20
+      "line": 22
     },
     {
       "type": "dependency",
       "name": "@radix-ui/react-tabs",
       "file": "package.json",
-      "line": 22
+      "line": 24
     },
     {
       "type": "dependency",
       "name": "csv-parse",
       "file": "package.json",
-      "line": 32
+      "line": 34
+    },
+    {
+      "type": "devDependency",
+      "name": "@testing-library/react",
+      "file": "package.json",
+      "line": 55
     }
   ],
   "unlistedDeps": [],
-  "summary": "Found 21 issues"
+  "summary": "Found 22 issues"
 }
