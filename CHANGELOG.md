@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.08 (30/01/2026) - Rate Limiting API
+
+- **Seguridad**:
+  - Rate limiting agregado a `/api/costaleros` (100 req/min por IP)
+  - Protección contra abuso de API
+  - Respuesta 429 cuando se excede límite
+
 ## v1.6.07 (30/01/2026) - Testing Framework
 
 - **Testing**:
