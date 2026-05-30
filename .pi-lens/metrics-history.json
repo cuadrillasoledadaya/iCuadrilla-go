@@ -550,7 +550,32 @@
         }
       ],
       "trend": "stable"
+    },
+    "src/app/(dashboard)/eventos/[id]/relevos/page.tsx": {
+      "latest": {
+        "commit": "4d0a27e",
+        "timestamp": "2026-05-30T13:43:37.835Z",
+        "mi": 8.2,
+        "cognitive": 327,
+        "nesting": 5,
+        "lines": 808,
+        "maxCyclomatic": 216,
+        "entropy": 6.57
+      },
+      "history": [
+        {
+          "commit": "4d0a27e",
+          "timestamp": "2026-05-30T13:43:37.835Z",
+          "mi": 8.2,
+          "cognitive": 327,
+          "nesting": 5,
+          "lines": 808,
+          "maxCyclomatic": 216,
+          "entropy": 6.57
+        }
+      ],
+      "trend": "stable"
     }
   },
-  "capturedAt": "2026-05-30T13:40:35.955Z"
+  "capturedAt": "2026-05-30T13:43:42.843Z"
 }

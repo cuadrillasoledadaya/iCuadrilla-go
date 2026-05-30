@@ -24,6 +24,7 @@ interface Costalero {
   apodo?: string;
   trabajadera: number;
   puesto: string;
+  puesto_secundario?: string;
   estadoAsistencia: 'presente' | 'ausente' | 'justificado' | 'pendiente';
   suplemento?: number;
 }
