@@ -8,17 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import {
-  CheckCircle2,
-  UserPlus,
-  List,
-  X,
-  ExternalLink,
-  ArrowRight,
-  ChevronLeft,
-} from 'lucide-react';
+import { CheckCircle2, UserPlus, X, ExternalLink, ArrowRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   nombre: z.string().min(2, 'El nombre es obligatorio'),
@@ -29,6 +20,7 @@ const formSchema = z.object({
   altura: z.string().optional(),
   trabajadera: z.string().regex(/^[1-7]$/, 'Debe ser del 1 al 7'),
   puesto: z.string().min(2, 'El puesto es obligatorio'),
+  puesto_secundario: z.string().optional(),
   suplemento: z.string().optional(),
   ano_ingreso: z.string().optional(),
 });
@@ -240,6 +232,40 @@ export default function AltaCostalero() {
               </option>
             </select>
             {errors.puesto && <p className="text-xs text-red-500">{errors.puesto.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase tracking-widest text-neutral-500">
+              Puesto Secundario
+            </label>
+            <select
+              {...register('puesto_secundario')}
+              className="w-full bg-white border border-black/10 h-12 rounded-xl px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+            >
+              <option value="" className="text-black bg-white">
+                Sin puesto secundario
+              </option>
+              <option value="Patero Izq" className="text-black bg-white">
+                Patero Izq
+              </option>
+              <option value="Patero Der" className="text-black bg-white">
+                Patero Der
+              </option>
+              <option value="Fijador Izq" className="text-black bg-white">
+                Fijador Izq
+              </option>
+              <option value="Fijador Der" className="text-black bg-white">
+                Fijador Der
+              </option>
+              <option value="Costero Izq" className="text-black bg-white">
+                Costero Izq
+              </option>
+              <option value="Costero Der" className="text-black bg-white">
+                Costero Der
+              </option>
+              <option value="Corriente" className="text-black bg-white">
+                Corriente
+              </option>
+            </select>
           </div>
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-neutral-500">

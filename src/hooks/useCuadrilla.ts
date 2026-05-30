@@ -12,6 +12,7 @@ export interface Costalero {
   apodo?: string;
   trabajadera: number;
   puesto: string;
+  puesto_secundario?: string;
 }
 
 export interface UseCuadrillaOptions {
@@ -37,7 +38,12 @@ export interface UseCuadrillaOptions {
 export function useCuadrilla(options: UseCuadrillaOptions = {}) {
   const { roleReady = true } = options;
 
-  const { data: costaleros, loading, error, refetch } = useFetch<Costalero>('costaleros', {
+  const {
+    data: costaleros,
+    loading,
+    error,
+    refetch,
+  } = useFetch<Costalero>('costaleros', {
     filters: { rol: 'costalero', estado: 'activo' },
     orders: [
       { column: 'trabajadera', ascending: true },

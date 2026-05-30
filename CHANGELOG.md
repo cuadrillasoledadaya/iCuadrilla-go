@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.04 (30/01/2026) - Puesto Secundario
+
+- **Nuevas Funcionalidades**:
+  - **Puesto Secundario**: Agregado campo opcional `puesto_secundario` en el registro de costaleros
+    - Permite asignar un segundo puesto por costalero (ej. Fijador que también puede ser Patero)
+    - Disponible en formulario de alta y edición
+    - Visualización en ficha del costalero
+
 ## v1.4.0 (23/01/2026) - SECURITY RELEASE 🔒
 
 - **Correcciones Críticas de Seguridad**:

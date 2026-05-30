@@ -17,8 +17,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { QRCodeSVG } from 'qrcode.react';
 import { useParams, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { getDisplayName } from '@/lib/utils';
 
 interface Costalero {
   id: string;
@@ -29,6 +27,7 @@ interface Costalero {
   altura: number;
   trabajadera: number;
   puesto: string;
+  puesto_secundario?: string;
   suplemento?: number;
   ano_ingreso?: number;
   telefono?: string;
@@ -127,11 +126,21 @@ export default function FichaCostalero() {
                 </>
               )}
             </h2>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/5">
-              <Shield size={12} className="text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                {costalero.puesto}
-              </span>
+            <div className="flex flex-col items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/5">
+                <Shield size={12} className="text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                  {costalero.puesto}
+                </span>
+              </div>
+              {costalero.puesto_secundario && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/5">
+                  <Shield size={12} className="text-neutral-400" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+                    {costalero.puesto_secundario}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
