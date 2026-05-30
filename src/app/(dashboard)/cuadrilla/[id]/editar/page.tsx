@@ -22,6 +22,9 @@ const formSchema = z.object({
   puesto_secundario: z.string().optional(),
   suplemento: z.string().optional(),
   ano_ingreso: z.string().optional(),
+}).refine((data) => !data.puesto_secundario || data.puesto_secundario !== data.puesto, {
+  message: 'El puesto secundario no puede ser igual al puesto principal',
+  path: ['puesto_secundario'],
 });
 
 export default function EditarCostalero() {
@@ -284,6 +287,9 @@ export default function EditarCostalero() {
                 Corriente
               </option>
             </select>
+            {errors.puesto_secundario && (
+              <p className="text-xs text-red-500">{errors.puesto_secundario.message}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-neutral-500">

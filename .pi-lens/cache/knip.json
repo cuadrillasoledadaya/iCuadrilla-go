@@ -1,0 +1,247 @@
+{
+  "success": true,
+  "issues": [
+    {
+      "type": "file",
+      "name": "public/fallback-ce627215c0e4a9af.js",
+      "file": "public/fallback-ce627215c0e4a9af.js"
+    },
+    {
+      "type": "file",
+      "name": "public/swe-worker-5c72df51bb1f6ee0.js",
+      "file": "public/swe-worker-5c72df51bb1f6ee0.js"
+    },
+    {
+      "type": "file",
+      "name": "src/lib/validations/forms.ts",
+      "file": "src/lib/validations/forms.ts"
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-checkbox",
+      "file": "package.json",
+      "line": 16
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-dialog",
+      "file": "package.json",
+      "line": 17
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-label",
+      "file": "package.json",
+      "line": 19
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-scroll-area",
+      "file": "package.json",
+      "line": 20
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-tabs",
+      "file": "package.json",
+      "line": 22
+    },
+    {
+      "type": "dependency",
+      "name": "csv-parse",
+      "file": "package.json",
+      "line": 32
+    },
+    {
+      "type": "export",
+      "name": "buttonVariants",
+      "file": "src/components/ui/button.tsx",
+      "line": 48
+    },
+    {
+      "type": "export",
+      "name": "ButtonProps",
+      "file": "src/components/ui/button.tsx",
+      "line": 33
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuLabel",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 81
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuSeparator",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 82
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuGroup",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 83
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuPortal",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 84
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuSub",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 85
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuRadioGroup",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 86
+    },
+    {
+      "type": "export",
+      "name": "InputProps",
+      "file": "src/components/ui/input.tsx",
+      "line": 5
+    },
+    {
+      "type": "export",
+      "name": "LoginFormData",
+      "file": "src/lib/validations/auth.ts",
+      "line": 21
+    },
+    {
+      "type": "export",
+      "name": "RegistroFormData",
+      "file": "src/lib/validations/auth.ts",
+      "line": 22
+    }
+  ],
+  "unusedExports": [
+    {
+      "type": "export",
+      "name": "buttonVariants",
+      "file": "src/components/ui/button.tsx",
+      "line": 48
+    },
+    {
+      "type": "export",
+      "name": "ButtonProps",
+      "file": "src/components/ui/button.tsx",
+      "line": 33
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuLabel",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 81
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuSeparator",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 82
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuGroup",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 83
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuPortal",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 84
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuSub",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 85
+    },
+    {
+      "type": "export",
+      "name": "DropdownMenuRadioGroup",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "line": 86
+    },
+    {
+      "type": "export",
+      "name": "InputProps",
+      "file": "src/components/ui/input.tsx",
+      "line": 5
+    },
+    {
+      "type": "export",
+      "name": "LoginFormData",
+      "file": "src/lib/validations/auth.ts",
+      "line": 21
+    },
+    {
+      "type": "export",
+      "name": "RegistroFormData",
+      "file": "src/lib/validations/auth.ts",
+      "line": 22
+    }
+  ],
+  "unusedFiles": [
+    {
+      "type": "file",
+      "name": "public/fallback-ce627215c0e4a9af.js",
+      "file": "public/fallback-ce627215c0e4a9af.js"
+    },
+    {
+      "type": "file",
+      "name": "public/swe-worker-5c72df51bb1f6ee0.js",
+      "file": "public/swe-worker-5c72df51bb1f6ee0.js"
+    },
+    {
+      "type": "file",
+      "name": "src/lib/validations/forms.ts",
+      "file": "src/lib/validations/forms.ts"
+    }
+  ],
+  "unusedDeps": [
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-checkbox",
+      "file": "package.json",
+      "line": 16
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-dialog",
+      "file": "package.json",
+      "line": 17
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-label",
+      "file": "package.json",
+      "line": 19
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-scroll-area",
+      "file": "package.json",
+      "line": 20
+    },
+    {
+      "type": "dependency",
+      "name": "@radix-ui/react-tabs",
+      "file": "package.json",
+      "line": 22
+    },
+    {
+      "type": "dependency",
+      "name": "csv-parse",
+      "file": "package.json",
+      "line": 32
+    }
+  ],
+  "unlistedDeps": [],
+  "summary": "Found 20 issues"
+}
