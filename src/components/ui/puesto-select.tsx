@@ -6,6 +6,7 @@ interface PuestoSelectProps {
   value: string;
   onChange: (value: string) => void;
   includeEmpty?: boolean;
+  placeholder?: string;
   className?: string;
 }
 
@@ -20,7 +21,7 @@ const PUESTOS = [
 ] as const;
 
 export const PuestoSelect = forwardRef<HTMLSelectElement, PuestoSelectProps>(
-  ({ value, onChange, includeEmpty = true, className }, ref) => {
+  ({ value, onChange, includeEmpty = true, className, placeholder }, ref) => {
     const baseClassName =
       'w-full bg-white border border-black/10 h-12 rounded-xl px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none';
 
@@ -33,7 +34,7 @@ export const PuestoSelect = forwardRef<HTMLSelectElement, PuestoSelectProps>(
       >
         {includeEmpty && (
           <option value="" className="text-black bg-white">
-            {includeEmpty === true ? 'Selecciona...' : 'Sin puesto secundario'}
+            {placeholder ?? (includeEmpty === true ? 'Selecciona...' : 'Sin puesto secundario')}
           </option>
         )}
         {PUESTOS.map((puesto) => (
