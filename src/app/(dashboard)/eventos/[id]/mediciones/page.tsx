@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { ArrowLeft, Save, Search, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { ErrorState } from '@/components/ui/error-state';
 
 interface Costalero {
   id: string;
@@ -32,6 +33,7 @@ export default function MedicionesPage() {
   const [originalMediciones, setOriginalMediciones] = useState<Record<string, Medicion>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [eventTitle, setEventTitle] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -39,22 +41,26 @@ export default function MedicionesPage() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       // 1. Fetch Event Info
-      const { data: eventData } = await supabase
+      const { data: eventData, error: eventError } = await supabase
         .from('eventos')
         .select('titulo')
         .eq('id', params.id)
         .single();
+      if (eventError) throw eventError;
       if (eventData) setEventTitle(eventData.titulo);
 
       // 2. Fetch Active Costaleros
-      const { data: costalerosData } = await supabase
+      const { data: costalerosData, error: costalerosError } = await supabase
         .from('costaleros')
         .select('id, nombre, apellidos, trabajadera, puesto')
         .eq('rol', 'costalero')
         .order('trabajadera', { ascending: true })
         .order('puesto', { ascending: true }); // Then by puesto/height logic roughly
+
+      if (costalerosError) throw costalerosError;
 
       if (costalerosData) {
         // Secondary sort by surnames just in case
@@ -66,10 +72,12 @@ export default function MedicionesPage() {
       }
 
       // 3. Fetch Existing Measurements
-      const { data: medicionesData } = await supabase
+      const { data: medicionesData, error: medicionesError } = await supabase
         .from('mediciones_ensayo')
         .select('costalero_id, altura_pre, altura_post')
         .eq('evento_id', params.id);
+
+      if (medicionesError) throw medicionesError;
 
       if (medicionesData) {
         const map: Record<string, Medicion> = {};
@@ -81,6 +89,7 @@ export default function MedicionesPage() {
       }
     } catch (e) {
       console.error('Error fetching data:', e);
+      setError('No se pudieron cargar las mediciones');
     } finally {
       setLoading(false);
     }
@@ -183,7 +192,19 @@ export default function MedicionesPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 min-h-[60vh] flex items-center justify-center">
+        <ErrorState
+          title="No se pudieron cargar las mediciones"
+          description="Hubo un problema al obtener los datos. Reintenta para volver a intentarlo."
+          onRetry={fetchData}
+        />
       </div>
     );
   }

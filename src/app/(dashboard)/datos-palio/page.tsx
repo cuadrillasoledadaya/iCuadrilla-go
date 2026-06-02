@@ -6,6 +6,8 @@ import { ChevronLeft, Save, Database } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { ErrorState } from '@/components/ui/error-state';
 
 interface PerfilTrabajadera {
   trabajadera: number;
@@ -28,6 +30,7 @@ export default function DatosPalioPage() {
     { trabajadera: 7, altura_cm: 143 },
   ]);
   const [originalAlturas, setOriginalAlturas] = useState<PerfilTrabajadera[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -35,24 +38,29 @@ export default function DatosPalioPage() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       // Obtener temporada activa
-      const { data: tempData } = await supabase
+      const { data: tempData, error: tempError } = await supabase
         .from('temporadas')
         .select('id, nombre')
         .eq('activa', true)
         .single();
+
+      if (tempError) throw tempError;
 
       if (tempData) {
         setTemporadaActiva(tempData.nombre);
         setTemporadaId(tempData.id);
 
         // Intentar cargar datos existentes
-        const { data: perfilData } = await supabase
+        const { data: perfilData, error: perfilError } = await supabase
           .from('perfil_trabajaderas')
           .select('trabajadera, altura_cm')
           .eq('temporada_id', tempData.id)
           .order('trabajadera', { ascending: true });
+
+        if (perfilError) throw perfilError;
 
         if (perfilData && perfilData.length === 7) {
           setAlturas(perfilData);
@@ -64,6 +72,7 @@ export default function DatosPalioPage() {
       }
     } catch (e) {
       console.error('Error fetching data:', e);
+      setError('No se pudieron cargar los datos del palio');
     } finally {
       setLoading(false);
     }
@@ -181,7 +190,19 @@ export default function DatosPalioPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 min-h-[60vh] flex items-center justify-center">
+        <ErrorState
+          title="No se pudieron cargar los datos"
+          description="Hubo un problema al obtener la información del palio. Reintenta para volver a intentarlo."
+          onRetry={fetchData}
+        />
       </div>
     );
   }

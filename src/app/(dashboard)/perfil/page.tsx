@@ -6,11 +6,14 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { User, Ruler, MapPin, BadgeCheck, Mail } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { getDisplayName } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { ErrorState } from '@/components/ui/error-state';
 
 export default function PerfilPage() {
   const { userId, isCostalero } = useUserRole();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (userId) {
@@ -19,16 +22,20 @@ export default function PerfilPage() {
   }, [userId]);
 
   const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const { data, error } = await supabase
+      const { data, error: fetchError } = await supabase
         .from('costaleros')
         .select('*')
         .eq('user_id', userId)
         .single();
 
+      if (fetchError) throw fetchError;
       if (data) setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setError('No se pudo cargar tu perfil');
     } finally {
       setLoading(false);
     }
@@ -37,7 +44,19 @@ export default function PerfilPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 min-h-[60vh] flex items-center justify-center">
+        <ErrorState
+          title="No se pudo cargar tu perfil"
+          description="Hubo un problema al obtener tus datos. Reintenta para volver a intentarlo."
+          onRetry={fetchProfile}
+        />
       </div>
     );
   }
