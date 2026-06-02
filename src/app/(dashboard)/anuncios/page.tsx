@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function TablonAnuncios() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function TablonAnuncios() {
   const [anuncios, setAnuncios] = useState<any[]>([]);
   const [nuevo, setNuevo] = useState({ titulo: '', contenido: '' });
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAnuncios();
@@ -41,9 +43,14 @@ export default function TablonAnuncios() {
     setLoading(false);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de que deseas borrar este anuncio?')) return;
+  const handleDelete = (id: string) => {
+    setDeletingId(id);
+  };
 
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    const id = deletingId;
+    setDeletingId(null);
     const { error } = await supabase.from('anuncios').delete().eq('id', id);
     if (error) {
       toast.error('Error al borrar: ' + error.message);
@@ -150,6 +157,16 @@ export default function TablonAnuncios() {
           ))
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={!!deletingId}
+        onClose={() => setDeletingId(null)}
+        onConfirm={confirmDelete}
+        title="¿Borrar anuncio?"
+        description="Esta acción no se puede deshacer."
+        confirmLabel="Borrar"
+        variant="danger"
+      />
     </div>
   );
 }
