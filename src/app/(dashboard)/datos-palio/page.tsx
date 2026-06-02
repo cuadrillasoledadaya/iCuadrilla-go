@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
 import { ErrorState } from '@/components/ui/error-state';
+import { useToast } from '@/components/ui/toast';
 
 interface PerfilTrabajadera {
   trabajadera: number;
@@ -16,6 +17,7 @@ interface PerfilTrabajadera {
 
 export default function DatosPalioPage() {
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [temporadaActiva, setTemporadaActiva] = useState<string | null>(null);
@@ -92,7 +94,7 @@ export default function DatosPalioPage() {
 
   const handleBlur = async (trabajadera: number) => {
     if (!temporadaId) {
-      alert('No hay una temporada activa para guardar datos.');
+      toast.warning('No hay una temporada activa para guardar datos.');
       return;
     }
 
@@ -129,14 +131,14 @@ export default function DatosPalioPage() {
           }
         });
       } catch (e: any) {
-        alert('Error al guardar: ' + e.message);
+        toast.error('Error al guardar: ' + e.message);
       }
     }
   };
 
   const guardarDatos = async () => {
     if (!temporadaId) {
-      alert(
+      toast.warning(
         "⚠️ ERROR: No hay ninguna temporada marcada como 'Activa' en el sistema.\n\nVe a Ajustes > Temporadas y activa una."
       );
       return;
@@ -158,10 +160,10 @@ export default function DatosPalioPage() {
 
       // Actualizar estado 'original' tras guardado masivo
       setOriginalAlturas(JSON.parse(JSON.stringify(alturas)));
-      alert(`¡Datos guardados correctamente para la temporada ${temporadaActiva}!`);
+      toast.success(`¡Datos guardados correctamente para la temporada ${temporadaActiva}!`);
     } catch (e) {
       console.error('Error saving:', e);
-      alert('Error al guardar los datos');
+      toast.error('Error al guardar los datos');
     } finally {
       setSaving(false);
     }

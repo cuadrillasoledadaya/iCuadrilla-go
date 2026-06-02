@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ErrorState } from '@/components/ui/error-state';
+import { useToast } from '@/components/ui/toast';
 
 interface Costalero {
   id: string;
@@ -26,6 +27,7 @@ interface Medicion {
 export default function MedicionesPage() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [costaleros, setCostaleros] = useState<Costalero[]>([]);
@@ -146,7 +148,7 @@ export default function MedicionesPage() {
         }));
         // Opcional: Feedback visual discreto (toast no tenemos, alert quizás molesto si ya confirmó)
       } catch (e: any) {
-        alert('Error al guardar: ' + e.message);
+        toast.error('Error al guardar: ' + e.message);
       }
     } else {
       // Si cancela, revertir al valor original (opcional, el usuario suele preferir mantener el dato editado por si acaso)
@@ -174,10 +176,10 @@ export default function MedicionesPage() {
         if (error) throw error;
       }
 
-      alert('¡Mediciones guardadas correctamente!');
+      toast.success('¡Mediciones guardadas correctamente!');
     } catch (e: any) {
       console.error('Error saving:', e);
-      alert('Error al guardar: ' + e.message);
+      toast.error('Error al guardar: ' + e.message);
     } finally {
       setSaving(false);
     }

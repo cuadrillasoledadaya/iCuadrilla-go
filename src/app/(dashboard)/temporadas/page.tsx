@@ -4,22 +4,26 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Calendar, Check, Plus, Trophy } from 'lucide-react';
+import { Calendar, Check, Plus, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useTemporadas } from '@/hooks/useTemporadas';
+import { PageHeader } from '@/components/ui/page-header';
+import { SectionHeader } from '@/components/ui/section-header';
+import { useToast } from '@/components/ui/toast';
 
 export default function GestionTemporadas() {
   const router = useRouter();
   const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
+  const toast = useToast();
   const { temporadas, loading, refetch } = useTemporadas();
   const [nuevaTemporada, setNuevaTemporada] = useState('');
   const [creating, setCreating] = useState(false);
 
   const handleActivar = async (id: string) => {
     if (!isAdmin && !isMaster) {
-      alert('No tienes permisos para realizar esta acción.');
+      toast.warning('No tienes permisos para realizar esta acción.');
       return;
     }
     if (!confirm('¿Estás seguro de cambiar la temporada activa?')) return;
@@ -92,13 +96,13 @@ export default function GestionTemporadas() {
       // no requieren clonación. Permanecen disponibles para la nueva temporada automáticamente.
       // Sus campos 'trabajadera' y 'puesto' son el estado actual.
 
-      alert(
+      toast.success(
         `Temporada ${nuevaTemporada} creada y activada correctamente.\n\nDatos del palio migrados desde la temporada anterior.`
       );
       setNuevaTemporada('');
       refetch();
     } catch (e: any) {
-      alert('Error al crear la temporada: ' + e.message);
+      toast.error('Error al crear la temporada: ' + e.message);
     } finally {
       setCreating(false);
     }
@@ -107,19 +111,7 @@ export default function GestionTemporadas() {
   return (
     <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-500">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4 flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="p-2 bg-white border border-black/5 rounded-full hover:bg-neutral-100 transition-colors"
-        >
-          <ArrowLeft size={20} className="text-neutral-600" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-lg font-black uppercase tracking-tight text-neutral-900 line-clamp-1">
-            Control de Temporadas
-          </h1>
-        </div>
-      </header>
+      <PageHeader variant="sticky" title="Control de Temporadas" back={{ onClick: () => router.back() }} />
 
       <div className="p-6 space-y-8">
         {/* Crear Nueva */}
@@ -154,9 +146,7 @@ export default function GestionTemporadas() {
 
         {/* History Section */}
         <div>
-          <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest mb-4 px-2">
-            Historial
-          </h3>
+          <SectionHeader title="Historial" className="mb-4 px-2" />
           <div className="space-y-3">
             {loading ? (
               <div className="text-center py-10">

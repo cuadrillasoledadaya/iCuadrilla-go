@@ -3,18 +3,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import {
-  ChevronLeft,
-  ArrowLeft,
-  Users,
-  UserCog,
-  Search,
-  ShieldCheck,
-  ShieldAlert,
-  UserCircle,
-} from 'lucide-react';
+import { Users, UserCog, Search, ShieldCheck, ShieldAlert, UserCircle } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 interface Costalero {
   id: string;
@@ -28,6 +22,7 @@ interface Costalero {
 export default function RolesPage() {
   const router = useRouter();
   const { isMaster, loading: roleLoading, canManageRoles, userEmail } = useUserRole();
+  const toast = useToast();
   const [costaleros, setCostaleros] = useState<Costalero[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,7 +60,7 @@ export default function RolesPage() {
     if (!error) {
       setCostaleros((prev) => prev.map((c) => (c.id === id ? { ...c, rol: newRole } : c)));
     } else {
-      alert('Error al actualizar el rol: ' + error.message);
+      toast.error('Error al actualizar el rol: ' + error.message);
     }
     setUpdatingId(null);
   };
@@ -84,29 +79,14 @@ export default function RolesPage() {
   if (roleLoading || loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 group/back z-10"
-        >
-          <ArrowLeft size={24} className="group-hover/back:-translate-x-1 transition-transform" />
-        </button>
-        <div className="text-center">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">
-            Gestión de Roles
-          </h1>
-          <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1">
-            SUPERADMIN PANEL
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Gestión de Roles" eyebrow="SUPERADMIN PANEL" back />
 
       {/* Search */}
       <div className="relative group">

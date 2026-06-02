@@ -5,11 +5,14 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter, useParams } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 export default function EditarAnuncio() {
   const router = useRouter();
   const params = useParams();
+  const toast = useToast();
   const [anuncio, setAnuncio] = useState({ titulo: '', contenido: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -23,7 +26,7 @@ export default function EditarAnuncio() {
         .single();
 
       if (error) {
-        alert('Error al cargar anuncio');
+        toast.error('Error al cargar anuncio');
         router.push('/anuncios');
         return;
       }
@@ -47,7 +50,7 @@ export default function EditarAnuncio() {
       .eq('id', params.id);
 
     if (error) {
-      alert('Error al guardar: ' + error.message);
+      toast.error('Error al guardar: ' + error.message);
     } else {
       router.push('/anuncios');
     }
@@ -57,25 +60,13 @@ export default function EditarAnuncio() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 bg-[#FAFAFA] min-h-screen">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">
-            Editar Anuncio
-          </h1>
-        </div>
-      </header>
+      <PageHeader title="Editar Anuncio" back />
 
       <form
         onSubmit={handleSave}

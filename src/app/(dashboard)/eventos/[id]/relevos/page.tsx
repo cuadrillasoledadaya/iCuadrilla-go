@@ -16,6 +16,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { cn, getDisplayName } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/toast';
 
 interface Costalero {
   id: string;
@@ -48,6 +51,7 @@ interface Muda {
 export default function GestionRelevos() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const [relevos, setRelevos] = useState<Relevo[]>([]);
   const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
   const [mudas, setMudas] = useState<Muda[]>([]);
@@ -312,7 +316,7 @@ export default function GestionRelevos() {
       await fetchInitialData();
     } catch (error: any) {
       console.error('Error managing muda:', error);
-      alert('Error al guardar el relevo: ' + (error.message || 'Error desconocido'));
+      toast.error('Error al guardar el relevo: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -333,7 +337,7 @@ export default function GestionRelevos() {
       await fetchInitialData();
     } catch (error: any) {
       console.error('Error deleting muda:', error);
-      alert('Error al borrar el relevo: ' + (error.message || 'Error desconocido'));
+      toast.error('Error al borrar el relevo: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -383,23 +387,36 @@ export default function GestionRelevos() {
     }
   };
 
+  const getAsistenciaVariant = (estado: string) => {
+    switch (estado) {
+      case 'presente':
+        return 'presente' as const;
+      case 'ausente':
+        return 'ausente' as const;
+      case 'justificado':
+        return 'justificado' as const;
+      default:
+        return 'neutral' as const;
+    }
+  };
+
   const getAsistenciaLabel = (estado: string) => {
     switch (estado) {
       case 'presente':
-        return { text: 'PRESENTE', color: 'bg-emerald-100 text-emerald-700' };
+        return 'PRESENTE';
       case 'ausente':
-        return { text: 'AUSENTE', color: 'bg-red-100 text-red-700' };
+        return 'AUSENTE';
       case 'justificado':
-        return { text: 'JUSTIFICADO', color: 'bg-amber-100 text-amber-700' };
+        return 'JUSTIFICADO';
       default:
-        return { text: 'PENDIENTE', color: 'bg-neutral-100 text-neutral-500' };
+        return 'PENDIENTE';
     }
   };
 
   if (loading && relevos.length === 0)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -753,7 +770,6 @@ export default function GestionRelevos() {
                   </div>
                 ) : (
                   filteredCandidates.map((c) => {
-                    const label = getAsistenciaLabel(c.estadoAsistencia);
                     return (
                       <button
                         key={c.id}
@@ -771,14 +787,9 @@ export default function GestionRelevos() {
                             <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">
                               T-{c.trabajadera} • {c.puesto}
                             </p>
-                            <span
-                              className={cn(
-                                'text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase',
-                                label.color
-                              )}
-                            >
-                              {label.text}
-                            </span>
+                            <Badge variant={getAsistenciaVariant(c.estadoAsistencia)} size="sm">
+                              {getAsistenciaLabel(c.estadoAsistencia)}
+                            </Badge>
                           </div>
                         </div>
                         <UserPlus size={18} className="text-neutral-900 group-hover:text-primary" />

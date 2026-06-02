@@ -12,7 +12,6 @@ import {
   Trash2,
   X,
   Upload,
-  ArrowLeft,
   ChevronRight,
   Search,
 } from 'lucide-react';
@@ -20,6 +19,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SectionHeader } from '@/components/ui/section-header';
+import { useToast } from '@/components/ui/toast';
 
 interface Repertorio {
   id: string;
@@ -32,6 +36,7 @@ interface Repertorio {
 export default function RepertorioPage() {
   const router = useRouter();
   const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
+  const toast = useToast();
   const [repertorios, setRepertorios] = useState<Repertorio[]>([]);
   const [temporadas, setTemporadas] = useState<any[]>([]);
   const [selectedTemporada, setSelectedTemporada] = useState<string>('');
@@ -87,7 +92,7 @@ export default function RepertorioPage() {
 
   const handleUpload = async () => {
     if (!selectedFile || !newNombre || !newTemporadaId) {
-      alert('Por favor rellena todos los campos.');
+      toast.warning('Por favor rellena todos los campos.');
       return;
     }
 
@@ -113,14 +118,14 @@ export default function RepertorioPage() {
 
       if (dbError) throw dbError;
 
-      alert('Repertorio subido correctamente.');
+      toast.success('Repertorio subido correctamente.');
       setShowUploadModal(false);
       setNewNombre('');
       setSelectedFile(null);
       await fetchRepertorios();
     } catch (e: any) {
       console.error('Error uploading:', e);
-      alert('Error al subir: ' + e.message);
+      toast.error('Error al subir: ' + e.message);
     } finally {
       setUploading(false);
     }
@@ -144,7 +149,7 @@ export default function RepertorioPage() {
 
       setRepertorios((prev) => prev.filter((r) => r.id !== rep.id));
     } catch (e: any) {
-      alert('Error al borrar: ' + e.message);
+      toast.error('Error al borrar: ' + e.message);
     }
   };
 
@@ -158,38 +163,30 @@ export default function RepertorioPage() {
   if (roleLoading && loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="min-h-screen bg-background pb-32 animate-in fade-in duration-500">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="p-2 bg-white border border-black/5 rounded-full hover:bg-neutral-100 transition-colors"
-          >
-            <ArrowLeft size={20} className="text-neutral-600" />
-          </button>
-          <h1 className="text-lg font-black uppercase tracking-tight text-neutral-900">
-            Repertorio Musical
-          </h1>
-        </div>
-
-        {(isAdmin || isMaster) && (
-          <button
-            onClick={() => {
-              setNewTemporadaId(selectedTemporada);
-              setShowUploadModal(true);
-            }}
-            className="p-3 bg-neutral-900 text-white rounded-2xl shadow-lg active:scale-95 transition-all"
-          >
-            <Plus size={20} />
-          </button>
-        )}
-      </header>
+      <PageHeader
+        variant="sticky"
+        title="Repertorio Musical"
+        back={{ onClick: () => router.back() }}
+        primaryAction={
+          isAdmin || isMaster
+            ? {
+                label: 'Subir',
+                icon: <Plus size={20} />,
+                onClick: () => {
+                  setNewTemporadaId(selectedTemporada);
+                  setShowUploadModal(true);
+                },
+              }
+            : undefined
+        }
+      />
 
       <div className="p-6 space-y-8">
         {/* Selector de Temporadas */}
@@ -212,26 +209,17 @@ export default function RepertorioPage() {
 
         {/* Lista de Repertorios */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between px-2">
-            <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest">
-              Documentos Disponibles
-            </h3>
+          <div className="px-2">
+            <SectionHeader title="Documentos disponibles" />
           </div>
 
           {filteredRepertorios.length === 0 ? (
-            <div className="bg-white/50 p-12 rounded-[40px] border border-black/5 border-dashed flex flex-col items-center justify-center text-center space-y-4">
-              <div className="p-4 bg-primary/5 rounded-full text-primary/20">
-                <Music size={40} />
-              </div>
-              <div className="space-y-1">
-                <p className="text-neutral-400 font-bold uppercase tracking-widest text-[10px]">
-                  Sin repertorio
-                </p>
-                <p className="text-neutral-300 text-xs italic">
-                  Aun no se ha subido ningún archivo para esta temporada
-                </p>
-              </div>
-            </div>
+            <EmptyState
+              icon={Music}
+              title="Sin repertorio"
+              description="Aun no se ha subido ningún archivo para esta temporada"
+              variant="muted"
+            />
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {filteredRepertorios.map((rep) => (

@@ -8,9 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ChevronLeft, Save, Trash2 } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PuestoSelect } from '@/components/ui/puesto-select';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 const formSchema = z
   .object({
@@ -34,6 +37,7 @@ const formSchema = z
 export default function EditarCostalero() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -110,7 +114,7 @@ export default function EditarCostalero() {
     const { error } = await supabase.from('costaleros').delete().eq('id', params.id);
 
     if (error) {
-      alert('Error al eliminar: ' + error.message);
+      toast.error('Error al eliminar: ' + error.message);
     } else {
       router.push('/cuadrilla');
     }
@@ -120,28 +124,13 @@ export default function EditarCostalero() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-accent"></div>
+        <Spinner size="lg" color="accent" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 max-w-2xl mx-auto">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-all active:scale-95 shadow-sm"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black tracking-tight uppercase text-neutral-900">
-            Editar Datos
-          </h1>
-          <p className="text-neutral-400 text-[10px] font-black uppercase tracking-widest">
-            Actualización de Expediente
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Editar Datos" subtitle="Actualización de Expediente" back />
 
       <form
         onSubmit={handleSubmit(onSubmit)}

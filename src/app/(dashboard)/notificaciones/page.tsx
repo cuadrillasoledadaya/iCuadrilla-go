@@ -3,18 +3,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import {
-  ChevronLeft,
-  ArrowLeft,
-  Bell,
-  CheckCircle2,
-  Clock,
-  Trash2,
-  Check,
-  Trophy,
-} from 'lucide-react';
+import { Bell, CheckCircle2, Clock, Trash2, Check, Trophy } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { EmptyState } from '@/components/ui/empty-state';
+import { useToast } from '@/components/ui/toast';
 
 interface Notificacion {
   id: string;
@@ -31,6 +26,7 @@ interface Notificacion {
 export default function NotificacionesPage() {
   const router = useRouter();
   const { isCostalero, isAdmin, loading: roleLoading, costaleroId } = useUserRole();
+  const toast = useToast();
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -143,12 +139,12 @@ export default function NotificacionesPage() {
       .select();
 
     if (updateError) {
-      alert('Error al justificar la asistencia: ' + updateError.message);
+      toast.error('Error al justificar la asistencia: ' + updateError.message);
       return;
     }
 
     if (!data || data.length === 0) {
-      alert('No se encontró la asistencia para actualizar. Verifica los IDs.');
+      toast.error('No se encontró la asistencia para actualizar. Verifica los IDs.');
       return;
     }
 
@@ -160,7 +156,7 @@ export default function NotificacionesPage() {
       prev.map((n) => (n.id === notificationId ? { ...n, leido: true } : n))
     );
 
-    alert('✅ Ausencia JUSTIFICADA correctamente.');
+    toast.success('✅ Ausencia JUSTIFICADA correctamente.');
     router.refresh();
   };
 
@@ -183,7 +179,7 @@ export default function NotificacionesPage() {
       .select();
 
     if (updateError) {
-      alert('Error al marcar la ausencia: ' + updateError.message);
+      toast.error('Error al marcar la ausencia: ' + updateError.message);
       return;
     }
 
@@ -195,7 +191,7 @@ export default function NotificacionesPage() {
       prev.map((n) => (n.id === notificationId ? { ...n, leido: true } : n))
     );
 
-    alert('✅ Ausencia confirmada.');
+    toast.success('✅ Ausencia confirmada.');
     router.refresh();
   };
 
@@ -208,7 +204,7 @@ export default function NotificacionesPage() {
   if (roleLoading || loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -217,27 +213,20 @@ export default function NotificacionesPage() {
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 group/back z-10"
-        >
-          <ArrowLeft size={24} className="group-hover/back:-translate-x-1 transition-transform" />
-        </button>
-        <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12">
-          Notificaciones
-        </h1>
-        <div className="absolute right-0">
-          <button
-            title="Marcar todas como leídas"
-            onClick={markAllAsRead}
-            disabled={unreadCount === 0}
-            className="p-3 bg-white border border-black/5 rounded-xl text-neutral-400 hover:text-primary shadow-sm transition-colors disabled:opacity-50"
-          >
-            <CheckCircle2 size={20} />
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        title="Notificaciones"
+        back={{ onClick: () => router.back() }}
+        primaryAction={
+          unreadCount > 0
+            ? {
+                label: 'Marcar leídas',
+                icon: <CheckCircle2 size={20} />,
+                onClick: markAllAsRead,
+                variant: 'outline',
+              }
+            : undefined
+        }
+      />
 
       {/* List */}
       <div className="space-y-4">
@@ -251,12 +240,7 @@ export default function NotificacionesPage() {
         )}
 
         {notificaciones.length === 0 ? (
-          <div className="bg-white p-12 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4 pt-20">
-            <div className="p-4 rounded-full bg-neutral-50 text-neutral-300">
-              <Bell size={48} />
-            </div>
-            <p className="text-neutral-400 font-bold text-sm italic">No tienes notificaciones</p>
-          </div>
+          <EmptyState icon={Bell} title="No tienes notificaciones" />
         ) : (
           <div className="space-y-3">
             {notificaciones.map((notif) => (

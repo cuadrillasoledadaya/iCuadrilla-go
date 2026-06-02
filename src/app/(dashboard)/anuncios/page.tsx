@@ -4,12 +4,16 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bell, Pencil, Trash2, ChevronLeft } from 'lucide-react';
+import { Bell, Pencil, Trash2 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
+import { PageHeader } from '@/components/ui/page-header';
+import { EmptyState } from '@/components/ui/empty-state';
+import { useToast } from '@/components/ui/toast';
 
 export default function TablonAnuncios() {
   const router = useRouter();
+  const toast = useToast();
   const [anuncios, setAnuncios] = useState<any[]>([]);
   const [nuevo, setNuevo] = useState({ titulo: '', contenido: '' });
   const [loading, setLoading] = useState(false);
@@ -42,7 +46,7 @@ export default function TablonAnuncios() {
 
     const { error } = await supabase.from('anuncios').delete().eq('id', id);
     if (error) {
-      alert('Error al borrar: ' + error.message);
+      toast.error('Error al borrar: ' + error.message);
     } else {
       fetchAnuncios();
     }
@@ -52,22 +56,7 @@ export default function TablonAnuncios() {
 
   return (
     <div className="p-6 space-y-8 bg-background min-h-screen pb-32 animate-in fade-in duration-700">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 group/back"
-        >
-          <ChevronLeft size={24} className="group-hover/back:-translate-x-1 transition-transform" />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">
-            Tablón de Anuncios
-          </h1>
-          <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">
-            Comunicados Oficiales
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Tablón de Anuncios" subtitle="Comunicados Oficiales" back />
 
       {canManageAnnouncements && (
         <form
@@ -112,12 +101,7 @@ export default function TablonAnuncios() {
 
       <div className="space-y-4">
         {anuncios.length === 0 ? (
-          <div className="text-center py-12 opacity-50">
-            <div className="inline-flex p-4 rounded-full bg-neutral-100 text-neutral-400 mb-3">
-              <Bell size={24} />
-            </div>
-            <p className="text-sm font-medium text-neutral-400">No hay anuncios publicados</p>
-          </div>
+          <EmptyState icon={Bell} title="No hay anuncios publicados" />
         ) : (
           anuncios.map((a) => (
             <div
