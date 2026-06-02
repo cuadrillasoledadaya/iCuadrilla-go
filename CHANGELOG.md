@@ -1,5 +1,115 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.11 (02/06/2026) - Error States + Alert/Confirm Migration
+
+- **ErrorState en fetch silenciosos (3 archivos)**: try/catch mudos que solo hacían `console.error` ahora muestran `<ErrorState onRetry={fetchData} />` con mensaje específico:
+  - `perfil`: si falla el fetch, antes mostraba "Perfil no encontrado" (engañoso)
+  - `datos-palio`: si falla el fetch, antes mostraba form con valores default (peligro: podía guardar pensando que era real)
+  - `eventos/[id]/mediciones`: si falla el fetch, antes mostraba "No se encontraron costaleros" (engañoso)
+  - El empty state legítimo (sin datos) se preserva, separado del error state
+
+- **ToastProvider integrado en root layout**: ya existía el primitivo `toast` pero no estaba wrapeado en el árbol de React. Ahora `useToast()` está disponible globalmente.
+
+- **ConfirmDialog primitivo nuevo** (8 tests): `<ConfirmDialog isOpen onClose onConfirm title variant="default"|"danger" loading />`. Accesible (role='alertdialog', aria-modal, aria-labelledby, aria-describedby, cierre con Escape).
+
+- **alert() → toast (38 alerts en 15 archivos)**: migración mecánica usando `useToast()`. Variants según semántica:
+  - `toast.error()`: 27 alerts (errores de supabase, fallos de fetch, etc)
+  - `toast.success()`: 8 alerts (operaciones exitosas, "Tramitada", "Guardada")
+  - `toast.warning()`: 5 alerts (validaciones, "Por favor...", permisos)
+  - 0 `alert()` en `src/app/`
+
+- **window.confirm() → ConfirmDialog (13 confirms en 10 archivos)**:
+  - 8 `variant="danger"` (borrar, marcar ausente)
+  - 4 `variant="default"` (cambiar temporada, justificar, guardar altura)
+  - 1 con título dinámico (`pendingSave.trabajadera`, etc)
+  - Patrón aplicado: estado separado para el trigger, `setEstado(null)` antes del async work
+  - 0 `window.confirm()` en `src/app/`
+
+- **Behavior changes**:
+  - Errores antes invisibles ahora son visibles (cambio intencional, expuesto para debugging)
+  - `confirm()` nativo del navegador reemplazado por dialog in-house (mismo flujo, mejor UX)
+  - `alert()` nativo reemplazado por toast no-bloqueante (mismo mensaje, mejor UX)
+
+- **Sin cambios funcionales**: rutas, datos, fetch, autenticación, todo intacto
+- 98/99 tests passing (1 fail pre-existente en `validation.test.ts:33`)
+- `npx tsc --noEmit` limpio, `npx next build` OK
+
+## v1.6.10 (02/06/2026) - Call Site Migrations
+
+- **Spinners** (24 archivos):
+  - 27 spinners inline reemplazados por `<Spinner size="lg" />`
+  - Spinner primitive extendido con prop `color` (primary | accent | white) para cubrir los outliers
+  - 4 archivos sin uso de `cn` detectado, removido: `exportar`, `cuadrilla list`, `eventos/[id]/pendientes`, `eventos/[id]/mediciones`
+  - `border-[#16a34a]` normalizado al color `primary` del design system (en `cuadrilla/movimientos` y `cuadrilla/[id]/baja`)
+
+- **Status Badges** (3 archivos):
+  - `getStatusStyle()` en `eventos/page.tsx` reemplazado por `<Badge variant>`
+  - Bloque inline en `eventos/[id]/page.tsx` reemplazado por `<Badge variant>`
+  - `getAsistenciaLabel()` en `eventos/[id]/relevos/page.tsx` reemplazado por `<Badge variant>` + `getAsistenciaVariant()`
+  - 4 representaciones de status consolidadas en una sola primitiva
+
+- **Page Headers** (19 archivos):
+  - 17 headers `<header className="relative flex items-center justify-center">` migrados a `<PageHeader>`
+  - 2 headers sticky (repertorio, temporadas) migrados a `<PageHeader variant="sticky">`
+  - Dashboard: restaurada la línea de "rol + temporada" usando `subtitle` con ReactNode
+  - Ajustes/Roles: "SUPERADMIN PANEL" movido de `subtitle` a `eyebrow` (mantiene color `text-primary`)
+  - `PageHeader` extendido: `subtitle` y `eyebrow` ahora aceptan `ReactNode` (no solo `string`), `rightSlot` agregado para DropdownMenu y otros custom widgets
+  - Container de `subtitle`/`eyebrow` cambiado de `<p>` a `<div>` para soportar elementos block
+
+- **Section Headers** (3 archivos):
+  - 5 headers de sección migrados a `<SectionHeader title>`
+  - "PRÓXIMOS EVENTOS" + Calendar icon, "Avisos Recientes" + Bell icon + "VER TODO" action, "Estadísticas", "Historial" (temporadas), "Documentos disponibles" (repertorio)
+  - `SectionHeader` refinado: el variant sin `eyebrow` ahora usa `text-sm tracking-widest text-neutral-400` (estilo "cofrade label" del proyecto) en vez del genérico `text-sm tracking-tight text-neutral-900`
+
+- **Empty States** (7 archivos):
+  - 8 empty states inline reemplazados por `<EmptyState icon={X} title="Y" />`
+  - Variants usados: `default` (mayoría) y `muted` (Dashboard "Tablón de anuncios", Repertorio "Sin repertorio")
+  - 1 empty state dentro de scroll horizontal dejado como está (estilo carousel)
+
+- **Comportamiento de la App**:
+  - **Cambios visuales sutiles**: los badges ahora usan el sistema de variants unificado (tonos un poco más refinados que las versiones inline)
+  - **Sin cambios funcionales**: rutas, datos, fetch, autenticación, todo intacto
+  - 90/91 tests passing (1 fail pre-existente en `validation.test.ts:33`, marcado como "for documented purposes only")
+  - `npx tsc --noEmit` limpio, `npx next build` 33 rutas sin warnings
+
+## v1.6.09 (02/06/2026) - UI Primitives Layer
+
+- **Primitivas UI Nuevas** (en `src/components/ui/`):
+  - `spinner.tsx` — Spinner canónico con 4 sizes (sm/md/lg/xl), reemplaza los 27 spinners inline
+  - `skeleton.tsx` — Skeleton base + SkeletonText, SkeletonCard, SkeletonAvatar, SkeletonListItem
+  - `empty-state.tsx` — Estado vacío unificado con 3 variants (default/muted/card) y action opcional
+  - `error-state.tsx` — Estado de error con retry opcional
+  - `badge.tsx` — Badge con 9 variants (`pendiente`, `en-curso`, `finalizado`, `presente`, `ausente`, `justificado`, `anunciado`, `neutral`, `primary`) que unifica los 4 `getStatusStyle()` duplicados
+  - `section-header.tsx` — Encabezado de sección (eyebrow + título + acción)
+  - `page-header.tsx` — Header de página con 3 variants (`centered`, `sticky`, `left`), back button configurable, primary/secondary actions
+  - `toast.tsx` — Sistema de toasts in-house con Radix Dialog (4 variants, auto-dismiss, stack)
+
+- **Testing**:
+  - 86 tests unitarios para las 8 primitivas nuevas en `src/__tests__/components/ui/`
+  - Cero regresiones: `npm test` y `npx next build` pasan limpios
+
+- **PWA y Branding**:
+  - `manifest.json`: theme color verde `#16a34a`, icons maskable agregados
+  - `public/apple-touch-icon.png` y `public/og-image.png` agregados
+  - `public/icons/icon-192x192-maskable.png` y `icon-512x512-maskable.png` agregados
+  - `layout.tsx`: OpenGraph + Twitter Card metadata
+  - `viewport.themeColor` cambiado de `#000000` a `#16a34a`
+
+- **Limpieza de Código Muerto**:
+  - Borradas 47 líneas de JSX huérfano en `dashboard/page.tsx:303-350` (bloque nunca renderizado)
+  - Eliminado conflicto `bg-black` vs `hsl(var(--background))` en `globals.css`
+  - Eliminado bloque `.dark` muerto (clase nunca aplicada en ningún elemento)
+  - Eliminadas 3 utilidades `.status-*` definidas pero con 0 usos
+  - Reemplazado `font-serif` huérfano por `italic` en `login` y `registro` (caía a Times New Roman)
+  - Borrado comentario de redirect comentado en `page.tsx`
+
+- **Configuración**:
+  - `tailwind.config.js`: `--radius` expuesto como tokens `borderRadius` (DEFAULT, sm, md, lg, xl, 2xl, 3xl)
+  - `.gitignore`: agregados `swe-worker-*.js` y `fallback-*.js`
+
+- **Comportamiento de la App**:
+  - **Sin cambios.** Los call sites existentes siguen usando sus implementaciones inline. Las primitivas están listas para migrar en una fase futura sin tocar la app actual.
+
 ## v1.6.08 (30/01/2026) - Rate Limiting API
 
 - **Seguridad**:
