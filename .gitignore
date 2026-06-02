@@ -41,3 +41,5 @@ public/swe-worker-*.js
 public/fallback-*.js
 # Local Pi runtime state
 .atl/
+
+.pi-lens/
