@@ -1,6 +1,0 @@
-{
-  "signature": "src/lib/rate-limit.ts::ℹ️ Advisory — no action required this turn:\nCode-quality warnings introduced/touched this turn: 1 across 1 file(s).\nTop rules: async-noise×1\nDetails written to .pi-lens/cache/code-quality-warnings.json\nNo action required unless you are already refactoring these areas.",
-  "sessionId": "lens-mps3fsp7-9d74e3e0",
-  "projectSeqStart": 47,
-  "projectSeqEnd": 48
-}
