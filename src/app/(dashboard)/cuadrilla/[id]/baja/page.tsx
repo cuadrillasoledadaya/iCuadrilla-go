@@ -6,10 +6,13 @@ import { ChevronLeft, AlertTriangle, Save } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/components/ui/toast';
 
 export default function BajaCostalero() {
   const router = useRouter();
   const params = useParams();
+  const toast = useToast();
   const [costalero, setCostalero] = useState<any>(null);
   const [motivo, setMotivo] = useState('');
   const [loading, setLoading] = useState(true);
@@ -30,7 +33,7 @@ export default function BajaCostalero() {
 
   const handleBaja = async () => {
     if (!motivo.trim()) {
-      alert('Por favor, introduce el motivo de la baja.');
+      toast.warning('Por favor, introduce el motivo de la baja.');
       return;
     }
     setSaving(true);
@@ -65,11 +68,11 @@ export default function BajaCostalero() {
 
       if (updateError) throw updateError;
 
-      alert('Baja tramitada correctamente.');
+      toast.success('Baja tramitada correctamente.');
       router.push('/cuadrilla');
       router.refresh();
     } catch (e: any) {
-      alert('Error: ' + e.message);
+      toast.error('Error: ' + e.message);
     } finally {
       setSaving(false);
     }
@@ -78,7 +81,7 @@ export default function BajaCostalero() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#16a34a]"></div>
+        <Spinner size="lg" />
       </div>
     );
 
