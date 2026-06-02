@@ -12,6 +12,7 @@ import { useTemporadas } from '@/hooks/useTemporadas';
 import { PageHeader } from '@/components/ui/page-header';
 import { SectionHeader } from '@/components/ui/section-header';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function GestionTemporadas() {
   const router = useRouter();
@@ -20,13 +21,23 @@ export default function GestionTemporadas() {
   const { temporadas, loading, refetch } = useTemporadas();
   const [nuevaTemporada, setNuevaTemporada] = useState('');
   const [creating, setCreating] = useState(false);
+  const [showChangeSeasonDialog, setShowChangeSeasonDialog] = useState(false);
+  const [pendingSeasonId, setPendingSeasonId] = useState<string | null>(null);
 
-  const handleActivar = async (id: string) => {
+  const handleActivar = (id: string) => {
     if (!isAdmin && !isMaster) {
       toast.warning('No tienes permisos para realizar esta acción.');
       return;
     }
-    if (!confirm('¿Estás seguro de cambiar la temporada activa?')) return;
+    setPendingSeasonId(id);
+    setShowChangeSeasonDialog(true);
+  };
+
+  const confirmChangeSeason = async () => {
+    if (!pendingSeasonId) return;
+    const id = pendingSeasonId;
+    setShowChangeSeasonDialog(false);
+    setPendingSeasonId(null);
 
     // Desactivar todas
     await supabase
@@ -216,6 +227,19 @@ export default function GestionTemporadas() {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showChangeSeasonDialog}
+        onClose={() => {
+          setShowChangeSeasonDialog(false);
+          setPendingSeasonId(null);
+        }}
+        onConfirm={confirmChangeSeason}
+        title="¿Cambiar la temporada activa?"
+        description="Se desactivará la temporada activa actual."
+        confirmLabel="Cambiar temporada"
+        variant="default"
+      />
     </div>
   );
 }

@@ -24,6 +24,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Repertorio {
   id: string;
@@ -42,6 +43,7 @@ export default function RepertorioPage() {
   const [selectedTemporada, setSelectedTemporada] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Repertorio | null>(null);
 
   // Form states
   const [uploading, setUploading] = useState(false);
@@ -131,8 +133,14 @@ export default function RepertorioPage() {
     }
   };
 
-  const handleDelete = async (rep: Repertorio) => {
-    if (!confirm(`¿Borrar el repertorio "${rep.nombre}"?`)) return;
+  const handleDelete = (rep: Repertorio) => {
+    setPendingDelete(rep);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    const rep = pendingDelete;
+    setPendingDelete(null);
 
     try {
       // Delete from storage
@@ -360,11 +368,21 @@ export default function RepertorioPage() {
                 className="w-full h-16 rounded-[24px] bg-neutral-900 text-white font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-95 disabled:opacity-50"
               >
                 {uploading ? 'Subiendo...' : 'Confirmar Subida'}
-              </Button>
-            </div>
+            </Button>
           </div>
         </div>
+        </div>
       )}
+
+      <ConfirmDialog
+        isOpen={!!pendingDelete}
+        onClose={() => setPendingDelete(null)}
+        onConfirm={confirmDelete}
+        title={pendingDelete ? `¿Borrar el repertorio "${pendingDelete.nombre}"?` : ''}
+        description="Se eliminará también el archivo del almacenamiento."
+        confirmLabel="Borrar"
+        variant="danger"
+      />
     </div>
   );
 }

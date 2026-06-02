@@ -14,6 +14,7 @@ import { PuestoSelect } from '@/components/ui/puesto-select';
 import { Spinner } from '@/components/ui/spinner';
 import { PageHeader } from '@/components/ui/page-header';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 const formSchema = z
   .object({
@@ -41,6 +42,7 @@ export default function EditarCostalero() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const {
     register,
@@ -102,13 +104,12 @@ export default function EditarCostalero() {
     setSaving(false);
   };
 
-  const deleteCostalero = async () => {
-    if (
-      !confirm(
-        '¿Estás seguro de que deseas eliminar este costalero? Esta acción no se puede deshacer.'
-      )
-    )
-      return;
+  const requestDelete = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    setShowDeleteDialog(false);
 
     setSaving(true);
     const { error } = await supabase.from('costaleros').delete().eq('id', params.id);
@@ -298,7 +299,7 @@ export default function EditarCostalero() {
 
           <Button
             type="button"
-            onClick={deleteCostalero}
+            onClick={requestDelete}
             disabled={saving}
             className="w-full bg-red-600/10 border border-red-600/30 text-red-500 hover:bg-red-600/20 font-bold h-14 rounded-2xl gap-2"
           >
@@ -320,6 +321,16 @@ export default function EditarCostalero() {
           {message}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={confirmDelete}
+        title="¿Eliminar este costalero?"
+        description="Esta acción no se puede deshacer."
+        confirmLabel="Borrar"
+        variant="danger"
+      />
     </div>
   );
 }

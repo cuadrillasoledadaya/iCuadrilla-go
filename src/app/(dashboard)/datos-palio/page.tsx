@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
 import { ErrorState } from '@/components/ui/error-state';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface PerfilTrabajadera {
   trabajadera: number;
@@ -33,6 +34,9 @@ export default function DatosPalioPage() {
   ]);
   const [originalAlturas, setOriginalAlturas] = useState<PerfilTrabajadera[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [pendingSave, setPendingSave] = useState<
+    { trabajadera: number; altura: number } | null
+  >(null);
 
   useEffect(() => {
     fetchData();
@@ -92,7 +96,7 @@ export default function DatosPalioPage() {
     return alturas[index + 1].altura_cm - alturas[index].altura_cm;
   };
 
-  const handleBlur = async (trabajadera: number) => {
+  const handleBlur = (trabajadera: number) => {
     if (!temporadaId) {
       toast.warning('No hay una temporada activa para guardar datos.');
       return;
@@ -106,33 +110,37 @@ export default function DatosPalioPage() {
     // Si no ha cambiado (y tenemos original), no hacer nada
     if (original && current.altura_cm === original.altura_cm) return;
 
-    if (window.confirm(`¿Guardar altura de T${trabajadera} (${current.altura_cm} cm)?`)) {
-      try {
-        const { error } = await supabase.from('perfil_trabajaderas').upsert(
-          {
-            temporada_id: temporadaId,
-            trabajadera: current.trabajadera,
-            altura_cm: current.altura_cm,
-          },
-          { onConflict: 'temporada_id,trabajadera' }
-        );
+    setPendingSave({ trabajadera, altura: current.altura_cm });
+  };
 
-        if (error) throw error;
+  const confirmSave = async () => {
+    if (!pendingSave) return;
+    const { trabajadera, altura } = pendingSave;
+    setPendingSave(null);
 
-        // Actualizar original
-        setOriginalAlturas((prev) => {
-          const exists = prev.some((p) => p.trabajadera === trabajadera);
-          if (exists) {
-            return prev.map((p) =>
-              p.trabajadera === trabajadera ? { ...p, altura_cm: current.altura_cm } : p
-            );
-          } else {
-            return [...prev, { ...current }];
-          }
-        });
-      } catch (e: any) {
-        toast.error('Error al guardar: ' + e.message);
-      }
+    try {
+      const { error } = await supabase.from('perfil_trabajaderas').upsert(
+        {
+          temporada_id: temporadaId,
+          trabajadera,
+          altura_cm: altura,
+        },
+        { onConflict: 'temporada_id,trabajadera' }
+      );
+
+      if (error) throw error;
+
+      // Actualizar original
+      setOriginalAlturas((prev) => {
+        const exists = prev.some((p) => p.trabajadera === trabajadera);
+        if (exists) {
+          return prev.map((p) => (p.trabajadera === trabajadera ? { ...p, altura_cm: altura } : p));
+        } else {
+          return [...prev, { trabajadera, altura_cm: altura }];
+        }
+      });
+    } catch (e: any) {
+      toast.error('Error al guardar: ' + e.message);
     }
   };
 
@@ -376,6 +384,19 @@ export default function DatosPalioPage() {
           {saving ? 'Guardando...' : 'Guardar Todo'}
         </Button>
       </div>
+
+      <ConfirmDialog
+        isOpen={!!pendingSave}
+        onClose={() => setPendingSave(null)}
+        onConfirm={confirmSave}
+        title={
+          pendingSave
+            ? `¿Guardar altura de T${pendingSave.trabajadera} (${pendingSave.altura} cm)?`
+            : ''
+        }
+        confirmLabel="Guardar"
+        variant="default"
+      />
     </div>
   );
 }

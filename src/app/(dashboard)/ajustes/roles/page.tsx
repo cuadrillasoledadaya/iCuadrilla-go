@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
 import { PageHeader } from '@/components/ui/page-header';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Costalero {
   id: string;
@@ -27,6 +28,11 @@ export default function RolesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{
+    id: string;
+    newRole: string;
+    nombre: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!roleLoading && !canManageRoles) {
@@ -48,11 +54,14 @@ export default function RolesPage() {
     setLoading(false);
   };
 
-  const handleRoleChange = async (id: string, newRole: string, nombre: string) => {
-    const confirmChange = window.confirm(
-      `¿Estás seguro de que deseas cambiar el rol de ${nombre} a ${newRole.toUpperCase()}?`
-    );
-    if (!confirmChange) return;
+  const handleRoleChange = (id: string, newRole: string, nombre: string) => {
+    setPendingRoleChange({ id, newRole, nombre });
+  };
+
+  const confirmRoleChange = async () => {
+    if (!pendingRoleChange) return;
+    const { id, newRole } = pendingRoleChange;
+    setPendingRoleChange(null);
 
     setUpdatingId(id);
     const { error } = await supabase.from('costaleros').update({ rol: newRole }).eq('id', id);
@@ -209,6 +218,19 @@ export default function RolesPage() {
           ))}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={!!pendingRoleChange}
+        onClose={() => setPendingRoleChange(null)}
+        onConfirm={confirmRoleChange}
+        title={
+          pendingRoleChange
+            ? `¿Cambiar el rol de ${pendingRoleChange.nombre} a ${pendingRoleChange.newRole.toUpperCase()}?`
+            : ''
+        }
+        confirmLabel="Cambiar rol"
+        variant="default"
+      />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Notificacion {
   id: string;
@@ -29,6 +30,14 @@ export default function NotificacionesPage() {
   const toast = useToast();
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
+  const [pendingJustify, setPendingJustify] = useState<
+    { notificationId: string; eventoId: string; costaleroId: string } | null
+  >(null);
+  const [pendingAusente, setPendingAusente] = useState<
+    { notificationId: string; eventoId: string; costaleroId: string } | null
+  >(null);
+  const [deletingNotifId, setDeletingNotifId] = useState<string | null>(null);
 
   const fetchNotificaciones = async () => {
     const queries = [];
@@ -63,8 +72,12 @@ export default function NotificacionesPage() {
     }
   }, [roleLoading, isCostalero, costaleroId, isAdmin]); // Added isAdmin to dependencies
 
-  const deleteAll = async () => {
-    if (!confirm('¿Estás seguro de que quieres eliminar todas las notificaciones?')) return;
+  const requestDeleteAll = () => {
+    setShowDeleteAllDialog(true);
+  };
+
+  const confirmDeleteAll = async () => {
+    setShowDeleteAllDialog(false);
 
     setNotificaciones([]);
 
@@ -124,11 +137,14 @@ export default function NotificacionesPage() {
     router.refresh();
   };
 
-  const handleJustify = async (notificationId: string, eventoId: string, costaleroId: string) => {
-    // Confirmation dialog
-    if (!window.confirm('¿Estás seguro de que deseas JUSTIFICAR esta ausencia?')) {
-      return;
-    }
+  const handleJustify = (notificationId: string, eventoId: string, costaleroId: string) => {
+    setPendingJustify({ notificationId, eventoId, costaleroId });
+  };
+
+  const confirmJustify = async () => {
+    if (!pendingJustify) return;
+    const { notificationId, eventoId, costaleroId } = pendingJustify;
+    setPendingJustify(null);
 
     // 1. Update Asistencia to 'justificado'
     const { data, error: updateError } = await supabase
@@ -160,15 +176,18 @@ export default function NotificacionesPage() {
     router.refresh();
   };
 
-  const handleConfirmAbsence = async (
+  const handleConfirmAbsence = (
     notificationId: string,
     eventoId: string,
     costaleroId: string
   ) => {
-    // Confirmation dialog
-    if (!window.confirm('¿Estás seguro de que deseas marcar como AUSENTE (no justificado)?')) {
-      return;
-    }
+    setPendingAusente({ notificationId, eventoId, costaleroId });
+  };
+
+  const confirmMarkAusente = async () => {
+    if (!pendingAusente) return;
+    const { notificationId, eventoId, costaleroId } = pendingAusente;
+    setPendingAusente(null);
 
     // 1. Update Asistencia to 'ausente'
     const { data, error: updateError } = await supabase
@@ -193,6 +212,13 @@ export default function NotificacionesPage() {
 
     toast.success('✅ Ausencia confirmada.');
     router.refresh();
+  };
+
+  const confirmDeleteNotif = async () => {
+    if (!deletingNotifId) return;
+    const id = deletingNotifId;
+    setDeletingNotifId(null);
+    await deleteNotification(id);
   };
 
   const deleteNotification = async (id: string) => {
@@ -379,9 +405,7 @@ export default function NotificacionesPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (window.confirm('¿Seguro que quieres eliminar esta notificación?')) {
-                          deleteNotification(notif.id);
-                        }
+                        setDeletingNotifId(notif.id);
                       }}
                       className="p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors ml-auto"
                     >
@@ -394,6 +418,43 @@ export default function NotificacionesPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteAllDialog}
+        onClose={() => setShowDeleteAllDialog(false)}
+        onConfirm={confirmDeleteAll}
+        title="¿Eliminar todas las notificaciones?"
+        description="Esta acción no se puede deshacer."
+        confirmLabel="Eliminar todo"
+        variant="danger"
+      />
+
+      <ConfirmDialog
+        isOpen={!!pendingJustify}
+        onClose={() => setPendingJustify(null)}
+        onConfirm={confirmJustify}
+        title="¿Justificar esta ausencia?"
+        confirmLabel="Justificar"
+        variant="default"
+      />
+
+      <ConfirmDialog
+        isOpen={!!pendingAusente}
+        onClose={() => setPendingAusente(null)}
+        onConfirm={confirmMarkAusente}
+        title="¿Marcar como AUSENTE (no justificado)?"
+        confirmLabel="Marcar ausente"
+        variant="danger"
+      />
+
+      <ConfirmDialog
+        isOpen={!!deletingNotifId}
+        onClose={() => setDeletingNotifId(null)}
+        onConfirm={confirmDeleteNotif}
+        title="¿Eliminar esta notificación?"
+        confirmLabel="Eliminar"
+        variant="danger"
+      />
     </div>
   );
 }

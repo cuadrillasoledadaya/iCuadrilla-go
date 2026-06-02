@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Costalero {
   id: string;
@@ -65,6 +66,7 @@ export default function GestionRelevos() {
   const [searchOther, setSearchOther] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [assignmentSupplement, setAssignmentSupplement] = useState('');
+  const [showDeleteRelevoDialog, setShowDeleteRelevoDialog] = useState(false);
 
   const TRABAJADERAS_COUNT = 7;
   const POSITIONS_PER_TRABAJADERA = 5;
@@ -322,13 +324,19 @@ export default function GestionRelevos() {
     }
   };
 
-  const deleteMuda = async () => {
+  const requestDeleteMuda = () => {
     if (!editingMuda) return;
-    if (!confirm('¿Seguro que quieres borrar este relevo? Se perderá toda su formación.')) return;
+    setShowDeleteRelevoDialog(true);
+  };
+
+  const confirmDeleteMuda = async () => {
+    if (!editingMuda) return;
+    const id = editingMuda.id;
+    setShowDeleteRelevoDialog(false);
 
     setLoading(true);
     try {
-      const { error } = await supabase.from('muda_nombres').delete().eq('id', editingMuda.id);
+      const { error } = await supabase.from('muda_nombres').delete().eq('id', id);
       if (error) throw error;
 
       setShowMudaModal(false);
@@ -849,7 +857,7 @@ export default function GestionRelevos() {
                 <Button
                   variant="ghost"
                   className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 font-black text-[10px] uppercase tracking-widest"
-                  onClick={deleteMuda}
+                  onClick={requestDeleteMuda}
                 >
                   Borrar este Relevo
                 </Button>
@@ -910,6 +918,16 @@ export default function GestionRelevos() {
       >
         <Plus size={28} />
       </button>
+
+      <ConfirmDialog
+        isOpen={showDeleteRelevoDialog}
+        onClose={() => setShowDeleteRelevoDialog(false)}
+        onConfirm={confirmDeleteMuda}
+        title="¿Borrar este relevo?"
+        description="Se perderá toda su formación."
+        confirmLabel="Borrar relevo"
+        variant="danger"
+      />
     </div>
   );
 }

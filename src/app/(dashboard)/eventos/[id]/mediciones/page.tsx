@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ErrorState } from '@/components/ui/error-state';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Costalero {
   id: string;
@@ -36,6 +37,9 @@ export default function MedicionesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [eventTitle, setEventTitle] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [pendingSave, setPendingSave] = useState<
+    { costaleroId: string; field: 'altura_pre' | 'altura_post' } | null
+  >(null);
 
   useEffect(() => {
     fetchData();
@@ -113,48 +117,51 @@ export default function MedicionesPage() {
     }));
   };
 
-  const handleBlur = async (costaleroId: string, field: 'altura_pre' | 'altura_post') => {
+  const handleBlur = (costaleroId: string, field: 'altura_pre' | 'altura_post') => {
     const currentVal = mediciones[costaleroId]?.[field];
     const originalVal = originalMediciones[costaleroId]?.[field];
-    const costalero = costaleros.find((c) => c.id === costaleroId);
 
     // Si el valor no ha cambiado, no hacer nada
     if (currentVal === originalVal) return;
 
-    // Si el valor ha cambiado, pedir confirmación y guardar
-    const fieldName = field === 'altura_pre' ? 'Pre-Ensayo' : 'Post-Ensayo';
-    const confirmMsg = `¿Guardar altura ${fieldName} para ${costalero?.nombre} ${costalero?.apellidos}?`;
+    setPendingSave({ costaleroId, field });
+  };
 
-    if (window.confirm(confirmMsg)) {
-      try {
-        const medicion = mediciones[costaleroId];
-        const { error } = await supabase.from('mediciones_ensayo').upsert(
-          {
-            evento_id: params.id,
-            costalero_id: costaleroId,
-            altura_pre: medicion.altura_pre,
-            altura_post: medicion.altura_post,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'evento_id, costalero_id' }
-        );
+  const confirmSave = async () => {
+    if (!pendingSave) return;
+    const { costaleroId, field } = pendingSave;
+    setPendingSave(null);
 
-        if (error) throw error;
+    try {
+      const medicion = mediciones[costaleroId];
+      const { error } = await supabase.from('mediciones_ensayo').upsert(
+        {
+          evento_id: params.id,
+          costalero_id: costaleroId,
+          altura_pre: medicion.altura_pre,
+          altura_post: medicion.altura_post,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'evento_id, costalero_id' }
+      );
 
-        // Actualizar el estado 'original' para evitar pedir confirmación de nuevo si no cambia más
-        setOriginalMediciones((prev) => ({
-          ...prev,
-          [costaleroId]: { ...medicion },
-        }));
-        // Opcional: Feedback visual discreto (toast no tenemos, alert quizás molesto si ya confirmó)
-      } catch (e: any) {
-        toast.error('Error al guardar: ' + e.message);
-      }
-    } else {
-      // Si cancela, revertir al valor original (opcional, el usuario suele preferir mantener el dato editado por si acaso)
-      // En este caso, dejamos el dato editado pero SIN guardar en BD.
+      if (error) throw error;
+
+      // Actualizar el estado 'original' para evitar pedir confirmación de nuevo si no cambia más
+      setOriginalMediciones((prev) => ({
+        ...prev,
+        [costaleroId]: { ...medicion },
+      }));
+    } catch (e: any) {
+      toast.error('Error al guardar: ' + e.message);
     }
   };
+
+  const pendingSaveCostalero = pendingSave
+    ? costaleros.find((c) => c.id === pendingSave.costaleroId)
+    : null;
+  const pendingSaveFieldName =
+    pendingSave?.field === 'altura_pre' ? 'Pre-Ensayo' : 'Post-Ensayo';
 
   const guardarMediciones = async () => {
     setSaving(true);
@@ -319,6 +326,19 @@ export default function MedicionesPage() {
             </div>
           )}
         </div>
+
+        <ConfirmDialog
+          isOpen={!!pendingSave}
+          onClose={() => setPendingSave(null)}
+          onConfirm={confirmSave}
+          title={
+            pendingSaveCostalero
+              ? `¿Guardar altura ${pendingSaveFieldName} para ${pendingSaveCostalero.nombre} ${pendingSaveCostalero.apellidos}?`
+              : ''
+          }
+          confirmLabel="Guardar"
+          variant="default"
+        />
 
         {/* Save Button Inline */}
         <div className="pt-4 pb-8">

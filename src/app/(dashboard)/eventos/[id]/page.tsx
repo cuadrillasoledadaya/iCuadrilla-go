@@ -29,6 +29,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/ui/page-header';
 import { useToast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Evento {
   id: string;
@@ -62,6 +63,7 @@ export default function DetalleEvento() {
   const [costaleroNombre, setCostaleroNombre] = useState('');
   const [alreadyNotified, setAlreadyNotified] = useState(false);
   const [isNotificationRead, setIsNotificationRead] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const fetchData = async () => {
     const { data: eventData } = await supabase
@@ -189,12 +191,18 @@ export default function DetalleEvento() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!evento) return;
-    if (!window.confirm(`¿Borrar "${evento.titulo}"?`)) return;
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!evento) return;
+    const eventoId = evento.id;
+    setShowDeleteDialog(false);
     setLoading(true);
-    await supabase.from('asistencias').delete().eq('evento_id', evento.id);
-    const { error } = await supabase.from('eventos').delete().eq('id', evento.id);
+    await supabase.from('asistencias').delete().eq('evento_id', eventoId);
+    const { error } = await supabase.from('eventos').delete().eq('id', eventoId);
     if (error) toast.error(error.message);
     else router.push('/eventos');
     setLoading(false);
@@ -496,6 +504,16 @@ export default function DetalleEvento() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={confirmDelete}
+        title={evento ? `¿Borrar "${evento.titulo}"?` : '¿Borrar evento?'}
+        description="Se eliminarán también las asistencias asociadas."
+        confirmLabel="Borrar evento"
+        variant="danger"
+      />
     </div>
   );
 }
