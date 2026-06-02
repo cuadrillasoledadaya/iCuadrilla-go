@@ -19,7 +19,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className={cn('min-h-screen', showNavbar && 'pb-20')}>{children}</main>
+      <main className={cn('min-h-screen lg:pl-64', showNavbar && 'pb-20')}>{children}</main>
 
       <Navbar />
     </div>

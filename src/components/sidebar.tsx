@@ -192,24 +192,26 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity duration-300 sm:hidden',
+          'fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity duration-300 lg:hidden',
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
       />
 
-      {/* Side Drawer */}
+      {/* Side Drawer (mobile) + Side Rail (desktop) */}
       <aside
         className={cn(
-          'fixed top-0 left-0 bottom-0 w-[85%] max-w-[300px] bg-white z-[70] transition-transform duration-300 ease-out border-r border-black/5 flex flex-col pt-4 shadow-2xl',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed top-0 left-0 bottom-0 bg-white z-[70] flex flex-col pt-4 shadow-2xl border-r border-black/5',
+          'w-[85%] max-w-[300px] transition-transform duration-300 ease-out',
+          isOpen ? 'translate-x-0' : '-translate-x-full',
+          'lg:translate-x-0 lg:w-64 lg:max-w-none lg:transition-none lg:shadow-none'
         )}
       >
         {/* Header Side */}
         <div className="px-6 py-8 flex flex-col items-center text-center space-y-3 relative">
           <button
             onClick={onClose}
-            className="absolute top-2 right-4 p-2 text-neutral-400 hover:text-neutral-900 transition-colors"
+            className="absolute top-2 right-4 p-2 text-neutral-400 hover:text-neutral-900 transition-colors lg:hidden"
           >
             <X size={24} />
           </button>
