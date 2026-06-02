@@ -37,5 +37,7 @@ next-env.d.ts
 # PWA
 public/sw.js
 public/workbox-*.js
+public/swe-worker-*.js
+public/fallback-*.js
 # Local Pi runtime state
 .atl/
