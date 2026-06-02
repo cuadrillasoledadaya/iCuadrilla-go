@@ -13,7 +13,7 @@ export const metadata: Metadata = {
       { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: [{ url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   appleWebApp: {
     capable: true,
@@ -23,10 +23,23 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
+  openGraph: {
+    type: 'website',
+    locale: 'es_ES',
+    title: 'iCuadrilla - Gestión de Costaleros',
+    description: 'La gestión de tu cuadrilla, en la palma de tu mano.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'iCuadrilla' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'iCuadrilla - Gestión de Costaleros',
+    description: 'La gestión de tu cuadrilla, en la palma de tu mano.',
+    images: ['/og-image.png'],
+  },
 };
 
 export const viewport = {
-  themeColor: '#000000',
+  themeColor: '#16a34a',
 };
 
 import { LayoutProvider } from '@/components/layout-context';
@@ -35,6 +48,7 @@ import { ScrollToTopButton } from '@/components/ui/scroll-to-top';
 import { OfflineBanner } from '@/components/offline-banner';
 import { SyncProvider } from '@/components/sync-provider';
 import { SessionTimeout } from '@/components/session-timeout';
+import { ToastProvider } from '@/components/ui/toast';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -44,7 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OfflineBanner />
         <SyncProvider>
           <LayoutProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
+            <ToastProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </ToastProvider>
           </LayoutProvider>
         </SyncProvider>
         <ScrollToTopButton />
