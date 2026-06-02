@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
-  ArrowLeft,
   Pencil,
   Trash2,
   QrCode,
@@ -26,6 +25,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 interface Evento {
   id: string;
@@ -42,6 +45,7 @@ export default function DetalleEvento() {
   const params = useParams();
   const router = useRouter();
   const { isCostalero, userId, canManageEvents, rol } = useUserRole();
+  const toast = useToast();
   const [evento, setEvento] = useState<Evento | null>(null);
   const [stats, setStats] = useState({
     presentes: 0,
@@ -174,12 +178,12 @@ export default function DetalleEvento() {
         leido: false,
         destinatario: 'admin',
       });
-      alert('Ausencia notificada.');
+      toast.success('Ausencia notificada.');
       setAlreadyNotified(true);
       setShowAbsenceModal(false);
       fetchData();
     } catch (error: any) {
-      alert('Error: ' + error.message);
+      toast.error('Error: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -191,7 +195,7 @@ export default function DetalleEvento() {
     setLoading(true);
     await supabase.from('asistencias').delete().eq('evento_id', evento.id);
     const { error } = await supabase.from('eventos').delete().eq('id', evento.id);
-    if (error) alert(error.message);
+    if (error) toast.error(error.message);
     else router.push('/eventos');
     setLoading(false);
   };
@@ -265,7 +269,7 @@ export default function DetalleEvento() {
   if (loading && !evento)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -278,33 +282,29 @@ export default function DetalleEvento() {
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen relative">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 group/back z-10"
-        >
-          <ArrowLeft size={24} className="group-hover/back:-translate-x-1 transition-transform" />
-        </button>
-        <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 text-center px-12 line-clamp-1">
-          {evento.titulo}
-        </h1>
-        {canManageEvents && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => router.push(`/eventos/${params.id}/editar`)}
-              className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-primary transition-colors hover:border-primary/20"
-            >
-              <Pencil size={20} />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="p-3 bg-white border border-black/5 rounded-2xl text-neutral-400 hover:text-red-500 transition-colors hover:border-red-100"
-            >
-              <Trash2 size={20} />
-            </button>
-          </div>
-        )}
-      </header>
+      <PageHeader
+        title={evento.titulo}
+        back={{ onClick: () => router.back() }}
+        primaryAction={
+          canManageEvents
+            ? {
+                label: 'Editar',
+                icon: <Pencil size={20} />,
+                onClick: () => router.push(`/eventos/${params.id}/editar`),
+              }
+            : undefined
+        }
+        secondaryAction={
+          canManageEvents
+            ? {
+                label: 'Eliminar',
+                icon: <Trash2 size={20} />,
+                onClick: handleDelete,
+                variant: 'destructive',
+              }
+            : undefined
+        }
+      />
 
       {/* Info Central Reverted to clean style */}
       <div
@@ -317,15 +317,16 @@ export default function DetalleEvento() {
               : 'bg-orange-100/60 border-orange-200'
         )}
       >
-        <div
-          className={cn(
-            'inline-flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border mb-2 shadow-sm',
+        <Badge
+          variant={
             evento.estado === 'en-curso'
-              ? 'bg-emerald-200/80 border-emerald-300 text-emerald-900'
+              ? 'en-curso'
               : evento.estado === 'finalizado'
-                ? 'bg-red-200/80 border-red-300 text-red-900'
-                : 'bg-orange-200/80 border-orange-300 text-orange-900'
-          )}
+                ? 'finalizado'
+                : 'pendiente'
+          }
+          size="md"
+          className="px-6 py-2 mb-2 shadow-sm"
         >
           {evento.estado === 'en-curso' ? (
             <Activity size={14} className="animate-pulse" />
@@ -335,7 +336,7 @@ export default function DetalleEvento() {
             <Timer size={14} />
           )}
           {evento.estado.replace('-', ' ')}
-        </div>
+        </Badge>
         <h2 className="text-4xl font-black text-neutral-900 uppercase tracking-tighter px-6">
           {evento.titulo}
         </h2>

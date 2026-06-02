@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ChevronLeft, CheckCircle2, XCircle, FileText, MoreVertical, Clock } from 'lucide-react';
+import { CheckCircle2, XCircle, FileText, MoreVertical, Clock } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 interface Costalero {
   id: string;
@@ -19,6 +21,7 @@ interface Costalero {
 export default function PendientesPage() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const [evento, setEvento] = useState<any>(null);
   const [pendientes, setPendientes] = useState<Costalero[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,7 +98,7 @@ export default function PendientesPage() {
 
       if (error) {
         console.error('Error updating:', error);
-        alert('Error: ' + error.message);
+        toast.error('Error: ' + error.message);
         window.location.reload();
       }
     }
@@ -104,29 +107,14 @@ export default function PendientesPage() {
   if (loading && !pendientes.length)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors z-10"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center">
-          <h1 className="text-xl font-black uppercase tracking-tighter text-neutral-900">
-            Pendientes
-          </h1>
-          <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">
-            {pendientes.length} por llegar
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Pendientes" subtitle={`${pendientes.length} por llegar`} back />
 
       <div className="space-y-3">
         {pendientes.length === 0 ? (

@@ -2,25 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import {
-  ChevronLeft,
-  ArrowLeft,
-  Calendar,
-  Clock,
-  Type,
-  MapPin,
-  AlignLeft,
-  Check,
-  Save,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Type, MapPin, AlignLeft, Check, Save } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 export default function EditarEvento() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -95,13 +89,13 @@ export default function EditarEvento() {
         .eq('id', params.id);
 
       if (error) {
-        alert(`Error al actualizar el evento: ${error.message}`);
+        toast.error(`Error al actualizar el evento: ${error.message}`);
         return;
       }
 
       router.push(`/eventos/${params.id}`);
     } catch (err: any) {
-      alert(`Error inesperado: ${err.message}`);
+      toast.error(`Error inesperado: ${err.message}`);
     } finally {
       setSaving(false);
     }
@@ -110,29 +104,14 @@ export default function EditarEvento() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">
-            Editar Evento
-          </h1>
-          <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
-            Modificar Convocatoria
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Editar Evento" subtitle="Modificar Convocatoria" back />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Título y Tipo */}
