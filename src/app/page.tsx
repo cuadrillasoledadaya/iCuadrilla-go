@@ -22,11 +22,6 @@ export default async function Home() {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Permitimos que el usuario vea la bienvenida siempre
-  // if (session) {
-  //     redirect("/dashboard");
-  // }
-
   return (
     <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden animate-in fade-in duration-[2000ms] ease-in-out">
       {/* Background Effects */}

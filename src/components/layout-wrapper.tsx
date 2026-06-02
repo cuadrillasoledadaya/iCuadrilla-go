@@ -9,19 +9,27 @@ import { cn } from '@/lib/utils';
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { isSidebarOpen, setSidebarOpen } = useLayout();
   const pathname = usePathname();
-  const showNavbar =
-    pathname !== '/' &&
-    pathname !== '/login' &&
-    pathname !== '/registro' &&
-    !pathname.includes('/relevos');
+  const isAuthPage =
+    pathname === '/' ||
+    pathname === '/login' ||
+    pathname === '/registro' ||
+    pathname === '/nueva-contrasena' ||
+    pathname === '/recuperar';
+  const isRelevos = pathname.includes('/relevos');
+  const showNavbar = !isAuthPage && !isRelevos;
+  const showSidebar = !isAuthPage;
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {showSidebar && (
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+      )}
 
-      <main className={cn('min-h-screen lg:pl-64', showNavbar && 'pb-20')}>{children}</main>
+      <main className={cn('min-h-screen', showSidebar && 'lg:pl-64', showNavbar && 'pb-20')}>
+        {children}
+      </main>
 
-      <Navbar />
+      {showNavbar && <Navbar />}
     </div>
   );
 }

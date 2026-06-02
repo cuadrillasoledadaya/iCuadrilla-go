@@ -21,11 +21,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useCuadrilla, type Costalero } from '@/hooks/useCuadrilla';
 import { getDisplayName } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function CuadrillaList() {
   const router = useRouter();
@@ -41,29 +43,17 @@ export default function CuadrillaList() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
-      {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors z-10"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black tracking-tighter uppercase text-neutral-900 italic">
-            La Cuadrilla
-          </h1>
-          <p className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">
-            Listado de Hermanos Costaleros
-          </p>
-        </div>
-        <div className="absolute right-0">
+      <PageHeader
+        title="La Cuadrilla"
+        subtitle="Listado de Hermanos Costaleros"
+        back
+        rightSlot={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center justify-center">
@@ -96,8 +86,8 @@ export default function CuadrillaList() {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </header>
+        }
+      />
 
       {/* Búsqueda y Filtros */}
       <div className="flex gap-3">
@@ -169,12 +159,7 @@ export default function CuadrillaList() {
         })}
 
         {filtered.length === 0 && (
-          <div className="text-center py-12 space-y-4">
-            <div className="h-20 w-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto text-neutral-300">
-              <Users size={40} />
-            </div>
-            <p className="text-neutral-400 font-medium italic">No se encontraron costaleros</p>
-          </div>
+          <EmptyState icon={Users} title="No se encontraron costaleros" />
         )}
       </div>
 

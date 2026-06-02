@@ -29,7 +29,7 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed bottom-6 left-1/2 -translate-x-1/2 w-[94%] max-w-md h-20 z-[100] glass-card rounded-[2.5rem] px-2 shadow-[0_12px_40px_rgba(0,0,0,0.15)] border border-white/50 transition-all duration-300 ease-in-out',
+        'fixed bottom-6 left-1/2 -translate-x-1/2 w-[94%] max-w-md h-20 z-[100] glass-card rounded-[2.5rem] px-2 shadow-[0_12px_40px_rgba(0,0,0,0.15)] border border-white/50 transition-all duration-300 ease-in-out lg:hidden',
         isSidebarOpen ? 'translate-y-[200%] opacity-0' : 'translate-y-0 opacity-100'
       )}
     >

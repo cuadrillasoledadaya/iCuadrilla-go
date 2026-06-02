@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface Movimiento {
   id: string;
@@ -69,7 +71,7 @@ export default function MovimientosCuadrilla() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#16a34a]"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -95,12 +97,7 @@ export default function MovimientosCuadrilla() {
 
       <main className="px-6 space-y-6">
         {movimientos.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-[32px] border border-black/5 space-y-4 shadow-sm">
-            <History size={48} className="mx-auto text-neutral-100" />
-            <p className="text-neutral-400 font-bold uppercase tracking-widest text-xs">
-              No hay movimientos registrados
-            </p>
-          </div>
+          <EmptyState icon={History} title="No hay movimientos registrados" />
         ) : (
           <div className="space-y-4">
             {movimientos.map((m) => (

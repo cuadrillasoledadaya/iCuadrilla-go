@@ -8,7 +8,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // 0. Rate limiting por IP
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const ip =
+    request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
   const { success } = await rateLimit(ip);
   if (!success) {
     return NextResponse.json(

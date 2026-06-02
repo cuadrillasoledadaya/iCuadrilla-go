@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { QRCodeSVG } from 'qrcode.react';
 import { useParams, useRouter } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
 
 interface Costalero {
   id: string;
@@ -53,7 +54,7 @@ export default function FichaCostalero() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-neutral-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 

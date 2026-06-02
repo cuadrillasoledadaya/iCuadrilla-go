@@ -122,7 +122,7 @@ export default function RegistroPage() {
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-2xl font-serif text-white tracking-wide">
+            <h1 className="text-2xl italic text-white tracking-wide">
               Hermandad de la
               <br />
               Soledad

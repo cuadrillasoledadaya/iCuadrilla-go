@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ChevronLeft, CheckCircle2, XCircle, FileText, Trash2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, FileText, Trash2, AlertCircle } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { saveToCache, getFromCache, addToSyncQueue } from '@/lib/offline-utils';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
 
 interface Costalero {
   id: string;
@@ -160,7 +162,7 @@ export default function TrabajaderasAsistencia() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -213,17 +215,7 @@ export default function TrabajaderasAsistencia() {
       `}</style>
 
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900 line-clamp-1">
-          Trabajaderas
-        </h1>
-      </header>
+      <PageHeader title="Trabajaderas" back />
 
       {/* Secciones por Trabajadera */}
       <div className="space-y-12">

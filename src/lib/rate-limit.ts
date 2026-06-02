@@ -4,9 +4,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 100; // requests
 const WINDOW_MS = 60000; // 1 minute
 
-export async function rateLimit(
-  identifier: string
-): Promise<{ success: boolean }> {
+export async function rateLimit(identifier: string): Promise<{ success: boolean }> {
   const now = Date.now();
   const record = rateLimitMap.get(identifier);
 

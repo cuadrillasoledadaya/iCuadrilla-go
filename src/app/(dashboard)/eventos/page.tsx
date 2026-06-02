@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
-  ChevronLeft,
   Search,
   Calendar,
   Clock,
@@ -19,6 +18,10 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useEventos, type Evento } from '@/hooks/useEventos';
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
+import { EmptyState } from '@/components/ui/empty-state';
 
 /**
  * Sort eventos: finalized at the bottom, rest by fecha_inicio ascending.
@@ -78,11 +81,11 @@ export default function AgendaEventos() {
   const getStatusStyle = (estado: string) => {
     switch (estado) {
       case 'en-curso':
-        return 'bg-emerald-200/80 border-emerald-300 text-emerald-900';
+        return 'en-curso';
       case 'finalizado':
-        return 'bg-red-200/80 border-red-300 text-red-900';
+        return 'finalizado';
       default:
-        return 'bg-orange-200/80 border-orange-300 text-orange-900';
+        return 'pendiente';
     }
   };
 
@@ -150,28 +153,17 @@ export default function AgendaEventos() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black tracking-tight uppercase text-neutral-900">
-            Agenda de Eventos
-          </h1>
-          <p className="text-neutral-500 font-bold italic text-[10px] tracking-widest uppercase">
-            Temporada {activeSeasonName || '...'}
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        title="Agenda de Eventos"
+        subtitle={`Temporada ${activeSeasonName || '...'}`}
+        back
+      />
 
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
@@ -185,10 +177,7 @@ export default function AgendaEventos() {
 
       <div className="grid gap-4">
         {filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-[32px] border border-black/5 shadow-sm">
-            <Calendar className="mx-auto text-neutral-200 mb-4" size={48} />
-            <p className="text-neutral-400 font-bold">No hay eventos programados</p>
-          </div>
+          <EmptyState icon={Calendar} title="No hay eventos programados" />
         ) : (
           filtered.map((e) => (
             <div
@@ -203,15 +192,10 @@ export default function AgendaEventos() {
                 <h3 className="text-xl font-black text-neutral-900 group-hover:text-primary transition-colors uppercase tracking-tight">
                   {e.titulo}
                 </h3>
-                <span
-                  className={cn(
-                    'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border flex items-center gap-1.5',
-                    getStatusStyle(e.estado)
-                  )}
-                >
+                <Badge variant={getStatusStyle(e.estado) as any} size="sm">
                   {getStatusIcon(e.estado)}
                   {getStatusLabel(e.estado)}
-                </span>
+                </Badge>
               </div>
 
               <div className="space-y-4">

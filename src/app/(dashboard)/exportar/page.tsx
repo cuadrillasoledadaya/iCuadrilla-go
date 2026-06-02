@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { FileDown, Table, Users, BarChart3, ChevronLeft, QrCode } from 'lucide-react';
+import { FileDown, Table, Users, BarChart3, QrCode } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import QRCodeLib from 'qrcode';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
 
 interface Costalero {
   id: string;
@@ -574,31 +575,18 @@ export default function ExportarDatos() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">
-            Exportar Datos
-          </h1>
-          {temporadaActiva && (
-            <p className="text-[10px] text-primary font-black uppercase tracking-widest">
-              Temporada {temporadaActiva}
-            </p>
-          )}
-        </div>
-      </header>
+      <PageHeader
+        title="Exportar Datos"
+        subtitle={temporadaActiva ? `Temporada ${temporadaActiva}` : undefined}
+        back
+      />
 
       {/* Costaleros Section */}
       <section className="space-y-4">

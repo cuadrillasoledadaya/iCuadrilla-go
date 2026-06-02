@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Lock, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function NuevaContrasenaPage() {
   const router = useRouter();
@@ -91,7 +92,7 @@ export default function NuevaContrasenaPage() {
   if (!sessionReady && !error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-white"></div>
+        <Spinner size="lg" color="white" />
       </div>
     );
   }

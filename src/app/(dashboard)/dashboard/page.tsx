@@ -2,12 +2,17 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Menu, Bell, Calendar, Users, CheckCircle2, Clock, ChevronRight } from 'lucide-react';
+import { Bell, Calendar, Users, CheckCircle2, Clock, ChevronRight } from 'lucide-react';
 import { useLayout } from '@/components/layout-context';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { saveToCache, getFromCache } from '@/lib/offline-utils';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SectionHeader } from '@/components/ui/section-header';
 
 interface Stats {
   totalCostaleros: number;
@@ -22,6 +27,7 @@ interface Stats {
 export default function DashboardPage() {
   const router = useRouter();
   const { setSidebarOpen } = useLayout();
+  const isDesktop = useIsDesktop();
   const {
     isCostalero,
     isAdmin,
@@ -302,57 +308,10 @@ export default function DashboardPage() {
 
   // ... (rest of render logic remains until "Avisos Recientes" section)
 
-  {
-    /* Avisos Recientes */
-  }
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">
-        Avisos Recientes
-      </h2>
-      {avisos.length > 0 && (
-        <a href="/anuncios" className="text-[10px] font-bold text-primary hover:underline">
-          VER TODO
-        </a>
-      )}
-    </div>
-
-    {avisos.length > 0 ? (
-      <div className="space-y-3">
-        {avisos.map((aviso) => (
-          <div
-            key={aviso.id}
-            className="bg-white p-5 rounded-[24px] border border-black/5 shadow-sm space-y-2"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-neutral-100 rounded-full text-neutral-500">
-                <Bell size={16} />
-              </div>
-              <h3 className="font-bold text-neutral-900 text-sm">{aviso.titulo}</h3>
-            </div>
-            <p className="text-xs text-neutral-500 line-clamp-2 pl-11">{aviso.contenido}</p>
-            <p className="text-[9px] text-neutral-400 pl-11 font-bold uppercase tracking-wider">
-              {new Date(aviso.created_at).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
-        <div className="p-4 rounded-full bg-primary/5 text-primary/20">
-          <Bell size={32} />
-        </div>
-        <p className="text-neutral-400 font-bold text-xs italic uppercase tracking-wider">
-          Tablón de anuncios vacío
-        </p>
-      </div>
-    )}
-  </div>;
-
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -361,17 +320,10 @@ export default function DashboardPage() {
       {/* Header */}
       {/* Header */}
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
-        >
-          <Menu size={24} />
-        </button>
-
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Hola {userName}</h1>
-          <div className="flex items-center justify-center gap-2">
+      <PageHeader
+        title={`Hola ${userName}`}
+        subtitle={
+          <span className="flex items-center justify-center gap-2">
             <span className="text-[10px] font-black text-primary uppercase tracking-widest">
               {isMaster
                 ? 'SUPERADMIN'
@@ -389,30 +341,30 @@ export default function DashboardPage() {
             <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
               Temporada {activeSeasonName || '...'}
             </span>
-          </div>
-        </div>
-
-        <button
-          onClick={() => router.push('/notificaciones')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
-        >
-          <Bell size={24} />
-          {unreadCount > 0 && (
-            <span className="absolute top-3 right-3 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-white">
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
-        </button>
-      </header>
+          </span>
+        }
+        back={isDesktop ? undefined : { onClick: () => setSidebarOpen(true) }}
+        rightSlot={
+          <button
+            onClick={() => router.push('/notificaciones')}
+            className="relative p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-600 hover:bg-neutral-50 transition-colors"
+          >
+            <Bell size={24} />
+            {unreadCount > 0 && (
+              <span className="absolute top-3 right-3 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+        }
+      />
 
       {/* Próximos Eventos (Carrusel) */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Calendar size={18} className="text-neutral-400" />
-          <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">
-            PRÓXIMOS EVENTOS
-          </h2>
-        </div>
+        <SectionHeader
+          icon={<Calendar size={18} />}
+          title="Próximos eventos"
+        />
 
         {proximosEventos.length > 0 ? (
           <div className="space-y-4">
@@ -485,29 +437,17 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white p-10 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-3 min-h-[140px]">
-            <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center text-neutral-300">
-              <Calendar size={24} />
-            </div>
-            <p className="text-neutral-400 font-bold italic text-sm">
-              No hay eventos próximos programados
-            </p>
-          </div>
+          <EmptyState icon={Calendar} title="No hay eventos próximos programados" />
         )}
       </div>
 
       {/* Avisos Recientes */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">
-            Avisos Recientes
-          </h2>
-          {avisos.length > 0 && (
-            <a href="/anuncios" className="text-[10px] font-bold text-primary hover:underline">
-              VER TODO
-            </a>
-          )}
-        </div>
+        <SectionHeader
+          icon={<Bell size={18} />}
+          title="Avisos recientes"
+          action={avisos.length > 0 ? { label: 'VER TODO', href: '/anuncios' } : undefined}
+        />
 
         {avisos.length > 0 ? (
           <div className="space-y-4">
@@ -554,22 +494,13 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white/50 p-8 rounded-[32px] border border-black/5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-4 rounded-full bg-primary/5 text-primary/20">
-              <Bell size={32} />
-            </div>
-            <p className="text-neutral-400 font-bold text-xs italic uppercase tracking-wider">
-              Tablón de anuncios vacío
-            </p>
-          </div>
+          <EmptyState icon={Bell} title="Tablón de anuncios vacío" variant="muted" />
         )}
       </div>
 
       {/* Estadísticas */}
       <div className="space-y-4">
-        <h2 className="text-sm font-black text-neutral-400 uppercase tracking-widest">
-          Estadísticas
-        </h2>
+        <SectionHeader title="Estadísticas" />
         <div className="grid grid-cols-2 gap-4">
           {/* Eventos Card */}
           <div className="bg-amber-50/50 p-7 rounded-[40px] border border-amber-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">

@@ -3,7 +3,6 @@
 import { useEffect, useState, Suspense } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
-  ChevronLeft,
   LayoutGrid,
   Activity,
   Timer,
@@ -17,6 +16,8 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
+import { Spinner } from '@/components/ui/spinner';
+import { PageHeader } from '@/components/ui/page-header';
 
 interface CostaleroInfo {
   id: string;
@@ -158,7 +159,7 @@ function EstadisticasContent() {
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
 
@@ -190,17 +191,7 @@ function EstadisticasContent() {
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       {/* Header */}
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 z-10"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className="text-xl font-black uppercase tracking-tight text-neutral-900 text-center px-12">
-          Estadísticas Detalladas
-        </h1>
-      </header>
+      <PageHeader title="Estadísticas Detalladas" back />
 
       {/* Global Summary Card */}
       <div className="p-8 rounded-[40px] bg-white border border-black/5 shadow-xl space-y-6 relative overflow-hidden">
@@ -384,7 +375,7 @@ export default function EstadisticasEvento() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-background">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+          <Spinner size="lg" />
         </div>
       }
     >

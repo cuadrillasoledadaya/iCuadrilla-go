@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { FileDown, Table, Users, BarChart3, ChevronLeft } from 'lucide-react';
+import { FileDown, Table, Users, BarChart3 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { PageHeader } from '@/components/ui/page-header';
 
 export default function EstadisticasExport() {
   const [data, setData] = useState<any[]>([]);
@@ -58,20 +59,7 @@ export default function EstadisticasExport() {
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <button
-          onClick={() => router.back()}
-          className="absolute left-0 p-3 bg-neutral-900 shadow-sm border border-neutral-800 rounded-2xl text-neutral-400 hover:text-white transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-white">Estadísticas</h1>
-          <p className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">
-            Exportación de Datos
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Estadísticas" subtitle="Exportación de Datos" back />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-neutral-900 p-6 rounded-xl border border-neutral-800 flex flex-col items-center justify-center space-y-4">

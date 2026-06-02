@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { CheckCircle2, UserPlus, X, ExternalLink, ArrowRight, ChevronLeft } from 'lucide-react';
+import { CheckCircle2, UserPlus, X, ExternalLink, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { PuestoSelect } from '@/components/ui/puesto-select';
+import { PageHeader } from '@/components/ui/page-header';
 
 const formSchema = z
   .object({
@@ -113,22 +114,7 @@ export default function AltaCostalero() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8 bg-background min-h-screen pb-32">
-      <header className="relative flex items-center justify-center min-h-[64px]">
-        <Link
-          href="/cuadrilla"
-          className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-all active:scale-95 z-10"
-        >
-          <ChevronLeft size={24} />
-        </Link>
-        <div className="text-center space-y-0.5">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-neutral-900">
-            Alta de Costalero
-          </h1>
-          <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">
-            Nuevo Expediente
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Alta de Costalero" subtitle="Nuevo Expediente" back={{ href: '/cuadrilla' }} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
