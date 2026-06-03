@@ -1,5 +1,14 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.12 (03/06/2026) - Mobile Menu + Silent Errors Audit
+
+- **Hamburger menu en navbar mobile**: botón "Menú" en la navbar inferior (5to item) que abre/cierra el sidebar drawer en mobile
+- **Toast en errores silenciosos (6 casos)**: `console.error` que antes se tragaban sin mostrar nada al usuario ahora muestran `toast.error`:
+  - `repertorio`: fetch inicial, fetch repertorios, error de storage al borrar
+  - `temporadas`: error clonando perfil de trabajaderas
+  - `eventos/[id]/relevos`: error al cargar datos de cuadrilla
+  - `costaleros/nuevo`: error al registrar movimiento de alta
+
 ## v1.6.11 (02/06/2026) - Error States + Alert/Confirm Migration
 
 - **ErrorState en fetch silenciosos (3 archivos)**: try/catch mudos que solo hacían `console.error` ahora muestran `<ErrorState onRetry={fetchData} />` con mensaje específico:
