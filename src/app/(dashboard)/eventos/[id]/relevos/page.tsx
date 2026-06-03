@@ -143,6 +143,7 @@ export default function GestionRelevos() {
       setCuadrilla(formattedCuadrilla);
     } catch (e) {
       console.error(e);
+      toast.error('Error al cargar los datos de la cuadrilla');
     } finally {
       setLoading(false);
     }

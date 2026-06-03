@@ -75,6 +75,7 @@ export default function RepertorioPage() {
       await fetchRepertorios();
     } catch (e) {
       console.error('Error fetching initial data:', e);
+      toast.error('Error al cargar los datos iniciales');
     } finally {
       setLoading(false);
     }
@@ -89,6 +90,7 @@ export default function RepertorioPage() {
       if (data) setRepertorios(data);
     } catch (e) {
       console.error('Error fetching repertoires:', e);
+      toast.error('Error al cargar el repertorio');
     }
   };
 
@@ -148,7 +150,10 @@ export default function RepertorioPage() {
         .from('repertorios')
         .remove([rep.archivo_path]);
 
-      if (storageError) console.error('Could not delete from storage:', storageError);
+      if (storageError) {
+        console.error('Could not delete from storage:', storageError);
+        toast.error('Error al borrar el archivo del almacenamiento');
+      }
 
       // Delete from DB
       const { error: dbError } = await supabase.from('repertorios').delete().eq('id', rep.id);

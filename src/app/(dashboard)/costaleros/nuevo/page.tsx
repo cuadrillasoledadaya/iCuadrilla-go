@@ -12,6 +12,7 @@ import { CheckCircle2, UserPlus, X, ExternalLink, ArrowRight } from 'lucide-reac
 import Link from 'next/link';
 import { PuestoSelect } from '@/components/ui/puesto-select';
 import { PageHeader } from '@/components/ui/page-header';
+import { useToast } from '@/components/ui/toast';
 
 const formSchema = z
   .object({
@@ -33,6 +34,7 @@ const formSchema = z
   });
 
 export default function AltaCostalero() {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [qrValue, setQrValue] = useState<string | null>(null);
   const [message, setMessage] = useState('');
@@ -99,7 +101,10 @@ export default function AltaCostalero() {
         },
       ]);
 
-      if (moveError) console.error('Error al registrar movimiento:', moveError);
+      if (moveError) {
+        console.error('Error al registrar movimiento:', moveError);
+        toast.error('Error al registrar el movimiento de alta');
+      }
 
       setQrValue(qrCode);
       setNewCostaleroName(`${values.nombre} ${values.apellidos}`);

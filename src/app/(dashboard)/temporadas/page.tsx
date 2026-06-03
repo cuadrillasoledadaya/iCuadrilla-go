@@ -98,7 +98,10 @@ export default function GestionTemporadas() {
             .from('perfil_trabajaderas')
             .insert(newProfileRows);
 
-          if (cloneError) console.error('Error clonando perfil:', cloneError);
+          if (cloneError) {
+            console.error('Error clonando perfil:', cloneError);
+            toast.error('Error al clonar el perfil de trabajaderas');
+          }
         }
       }
 

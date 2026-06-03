@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Home, QrCode, Users, Repeat, Bell, BarChart, Calendar } from 'lucide-react';
+import { Home, QrCode, Users, Repeat, Bell, BarChart, Calendar, Menu } from 'lucide-react';
 import { useLayout } from './layout-context';
 
 const navItems = [
@@ -15,7 +15,7 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { isSidebarOpen } = useLayout();
+  const { isSidebarOpen, setSidebarOpen } = useLayout();
 
   // No mostrar navbar en landing, login, registro ni en la gestión de relevos
   if (
@@ -33,10 +33,9 @@ export function Navbar() {
         isSidebarOpen ? 'translate-y-[200%] opacity-0' : 'translate-y-0 opacity-100'
       )}
     >
-      <div className="grid grid-cols-4 h-full items-center">
+      <div className="grid grid-cols-5 h-full items-center">
         {navItems.map((item) => {
           const Icon = item.icon;
-          // El inicio se marca activo tanto en / como en /dashboard
           const isActive =
             item.href === '/dashboard'
               ? pathname === '/dashboard' || pathname === '/'
@@ -73,6 +72,35 @@ export function Navbar() {
             </Link>
           );
         })}
+
+        {/* Menu toggle — abre el sidebar drawer en mobile */}
+        <button
+          onClick={() => setSidebarOpen(!isSidebarOpen)}
+          className={cn(
+            'relative flex flex-col items-center justify-center h-full transition-all duration-300',
+            isSidebarOpen ? 'text-primary' : 'text-neutral-500 hover:text-black'
+          )}
+        >
+          {isSidebarOpen && (
+            <span className="absolute top-2 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.4)]" />
+          )}
+          <div
+            className={cn(
+              'p-2 rounded-2xl transition-all duration-300 flex items-center justify-center',
+              isSidebarOpen ? 'bg-primary/10 scale-110' : 'scale-100 opacity-70'
+            )}
+          >
+            <Menu size={22} strokeWidth={isSidebarOpen ? 2.5 : 2} />
+          </div>
+          <span
+            className={cn(
+              'text-[10px] font-bold mt-1 tracking-tight transition-all',
+              isSidebarOpen ? 'opacity-100 translate-y-0' : 'opacity-60 translate-y-0.5'
+            )}
+          >
+            {isSidebarOpen ? 'Cerrar' : 'Menú'}
+          </span>
+        </button>
       </div>
     </nav>
   );
