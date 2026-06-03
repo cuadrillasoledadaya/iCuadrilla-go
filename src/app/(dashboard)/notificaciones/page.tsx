@@ -407,6 +407,7 @@ export default function NotificacionesPage() {
                         e.stopPropagation();
                         setDeletingNotifId(notif.id);
                       }}
+                      aria-label="Eliminar notificación"
                       className="p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors ml-auto"
                     >
                       <Trash2 size={14} />

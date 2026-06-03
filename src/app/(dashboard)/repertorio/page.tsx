@@ -258,16 +258,18 @@ export default function RepertorioPage() {
 
                   <div className="flex items-center gap-2 ml-4">
                     <a
-                      href={getFileUrl(rep.archivo_path)}
+                      href={rep.archivo_path}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 bg-neutral-50 text-neutral-400 rounded-xl hover:bg-neutral-900 hover:text-white transition-all shadow-sm"
+                      aria-label="Abrir archivo"
+                      className="p-3 bg-white text-neutral-400 rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm border border-black/5"
                     >
                       <ExternalLink size={18} />
                     </a>
                     {(isAdmin || isMaster) && (
                       <button
                         onClick={() => handleDelete(rep)}
+                        aria-label="Eliminar repertorio"
                         className="p-3 bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm border border-red-100/50"
                       >
                         <Trash2 size={18} />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
   Pencil,
@@ -42,6 +42,18 @@ interface Evento {
   estado: string;
 }
 
+function calculateStatus(
+  inicio: string,
+  fin: string | null
+): 'pendiente' | 'en-curso' | 'finalizado' {
+  const now = new Date();
+  const start = new Date(inicio);
+  const end = fin ? new Date(fin) : new Date(start.getTime() + 3 * 60 * 60 * 1000);
+  if (now < start) return 'pendiente';
+  if (now >= start && now <= end) return 'en-curso';
+  return 'finalizado';
+}
+
 export default function DetalleEvento() {
   const params = useParams();
   const router = useRouter();
@@ -65,7 +77,7 @@ export default function DetalleEvento() {
   const [isNotificationRead, setIsNotificationRead] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const { data: eventData } = await supabase
       .from('eventos')
       .select('*')
@@ -101,23 +113,11 @@ export default function DetalleEvento() {
       setStats({ presentes, justificados, ausentes, pendientes, total: totalCostaleros });
     }
     setLoading(false);
-  };
+  }, [params.id]);
 
   useEffect(() => {
     fetchData();
-  }, [params.id]);
-
-  const calculateStatus = (
-    inicio: string,
-    fin: string | null
-  ): 'pendiente' | 'en-curso' | 'finalizado' => {
-    const now = new Date();
-    const start = new Date(inicio);
-    const end = fin ? new Date(fin) : new Date(start.getTime() + 3 * 60 * 60 * 1000);
-    if (now < start) return 'pendiente';
-    if (now >= start && now <= end) return 'en-curso';
-    return 'finalizado';
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     const fetchCostaleroInfo = async () => {

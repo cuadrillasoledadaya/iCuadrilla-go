@@ -1,5 +1,13 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.15 (03/06/2026) - Accesibilidad + Performance + Documentación
+
+- **Accesibilidad (10+ fixes)**: ARIA labels en icon-only buttons (modal, sidebar, password toggle, filter, back, delete, etc.), `role="alert"` en mensajes de feedback
+- **Background tab detection (L1)**: polling en estadisticas se pausa cuando la pestaña está oculta
+- **useCallback en fetchData (M4)**: `calculateStatus` movida a módulo, fetchData envuelta en useCallback en eventos/[id]
+- **AGENTS.md**: documentación de convenciones del proyecto para agentes IA
+- **PWA audit**: verificado que cache offline + sync queue están correctos
+
 ## v1.6.14 (03/06/2026) - React.memo on List Components
 
 - **CostaleroCard (cuadrilla)**: memoized con React.memo + useCallback para selección

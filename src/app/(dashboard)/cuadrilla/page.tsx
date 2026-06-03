@@ -137,7 +137,7 @@ export default function CuadrillaList() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <button className="p-4 bg-white border border-black/5 shadow-sm rounded-2xl text-neutral-400 hover:text-primary transition-colors">
+        <button aria-label="Filtrar" className="p-4 bg-white border border-black/5 shadow-sm rounded-2xl text-neutral-400 hover:text-primary transition-colors">
           <Filter size={24} />
         </button>
       </div>

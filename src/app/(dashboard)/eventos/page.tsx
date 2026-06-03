@@ -289,6 +289,7 @@ export default function AgendaEventos() {
       {canManageEvents && (
         <button
           onClick={() => router.push('/eventos/nuevo')}
+          aria-label="Nuevo Evento"
           className="fixed bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40"
         >
           <Plus size={32} strokeWidth={3} />

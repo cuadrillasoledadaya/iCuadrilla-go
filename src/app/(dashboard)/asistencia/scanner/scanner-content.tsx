@@ -197,6 +197,7 @@ export default function ScannerContent() {
       <header className="relative flex items-center justify-center min-h-[64px]">
         <button
           onClick={() => router.back()}
+          aria-label="Volver"
           className="absolute left-0 p-3 bg-white shadow-sm border border-black/5 rounded-2xl text-neutral-400 hover:text-neutral-900 transition-colors"
         >
           <ChevronLeft size={24} />

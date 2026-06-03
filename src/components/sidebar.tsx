@@ -211,6 +211,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="px-6 py-8 flex flex-col items-center text-center space-y-3 relative">
           <button
             onClick={onClose}
+            aria-label="Cerrar menú"
             className="absolute top-2 right-4 p-2 text-neutral-400 hover:text-neutral-900 transition-colors lg:hidden"
           >
             <X size={24} />

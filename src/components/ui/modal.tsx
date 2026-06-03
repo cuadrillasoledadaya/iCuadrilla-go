@@ -34,6 +34,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           <h3 className="text-xl font-black gold-gradient uppercase tracking-tight">{title}</h3>
           <button
             onClick={onClose}
+            aria-label="Cerrar"
             className="p-2 hover:bg-white/5 rounded-full text-neutral-500 hover:text-white transition-colors"
           >
             <X size={20} />

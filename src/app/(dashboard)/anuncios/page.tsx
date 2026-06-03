@@ -147,6 +147,7 @@ export default function TablonAnuncios() {
                 {canManageAnnouncements && (
                   <button
                     onClick={() => handleDelete(a.id)}
+                    aria-label="Eliminar anuncio"
                     className="p-2 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all active:scale-95"
                   >
                     <Trash2 size={18} />

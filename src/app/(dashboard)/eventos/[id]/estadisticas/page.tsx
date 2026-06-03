@@ -148,12 +148,34 @@ function EstadisticasContent() {
   useEffect(() => {
     fetchData();
 
-    // Auto-refresh cada 30 segundos
-    const interval = setInterval(() => {
-      fetchData();
-    }, 30000);
+    let interval: ReturnType<typeof setInterval>;
 
-    return () => clearInterval(interval);
+    const startPolling = () => {
+      interval = setInterval(() => {
+        fetchData();
+      }, 30000);
+    };
+
+    const stopPolling = () => {
+      clearInterval(interval);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        fetchData();
+        startPolling();
+      }
+    };
+
+    startPolling();
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, [params.id]);
 
   if (loading)
