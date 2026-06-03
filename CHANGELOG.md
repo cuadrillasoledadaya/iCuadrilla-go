@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.13 (03/06/2026) - Performance: Re-render Hotfixes
+
+- **page-header.tsx**: agregado `'use client'` faltante (usaba `useRouter` sin directive, funcionaba por herencia nomás)
+- **LayoutContext**: value memoizado con `useMemo` — evita re-renderizar toda el árbol cuando cambia `isSidebarOpen`
+- **eventos/page.tsx**: fix stale closure en status sync interval — usaba `eventos` del closure inicial en vez del valor actualizado
+
 ## v1.6.12 (03/06/2026) - Mobile Menu + Silent Errors Audit
 
 - **Hamburger menu en navbar mobile**: botón "Menú" en la navbar inferior (5to item) que abre/cierra el sidebar drawer en mobile

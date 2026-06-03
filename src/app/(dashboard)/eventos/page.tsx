@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
   Search,
@@ -65,6 +65,12 @@ export default function AgendaEventos() {
   // (below) updates this state in-place with live status recalculations.
   const [eventos, setEventos] = useState<Evento[]>([]);
 
+  // Ref to keep the interval closure fresh
+  const eventosRef = useRef(eventos);
+  useEffect(() => {
+    eventosRef.current = eventos;
+  }, [eventos]);
+
   // Sync raw hook data → sorted local state on initial load / refetch
   useEffect(() => {
     if (rawEventos) {
@@ -128,7 +134,8 @@ export default function AgendaEventos() {
     if (eventos.length === 0) return;
 
     const syncStatuses = async () => {
-      const updates = eventos.map(async (e) => {
+      const current = eventosRef.current;
+      const updates = current.map(async (e) => {
         const realStatus = calculateStatus(e.fecha_inicio, e.fecha_fin);
         if (realStatus !== e.estado) {
           await supabase.from('eventos').update({ estado: realStatus }).eq('id', e.id);
@@ -140,7 +147,7 @@ export default function AgendaEventos() {
       const updatedEventos = await Promise.all(updates);
       const sorted = sortEventos(updatedEventos);
 
-      if (JSON.stringify(sorted) !== JSON.stringify(eventos)) {
+      if (JSON.stringify(sorted) !== JSON.stringify(eventosRef.current)) {
         setEventos(sorted);
       }
     };

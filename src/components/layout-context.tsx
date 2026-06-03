@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 
 interface LayoutContextType {
   isSidebarOpen: boolean;
@@ -12,8 +12,13 @@ const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const value = useMemo(
+    () => ({ isSidebarOpen, setSidebarOpen: setIsSidebarOpen }),
+    [isSidebarOpen]
+  );
+
   return (
-    <LayoutContext.Provider value={{ isSidebarOpen, setSidebarOpen: setIsSidebarOpen }}>
+    <LayoutContext.Provider value={value}>
       {children}
     </LayoutContext.Provider>
   );
