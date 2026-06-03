@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
   ChevronLeft,
@@ -48,6 +48,78 @@ interface Muda {
   nombre: string;
   orden: number;
 }
+
+const CandidateItem = memo(function CandidateItem({
+  costalero,
+  onAssign,
+}: {
+  costalero: Costalero;
+  onAssign: (id: string) => void;
+}) {
+  return (
+    <button
+      onClick={() => onAssign(costalero.id)}
+      className={cn(
+        'w-full p-4 bg-neutral-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-primary/20 rounded-2xl flex items-center justify-between group transition-all',
+        getAsistenciaBorderColor(costalero.estadoAsistencia)
+      )}
+    >
+      <div className="text-left">
+        <p className="font-extrabold text-neutral-900 group-hover:text-primary">
+          {getDisplayName(costalero)}
+        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">
+            T-{costalero.trabajadera} • {costalero.puesto}
+          </p>
+          <Badge variant={getAsistenciaVariant(costalero.estadoAsistencia)} size="sm">
+            {getAsistenciaLabel(costalero.estadoAsistencia)}
+          </Badge>
+        </div>
+      </div>
+      <UserPlus size={18} className="text-neutral-900 group-hover:text-primary" />
+    </button>
+  );
+});
+
+function getAsistenciaBorderColor(estado: string) {
+  switch (estado) {
+    case 'presente':
+      return 'border-l-4 border-l-emerald-500';
+    case 'ausente':
+      return 'border-l-4 border-l-red-500';
+    case 'justificado':
+      return 'border-l-4 border-l-amber-500';
+    default:
+      return 'border-l-4 border-l-neutral-300';
+  }
+}
+
+const getAsistenciaVariant = (estado: string) => {
+  switch (estado) {
+    case 'presente':
+      return 'presente' as const;
+    case 'ausente':
+      return 'ausente' as const;
+    case 'justificado':
+      return 'justificado' as const;
+    default:
+      return 'neutral' as const;
+  }
+};
+
+const getAsistenciaLabel = (estado: string) => {
+  switch (estado) {
+    case 'presente':
+      return 'PRESENTE';
+    case 'ausente':
+      return 'AUSENTE';
+    case 'justificado':
+      return 'JUSTIFICADO';
+    default:
+      return 'PENDIENTE';
+  }
+};
 
 export default function GestionRelevos() {
   const params = useParams();
@@ -381,46 +453,6 @@ export default function GestionRelevos() {
       // Luego por apellidos
       return a.apellidos.localeCompare(b.apellidos);
     });
-
-  // Función para obtener el color del borde según estado de asistencia
-  const getAsistenciaBorderColor = (estado: string) => {
-    switch (estado) {
-      case 'presente':
-        return 'border-l-4 border-l-emerald-500';
-      case 'ausente':
-        return 'border-l-4 border-l-red-500';
-      case 'justificado':
-        return 'border-l-4 border-l-amber-500';
-      default:
-        return 'border-l-4 border-l-neutral-300';
-    }
-  };
-
-  const getAsistenciaVariant = (estado: string) => {
-    switch (estado) {
-      case 'presente':
-        return 'presente' as const;
-      case 'ausente':
-        return 'ausente' as const;
-      case 'justificado':
-        return 'justificado' as const;
-      default:
-        return 'neutral' as const;
-    }
-  };
-
-  const getAsistenciaLabel = (estado: string) => {
-    switch (estado) {
-      case 'presente':
-        return 'PRESENTE';
-      case 'ausente':
-        return 'AUSENTE';
-      case 'justificado':
-        return 'JUSTIFICADO';
-      default:
-        return 'PENDIENTE';
-    }
-  };
 
   if (loading && relevos.length === 0)
     return (
@@ -778,33 +810,9 @@ export default function GestionRelevos() {
                     No hay costaleros libres
                   </div>
                 ) : (
-                  filteredCandidates.map((c) => {
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => assignCostalero(c.id)}
-                        className={cn(
-                          'w-full p-4 bg-neutral-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-primary/20 rounded-2xl flex items-center justify-between group transition-all',
-                          getAsistenciaBorderColor(c.estadoAsistencia)
-                        )}
-                      >
-                        <div className="text-left">
-                          <p className="font-extrabold text-neutral-900 group-hover:text-primary">
-                            {getDisplayName(c)}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <p className="text-[9px] font-black text-neutral-900 uppercase tracking-widest">
-                              T-{c.trabajadera} • {c.puesto}
-                            </p>
-                            <Badge variant={getAsistenciaVariant(c.estadoAsistencia)} size="sm">
-                              {getAsistenciaLabel(c.estadoAsistencia)}
-                            </Badge>
-                          </div>
-                        </div>
-                        <UserPlus size={18} className="text-neutral-900 group-hover:text-primary" />
-                      </button>
-                    );
-                  })
+                  filteredCandidates.map((c) => (
+                    <CandidateItem key={c.id} costalero={c} onAssign={assignCostalero} />
+                  ))
                 )}
               </div>
             </div>

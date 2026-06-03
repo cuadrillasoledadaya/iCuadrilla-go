@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { CheckCircle2, XCircle, FileText, Trash2, AlertCircle } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -22,6 +22,71 @@ interface Costalero {
   suplemento?: number;
 }
 
+const CostaleroSlot = memo(function CostaleroSlot({
+  member,
+  onSelect,
+}: {
+  member: Costalero;
+  onSelect: (m: Costalero) => void;
+}) {
+  return (
+    <button
+      onClick={() => onSelect(member)}
+      className={cn(
+        'w-full bg-white p-5 rounded-[24px] flex justify-between items-center transition-all border shadow-sm active:scale-[0.98] relative overflow-hidden',
+        member.estado === 'presente'
+          ? 'border-emerald-500/20 shadow-emerald-500/5'
+          : !member.estado
+            ? 'pending-card'
+            : 'border-black/5'
+      )}
+    >
+      {!member.estado && (
+        <div className="absolute top-3.5 right-3.5 alert-dot">
+          <div className="bg-neutral-900 w-2.5 h-2.5 rounded-full shadow-lg shadow-black/20" />
+        </div>
+      )}
+      <div className="space-y-3 text-left">
+        <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">
+          {member.nombre} {member.apellidos}
+        </h3>
+
+        <div
+          className={cn(
+            'inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest',
+            member.estado === 'presente' && 'bg-emerald-50 text-emerald-600 border-emerald-100',
+            (member.estado === 'justificado' || member.estado === 'justificada') &&
+              'bg-amber-50 text-amber-600 border-amber-100',
+            member.estado === 'ausente' && 'bg-red-50 text-red-600 border-red-100',
+            !member.estado && 'bg-neutral-900 text-white border-black pending-badge shadow-lg'
+          )}
+        >
+          {member.estado === 'presente' && <CheckCircle2 size={10} />}
+          {(member.estado === 'justificado' || member.estado === 'justificada') && (
+            <FileText size={10} />
+          )}
+          {member.estado === 'ausente' && <XCircle size={10} />}
+          {!member.estado && <AlertCircle size={10} className="animate-bounce" />}
+          {member.estado || 'PENDIENTE REGISTRO'}
+        </div>
+      </div>
+
+      <div className="text-right flex flex-col items-end gap-1">
+        {member.hora && (
+          <span className="text-[10px] font-bold text-neutral-300 font-mono italic">
+            {member.hora}
+          </span>
+        )}
+        {member.suplemento && (
+          <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-black uppercase rounded-md border border-purple-200 shadow-sm">
+            {member.suplemento} cm
+          </span>
+        )}
+      </div>
+    </button>
+  );
+});
+
 export default function TrabajaderasAsistencia() {
   const params = useParams();
   const router = useRouter();
@@ -29,6 +94,10 @@ export default function TrabajaderasAsistencia() {
   const [cuadrilla, setCuadrilla] = useState<Costalero[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCostalero, setSelectedCostalero] = useState<Costalero | null>(null);
+
+  const handleSelectCostalero = useCallback((m: Costalero) => {
+    setSelectedCostalero(m);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -243,63 +312,7 @@ export default function TrabajaderasAsistencia() {
 
               <div className="space-y-3">
                 {members.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => setSelectedCostalero(m)}
-                    className={cn(
-                      'w-full bg-white p-5 rounded-[24px] flex justify-between items-center transition-all border shadow-sm active:scale-[0.98] relative overflow-hidden',
-                      m.estado === 'presente'
-                        ? 'border-emerald-500/20 shadow-emerald-500/5'
-                        : !m.estado
-                          ? 'pending-card'
-                          : 'border-black/5'
-                    )}
-                  >
-                    {!m.estado && (
-                      <div className="absolute top-3.5 right-3.5 alert-dot">
-                        <div className="bg-neutral-900 w-2.5 h-2.5 rounded-full shadow-lg shadow-black/20" />
-                      </div>
-                    )}
-                    <div className="space-y-3 text-left">
-                      <h3 className="font-extrabold text-neutral-900 text-lg tracking-tight italic">
-                        {m.nombre} {m.apellidos}
-                      </h3>
-
-                      <div
-                        className={cn(
-                          'inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest',
-                          m.estado === 'presente' &&
-                            'bg-emerald-50 text-emerald-600 border-emerald-100',
-                          (m.estado === 'justificado' || m.estado === 'justificada') &&
-                            'bg-amber-50 text-amber-600 border-amber-100',
-                          m.estado === 'ausente' && 'bg-red-50 text-red-600 border-red-100',
-                          !m.estado &&
-                            'bg-neutral-900 text-white border-black pending-badge shadow-lg'
-                        )}
-                      >
-                        {m.estado === 'presente' && <CheckCircle2 size={10} />}
-                        {(m.estado === 'justificado' || m.estado === 'justificada') && (
-                          <FileText size={10} />
-                        )}
-                        {m.estado === 'ausente' && <XCircle size={10} />}
-                        {!m.estado && <AlertCircle size={10} className="animate-bounce" />}
-                        {m.estado || 'PENDIENTE REGISTRO'}
-                      </div>
-                    </div>
-
-                    <div className="text-right flex flex-col items-end gap-1">
-                      {m.hora && (
-                        <span className="text-[10px] font-bold text-neutral-300 font-mono italic">
-                          {m.hora}
-                        </span>
-                      )}
-                      {m.suplemento && (
-                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-black uppercase rounded-md border border-purple-200 shadow-sm">
-                          {m.suplemento} cm
-                        </span>
-                      )}
-                    </div>
-                  </button>
+                  <CostaleroSlot key={m.id} member={m} onSelect={handleSelectCostalero} />
                 ))}
               </div>
             </div>

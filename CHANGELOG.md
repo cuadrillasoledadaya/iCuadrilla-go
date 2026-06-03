@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.14 (03/06/2026) - React.memo on List Components
+
+- **CostaleroCard (cuadrilla)**: memoized con React.memo + useCallback para selección
+- **CostaleroSlot (trabajaderas)**: memoized, evita re-render al cambiar estado de otro costalero
+- **CandidateItem (relevos)**: memoized en el modal de asignación (~80 items); helpers de asistencia movidos a nivel módulo (referencias estables)
+- **getAsistencia helpers**: movidas fuera del componente en relevos — borderColor, variant, label ahora son referencias estables
+
 ## v1.6.13 (03/06/2026) - Performance: Re-render Hotfixes
 
 - **page-header.tsx**: agregado `'use client'` faltante (usaba `useRouter` sin directive, funcionaba por herencia nomás)
