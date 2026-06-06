@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.20 (06/06/2026) - Iguala: alerta de costalero fuera de posición o con suplemento
+
+- **Icono de alerta en el bocadillo**: cada burbuja con costalero muestra un `AlertTriangle` rojo si está fuera de su posición principal (`puesto !== posicion`) o un `AlertCircle` ámbar si lleva suplemento
+- **Popup de información**: tocar el icono abre una card en la parte superior de la pantalla (z-60, encima del modal de asignación) con: nombre, posición principal, posición secundaria, suplemento y aviso si está fuera de su sitio
+- **Cerrar el popup**: botón X, tocar de nuevo el icono, o tocar el costalero (eso abre/cierra el modal de asignación como antes)
+- **Accesibilidad**: el bocadillo pasó de `<button>` a `<div role="button">` con soporte de teclado (Enter/Space) para poder anidar el botón del icono correctamente
+
 ## v1.6.19 (06/06/2026) - Iguala: modal de asignación más espacioso
 
 - **Modal más alto**: `max-h-[85vh]` → `max-h-[92vh]` — más espacio vertical en pantalla

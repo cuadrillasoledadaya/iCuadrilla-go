@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ChevronLeft, Search, UserPlus, Trash2, ArrowLeftRight } from 'lucide-react';
+import { ChevronLeft, Search, UserPlus, Trash2, ArrowLeftRight, AlertTriangle, AlertCircle, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { cn, getDisplayName } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -150,6 +150,96 @@ const getAsistenciaLabel = (estado: string) => {
   }
 };
 
+function CostaleroInfoCard({
+  info,
+  costalero,
+  releveData,
+  onClose,
+}: {
+  info: { t: number; p: number };
+  costalero: Costalero;
+  releveData?: Iguala;
+  onClose: () => void;
+}) {
+  const isOutOfPos =
+    costalero.puesto != null &&
+    costalero.puesto !== '' &&
+    Number(costalero.puesto) !== Number(info.p);
+  const suplementoVal = releveData?.suplemento ?? costalero.suplemento;
+  const hasSuplemento = suplementoVal != null && Number(suplementoVal) > 0;
+
+  return (
+    <div className="fixed top-4 left-0 right-0 z-[60] px-4 pointer-events-none">
+      <div className="bg-white rounded-2xl shadow-2xl border border-black/5 p-4 max-w-sm mx-auto pointer-events-auto animate-in slide-in-from-top duration-200">
+        <div className="flex items-start gap-3">
+          <div
+            className={cn(
+              'p-2 rounded-xl shrink-0',
+              isOutOfPos ? 'bg-red-100' : 'bg-amber-100'
+            )}
+          >
+            {isOutOfPos ? (
+              <AlertTriangle size={18} className="text-red-600" />
+            ) : (
+              <AlertCircle size={18} className="text-amber-600" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">
+              T-{info.t} • {releveData?.posicion_label || `Pos. ${info.p}`}
+            </p>
+            <p className="text-sm font-black text-neutral-900 tracking-tight truncate">
+              {getDisplayName(costalero)}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1 -m-1 text-neutral-400 hover:text-neutral-900 shrink-0"
+            aria-label="Cerrar"
+          >
+            <X size={16} />
+          </button>
+        </div>
+        <div className="mt-3 pt-3 border-t border-neutral-100 space-y-1.5">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+              Posición principal
+            </span>
+            <span className="text-xs font-black text-neutral-900">
+              {costalero.puesto || '-'}
+            </span>
+          </div>
+          {costalero.puesto_secundario && (
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                Posición secundaria
+              </span>
+              <span className="text-xs font-black text-neutral-900">
+                {costalero.puesto_secundario}
+              </span>
+            </div>
+          )}
+          {hasSuplemento && (
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                Suplemento
+              </span>
+              <span className="text-xs font-black text-amber-600">
+                +{suplementoVal} cm
+              </span>
+            </div>
+          )}
+          {isOutOfPos && (
+            <div className="mt-2 p-2 bg-red-50 rounded-lg text-[10px] font-bold text-red-700 leading-tight">
+              Asignado fuera de su posición principal. Idealmente debería ir en la posición {costalero.puesto}.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function GestionIguala() {
   const params = useParams();
   const router = useRouter();
@@ -163,6 +253,7 @@ export default function GestionIguala() {
   const [searchTerm, setSearchTerm] = useState('');
   const [assignmentSupplement, setAssignmentSupplement] = useState('');
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [infoBubble, setInfoBubble] = useState<{ t: number; p: number } | null>(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -279,6 +370,7 @@ export default function GestionIguala() {
   };
 
   const handlePosClick = async (t: number, p: number) => {
+    setInfoBubble(null);
     const costalero = getCostaleroAt(t, p);
 
     if (selectedPos) {
@@ -493,6 +585,16 @@ export default function GestionIguala() {
                   const isSelected = selectedPos?.t === t && selectedPos?.p === p;
                   const releveData = igualas.find((r) => r.trabajadera === t && r.posicion === p);
 
+                  const isOutOfPosition =
+                    !!costalero &&
+                    costalero.puesto != null &&
+                    costalero.puesto !== '' &&
+                    Number(costalero.puesto) !== Number(p);
+                  const suplementoVal = releveData?.suplemento ?? costalero?.suplemento;
+                  const hasSuplemento = suplementoVal != null && Number(suplementoVal) > 0;
+                  const showAlert = !!costalero && (isOutOfPosition || hasSuplemento);
+                  const showInfo = infoBubble?.t === t && infoBubble?.p === p;
+
                   const getAsistenciaBg = () => {
                     if (!costalero) return 'bg-neutral-50/50 border-dashed border-neutral-200';
                     if (isSelected) return 'border-primary bg-primary/5 shadow-lg scale-105 z-10';
@@ -509,15 +611,23 @@ export default function GestionIguala() {
                   };
 
                   return (
-                    <button
+                    <div
                       key={`${t}-${p}`}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handlePosClick(t, p)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handlePosClick(t, p);
+                        }
+                      }}
                       className={cn(
-                        'relative flex-1 min-w-[104px] p-2.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1 h-24 text-center overflow-hidden',
+                        'relative flex-1 min-w-[104px] p-2.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1 h-24 text-center overflow-hidden cursor-pointer',
                         getAsistenciaBg()
                       )}
                     >
-                      <span className="text-[10px] font-black uppercase tracking-wide text-neutral-900 w-full truncate leading-none">
+                      <span className="text-[10px] font-black uppercase tracking-wide text-neutral-900 w-full truncate leading-none pr-5">
                         {releveData?.posicion_label || `Pos. ${p}`}
                       </span>
                       <span
@@ -528,7 +638,30 @@ export default function GestionIguala() {
                       >
                         {costalero ? getDisplayName(costalero) : 'Asignar...'}
                       </span>
-                    </button>
+                      {showAlert && costalero && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setInfoBubble(showInfo ? null : { t, p });
+                          }}
+                          className={cn(
+                            'absolute top-1 right-1 p-1 rounded-full backdrop-blur-sm transition-all z-10',
+                            isOutOfPosition
+                              ? 'bg-red-100/90 hover:bg-red-200/90'
+                              : 'bg-amber-100/90 hover:bg-amber-200/90',
+                            showInfo && 'ring-2 ring-primary scale-110'
+                          )}
+                          aria-label="Ver información del costalero"
+                        >
+                          {isOutOfPosition ? (
+                            <AlertTriangle size={10} className="text-red-600" />
+                          ) : (
+                            <AlertCircle size={10} className="text-amber-600" />
+                          )}
+                        </button>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -650,6 +783,20 @@ export default function GestionIguala() {
           </div>
         </div>
       )}
+
+      {infoBubble && (() => {
+        const c = getCostaleroAt(infoBubble.t, infoBubble.p);
+        const rd = igualas.find((r) => r.trabajadera === infoBubble.t && r.posicion === infoBubble.p);
+        if (!c) return null;
+        return (
+          <CostaleroInfoCard
+            info={infoBubble}
+            costalero={c}
+            releveData={rd}
+            onClose={() => setInfoBubble(null)}
+          />
+        );
+      })()}
 
       {selectedPos && !showModal && (
         <div className="fixed bottom-6 right-6 z-40 w-full max-w-[340px]">
