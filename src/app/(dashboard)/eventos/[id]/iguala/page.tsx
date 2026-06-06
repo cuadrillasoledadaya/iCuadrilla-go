@@ -58,6 +58,26 @@ function getAvailablePositions(t: number): string[] {
   return t === 1 || t === TRABAJADERAS_COUNT ? POSICIONES_PATERAS : POSICIONES_CENTRO;
 }
 
+type UpsertIgualaResult = { error: unknown; migrationPending: boolean };
+
+async function safeUpsertIguala(
+  payload: Record<string, unknown>
+): Promise<UpsertIgualaResult> {
+  const result = await supabase
+    .from('relevos')
+    .upsert(payload, { onConflict: 'evento_id,trabajadera,posicion,muda_id' });
+
+  if (result.error && /posicion_label/i.test(result.error.message)) {
+    const { posicion_label: _omit, ...rest } = payload;
+    const fallback = await supabase
+      .from('relevos')
+      .upsert(rest, { onConflict: 'evento_id,trabajadera,posicion,muda_id' });
+    return { error: fallback.error, migrationPending: true };
+  }
+
+  return { error: result.error, migrationPending: false };
+}
+
 const CandidateItem = memo(function CandidateItem({
   costalero,
   onAssign,
@@ -342,26 +362,41 @@ export default function GestionIguala() {
         .eq('costalero_id', cid)
         .eq('muda_id', mudaId);
 
-      await supabase.from('relevos').upsert(
-        {
-          evento_id: params.id,
-          trabajadera: selectedPos.t,
-          posicion: selectedPos.p,
-          costalero_id: cid,
-          muda_id: mudaId,
-          suplemento: supplementVal,
-          posicion_label: selectedPosition,
-        },
-        { onConflict: 'evento_id,trabajadera,posicion,muda_id' }
-      );
+      const { error, migrationPending } = await safeUpsertIguala({
+        evento_id: params.id,
+        trabajadera: selectedPos.t,
+        posicion: selectedPos.p,
+        costalero_id: cid,
+        muda_id: mudaId,
+        suplemento: supplementVal,
+        posicion_label: selectedPosition,
+      });
+
+      if (error) {
+        toast.error('Error al asignar el costalero');
+        setLoading(false);
+        return;
+      }
+
+      if (migrationPending) {
+        toast.warning(
+          'Migración pendiente: aplicá el SQL para guardar la posición del costalero.'
+        );
+      }
     } else {
-      await supabase
+      const { error } = await supabase
         .from('relevos')
         .delete()
         .eq('evento_id', params.id)
         .eq('trabajadera', selectedPos.t)
         .eq('posicion', selectedPos.p)
         .eq('muda_id', mudaId);
+
+      if (error) {
+        toast.error('Error al vaciar el hueco');
+        setLoading(false);
+        return;
+      }
     }
 
     setShowModal(false);
