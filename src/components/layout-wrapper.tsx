@@ -15,8 +15,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     pathname === '/registro' ||
     pathname === '/nueva-contrasena' ||
     pathname === '/recuperar';
-  const isRelevos = pathname.includes('/relevos');
-  const showNavbar = !isAuthPage && !isRelevos;
+  const isIguala = pathname.includes('/iguala');
+  const showNavbar = !isAuthPage && !isIguala;
   const showSidebar = !isAuthPage;
 
   return (

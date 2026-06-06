@@ -20,6 +20,7 @@ import {
   X,
   Send,
   BarChart3,
+  MoreVertical,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,12 @@ import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/ui/page-header';
 import { useToast } from '@/components/ui/toast';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 
 interface Evento {
   id: string;
@@ -184,8 +191,8 @@ export default function DetalleEvento() {
       setAlreadyNotified(true);
       setShowAbsenceModal(false);
       fetchData();
-    } catch (error: any) {
-      toast.error('Error: ' + error.message);
+    } catch (error: unknown) {
+      toast.error('Error: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -234,10 +241,10 @@ export default function DetalleEvento() {
     ...(canManageEvents && evento
       ? [
           {
-            label: 'GESTIONAR RELEVOS',
+            label: 'GESTIONAR IGUALA',
             icon: Repeat,
             color: 'bg-amber-600 shadow-amber-200',
-            href: `/eventos/${params.id}/relevos`,
+            href: `/eventos/${params.id}/iguala`,
           },
           {
             label: 'MEDICIONES',
@@ -293,24 +300,30 @@ export default function DetalleEvento() {
       <PageHeader
         title={evento.titulo}
         back={{ onClick: () => router.back() }}
-        primaryAction={
-          canManageEvents
-            ? {
-                label: 'Editar',
-                icon: <Pencil size={20} />,
-                onClick: () => router.push(`/eventos/${params.id}/editar`),
-              }
-            : undefined
-        }
-        secondaryAction={
-          canManageEvents
-            ? {
-                label: 'Eliminar',
-                icon: <Trash2 size={20} />,
-                onClick: handleDelete,
-                variant: 'destructive',
-              }
-            : undefined
+        rightSlot={
+          canManageEvents ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Acciones"
+                  className="p-2 bg-white shadow-sm border border-black/5 rounded-xl text-neutral-600 hover:bg-neutral-50 transition-colors"
+                >
+                  <MoreVertical size={22} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={() => router.push(`/eventos/${params.id}/editar`)}>
+                  <Pencil size={16} className="mr-3 text-neutral-500" />
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                  <Trash2 size={16} className="mr-3 text-red-400" />
+                  Eliminar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : undefined
         }
       />
 
