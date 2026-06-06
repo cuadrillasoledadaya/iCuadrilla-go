@@ -30,10 +30,33 @@ interface Iguala {
   costalero_id: string | null;
   muda_id: string;
   suplemento?: number;
+  posicion_label?: string | null;
   costalero?: Costalero;
 }
 
 const TRABAJADERAS_COUNT = 7;
+
+const POSICIONES_PATERAS = [
+  'Patero Izq',
+  'Patero Der',
+  'Costero Izq',
+  'Costero Der',
+  'Fijador Izq',
+  'Fijador Der',
+  'Corriente',
+];
+
+const POSICIONES_CENTRO = [
+  'Costero Izq',
+  'Costero Der',
+  'Fijador Izq',
+  'Fijador Der',
+  'Corriente',
+];
+
+function getAvailablePositions(t: number): string[] {
+  return t === 1 || t === TRABAJADERAS_COUNT ? POSICIONES_PATERAS : POSICIONES_CENTRO;
+}
 
 const CandidateItem = memo(function CandidateItem({
   costalero,
@@ -119,6 +142,7 @@ export default function GestionIguala() {
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [assignmentSupplement, setAssignmentSupplement] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -299,7 +323,9 @@ export default function GestionIguala() {
       return;
     }
 
+    const existing = igualas.find((r) => r.trabajadera === t && r.posicion === p);
     setSelectedPos({ t, p });
+    setSelectedPosition(existing?.posicion_label ?? null);
   };
 
   const assignCostalero = async (cid: string | null) => {
@@ -324,6 +350,7 @@ export default function GestionIguala() {
           costalero_id: cid,
           muda_id: mudaId,
           suplemento: supplementVal,
+          posicion_label: selectedPosition,
         },
         { onConflict: 'evento_id,trabajadera,posicion,muda_id' }
       );
@@ -341,6 +368,7 @@ export default function GestionIguala() {
     setSelectedPos(null);
     setSearchTerm('');
     setAssignmentSupplement('');
+    setSelectedPosition(null);
     await fetchIgualas();
     setLoading(false);
   };
@@ -456,7 +484,7 @@ export default function GestionIguala() {
                     >
                       <div className="flex justify-between items-start">
                         <span className="text-[8px] font-black uppercase tracking-widest text-neutral-900">
-                          Pos. {p}
+                          {releveData?.posicion_label || `Pos. ${p}`}
                         </span>
                         <div className="flex flex-col items-end gap-1">
                           {costalero && (
@@ -497,6 +525,7 @@ export default function GestionIguala() {
           onClick={() => {
             setShowModal(false);
             setSelectedPos(null);
+            setSelectedPosition(null);
           }}
         >
           <div
@@ -511,7 +540,8 @@ export default function GestionIguala() {
                   : 'Asignar Costalero'}
               </h3>
               <p className="text-[10px] font-black text-neutral-900 uppercase tracking-widest">
-                Trabajadera {selectedPos?.t} • Pos. {selectedPos?.p}
+                Trabajadera {selectedPos?.t} •{' '}
+                {selectedPosition || `Pos. ${selectedPos?.p}`}
               </p>
             </div>
 
@@ -528,6 +558,43 @@ export default function GestionIguala() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+
+              {selectedPos && (
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1">
+                    Posición
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPosition(null)}
+                      className={cn(
+                        'px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all',
+                        selectedPosition === null
+                          ? 'bg-primary text-white shadow-md shadow-primary/20'
+                          : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                      )}
+                    >
+                      Ninguna
+                    </button>
+                    {getAvailablePositions(selectedPos.t).map((pos) => (
+                      <button
+                        key={pos}
+                        type="button"
+                        onClick={() => setSelectedPosition(pos)}
+                        className={cn(
+                          'px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all',
+                          selectedPosition === pos
+                            ? 'bg-primary text-white shadow-md shadow-primary/20'
+                            : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        )}
+                      >
+                        {pos}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-1">
                 <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1">
