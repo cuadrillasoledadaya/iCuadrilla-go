@@ -513,16 +513,16 @@ export default function GestionIguala() {
                       key={`${t}-${p}`}
                       onClick={() => handlePosClick(t, p)}
                       className={cn(
-                        'relative flex-1 min-w-[80px] p-2 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-0.5 h-20 text-center overflow-hidden',
+                        'relative flex-1 min-w-[92px] p-2 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-0.5 h-24 text-center overflow-hidden',
                         getAsistenciaBg()
                       )}
                     >
-                      <span className="text-[9px] font-black uppercase tracking-wider text-neutral-900 w-full truncate leading-none pr-6">
+                      <span className="text-[10px] font-black uppercase tracking-wide text-neutral-900 w-full truncate leading-none pr-5">
                         {releveData?.posicion_label || `Pos. ${p}`}
                       </span>
                       <span
                         className={cn(
-                          'font-black text-[11px] leading-tight w-full truncate',
+                          'font-black text-[12px] leading-tight w-full truncate',
                           costalero ? 'text-neutral-900' : 'text-neutral-300 font-medium'
                         )}
                       >
