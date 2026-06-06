@@ -513,38 +513,21 @@ export default function GestionIguala() {
                       key={`${t}-${p}`}
                       onClick={() => handlePosClick(t, p)}
                       className={cn(
-                        'relative flex-1 min-w-[92px] p-2 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-0.5 h-24 text-center overflow-hidden',
+                        'relative flex-1 min-w-[104px] p-2.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1 h-24 text-center overflow-hidden',
                         getAsistenciaBg()
                       )}
                     >
-                      <span className="text-[10px] font-black uppercase tracking-wide text-neutral-900 w-full truncate leading-none pr-5">
+                      <span className="text-[10px] font-black uppercase tracking-wide text-neutral-900 w-full truncate leading-none">
                         {releveData?.posicion_label || `Pos. ${p}`}
                       </span>
                       <span
                         className={cn(
-                          'font-black text-[12px] leading-tight w-full truncate',
+                          'font-black text-[13px] leading-tight w-full truncate',
                           costalero ? 'text-neutral-900' : 'text-neutral-300 font-medium'
                         )}
                       >
                         {costalero ? getDisplayName(costalero) : 'Asignar...'}
                       </span>
-                      {costalero && (
-                        <div className="absolute top-1 right-1 flex flex-col items-end gap-0.5 max-w-[60%]">
-                          {costalero.puesto && (
-                            <span className="text-[7px] font-black bg-neutral-900/5 text-neutral-900 px-1 rounded-full">
-                              {costalero.puesto}
-                            </span>
-                          )}
-                          {(releveData?.suplemento != null || costalero?.suplemento != null) && (
-                            <span className="text-[7px] font-black bg-primary/10 text-primary px-1 rounded-full">
-                              +{releveData?.suplemento ?? costalero?.suplemento}cm
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      {isSelected && (
-                        <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                      )}
                     </button>
                   );
                 })}

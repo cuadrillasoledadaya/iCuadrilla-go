@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.18 (06/06/2026) - Iguala: burbujas minimalistas (solo nombre + posición)
+
+- **Quitados los badges**: `puesto` y `suplemento` ya no se muestran dentro del globo (se ven en el modal si hace falta)
+- **Quitado el dot de selección**: el estado seleccionado se expresa solo con `border-primary` + `bg-primary/5` + `shadow-lg scale-105`
+- **Más espacio para el texto**: `min-w-[92px]` → `min-w-[104px]`, padding `p-2` → `p-2.5`, font del nombre `text-[12px]` → `text-[13px]`
+- **Removida la reserva `pr-5`**: ya no hay badge al que esquivar
+
 ## v1.6.17 (06/06/2026) - Iguala: burbujas un poco más grandes
 
 - **Bubble sizing**: `min-w-[80px]` → `min-w-[92px]`, `h-20` → `h-24` (96px alto) — más aire interno para el texto
