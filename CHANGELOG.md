@@ -1,5 +1,22 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.17 (06/06/2026) - Iguala: burbujas un poco más grandes
+
+- **Bubble sizing**: `min-w-[80px]` → `min-w-[92px]`, `h-20` → `h-24` (96px alto) — más aire interno para el texto
+- **Font size**: etiqueta de posición `text-[9px]` → `text-[10px]`, nombre `text-[11px]` → `text-[12px]`
+- **Letter spacing**: `tracking-wider` → `tracking-wide` en posición, `pr-6` → `pr-5` para liberar espacio al texto sin chocar con el badge
+
+## v1.6.16 (06/06/2026) - Iguala: layout centrado + truncado
+
+- **Bubble layout (Iguala)**: posición y nombre centrados en una sola línea con `truncate` (ellipsis en overflow)
+- **Badges reubicados**: `puesto` + `suplemento` movidos a `absolute top-1 right-1` (fuera del flujo horizontal) — ya no compiten con la etiqueta de posición
+- **Selection dot**: movido de `top-1 right-1` a `top-1 left-1` para no chocar con los badges
+- **Helpers nuevos**:
+  - `src/lib/date-utils.ts`: `formatDateShort`, `formatDateLong`, `formatDateDefault`, `formatTime`, `toISODate`
+  - `src/lib/logger.ts`: logger con `NEXT_PUBLIC_DEBUG` flag para no spammear consola en prod
+- **UI audit batch**: pulido de consistencia en dashboard, sidebar, page-header, useFetch, offline-utils
+- **Tests**: ajustes en `tests/validation.test.ts`
+
 ## v1.6.15 (03/06/2026) - Accesibilidad + Performance + Documentación
 
 - **Accesibilidad (10+ fixes)**: ARIA labels en icon-only buttons (modal, sidebar, password toggle, filter, back, delete, etc.), `role="alert"` en mensajes de feedback
