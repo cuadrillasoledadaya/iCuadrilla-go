@@ -3,7 +3,7 @@
 /**
  * Utility to save data to localStorage with a prefix.
  */
-export const saveToCache = (key: string, data: any) => {
+export const saveToCache = <T>(key: string, data: T) => {
   if (typeof window === 'undefined') return;
   try {
     const cacheData = {
@@ -42,10 +42,17 @@ export const getFromCache = <T>(key: string, maxAgeMs?: number): T | null => {
 /**
  * Synchronization Queue Interface
  */
+export interface AttendancePayload {
+  costalero_id: string;
+  evento_id: string;
+  estado?: string;
+  isDelete?: boolean;
+}
+
 export interface SyncAction {
   id: string;
   type: 'attendance_update';
-  payload: any;
+  payload: AttendancePayload;
   timestamp: number;
 }
 

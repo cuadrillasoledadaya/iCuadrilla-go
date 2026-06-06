@@ -30,7 +30,7 @@ describe('Puesto validation', () => {
 
   it('should reject empty puesto', () => {
     const puesto = '';
-    expect(puesto.length).toBeGreaterThanOrEqual(2);
+    expect(puesto.length).toBeLessThan(2);
   });
 
   it('should reject when puesto_secundario equals puesto', () => {

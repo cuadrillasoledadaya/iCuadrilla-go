@@ -94,8 +94,8 @@ export default function EditarEvento() {
       }
 
       router.push(`/eventos/${params.id}`);
-    } catch (err: any) {
-      toast.error(`Error inesperado: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Error inesperado: ${err instanceof Error ? err.message : 'Error desconocido'}`);
     } finally {
       setSaving(false);
     }

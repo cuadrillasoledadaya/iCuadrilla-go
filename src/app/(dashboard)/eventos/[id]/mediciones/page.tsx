@@ -152,8 +152,8 @@ export default function MedicionesPage() {
         ...prev,
         [costaleroId]: { ...medicion },
       }));
-    } catch (e: any) {
-      toast.error('Error al guardar: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Error al guardar: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     }
   };
 
@@ -184,9 +184,9 @@ export default function MedicionesPage() {
       }
 
       toast.success('¡Mediciones guardadas correctamente!');
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Error saving:', e);
-      toast.error('Error al guardar: ' + e.message);
+      toast.error('Error al guardar: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     } finally {
       setSaving(false);
     }

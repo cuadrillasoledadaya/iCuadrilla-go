@@ -1,6 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
+interface CostaleroRow {
+  nombre: string;
+  apellidos: string;
+  trabajadera: number;
+  puesto: string;
+  altura?: string | null;
+}
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { FileDown, Table, Users, BarChart3 } from 'lucide-react';
@@ -10,7 +18,7 @@ import 'jspdf-autotable';
 import { PageHeader } from '@/components/ui/page-header';
 
 export default function EstadisticasExport() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<CostaleroRow[]>([]);
 
   useEffect(() => {
     fetchData();

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import type { Evento } from '@/hooks/useEventos';
 import { CheckCircle2, XCircle, FileText, MoreVertical, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ interface Costalero {
 export default function AsistentesPage() {
   const params = useParams();
   const router = useRouter();
-  const [evento, setEvento] = useState<any>(null);
+  const [evento, setEvento] = useState<Evento | null>(null);
   const [asistentes, setAsistentes] = useState<Costalero[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCostalero, setSelectedCostalero] = useState<Costalero | null>(null);
@@ -31,7 +32,7 @@ export default function AsistentesPage() {
   useEffect(() => {
     const fetchData = async () => {
       // Cargar de caché
-      const cachedEvento = getFromCache<any>(`event_${params.id}_data`);
+      const cachedEvento = getFromCache<Evento>(`event_${params.id}_data`);
       const cachedAsistentes = getFromCache<Costalero[]>(`asistentes_list_${params.id}`);
 
       if (cachedEvento) setEvento(cachedEvento);
@@ -67,7 +68,7 @@ export default function AsistentesPage() {
         // 3. Filter Asistentes
         const filtered = allCostaleros
           .map((c) => {
-            const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
+            const asistencia = allAsistencias.find((a: { costalero_id: string }) => a.costalero_id === c.id);
             return {
               ...c,
               estado: asistencia?.estado || null,
@@ -102,7 +103,7 @@ export default function AsistentesPage() {
   const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
     if (!selectedCostalero || !evento) return;
 
-    const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+    const dbStatus: Costalero['estado'] = newStatus === 'justificado' ? 'justificada' : newStatus === 'delete' ? undefined : newStatus;
 
     // Optimistic Update
     let updatedAsistentes = [...asistentes];
@@ -110,7 +111,7 @@ export default function AsistentesPage() {
       updatedAsistentes = asistentes.filter((c) => c.id !== selectedCostalero.id);
     } else {
       updatedAsistentes = asistentes.map((c) =>
-        c.id === selectedCostalero.id ? { ...c, estado: dbStatus as any } : c
+        c.id === selectedCostalero.id ? { ...c, estado: dbStatus } : c
       );
     }
 
@@ -121,7 +122,7 @@ export default function AsistentesPage() {
     // Sync queue payload
     const actionPayload = {
       costalero_id: selectedCostalero.id,
-      evento_id: params.id,
+      evento_id: params.id as string,
       estado: dbStatus,
       isDelete: newStatus === 'delete',
     };
@@ -146,7 +147,7 @@ export default function AsistentesPage() {
         const { error } = await supabase.from('asistencias').upsert(
           {
             costalero_id: selectedCostalero.id,
-            evento_id: params.id,
+      evento_id: params.id as string,
             estado: dbStatus,
           },
           {

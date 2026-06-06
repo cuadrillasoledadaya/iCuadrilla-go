@@ -110,9 +110,10 @@ export default function AltaCostalero() {
       setNewCostaleroName(`${values.nombre} ${values.apellidos}`);
       setShowSuccessModal(true);
       reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Error desconocido';
       console.error(error);
-      setMessage(`Error: ${error.message}`);
+      setMessage(`Error: ${message}`);
     }
     setLoading(false);
   };

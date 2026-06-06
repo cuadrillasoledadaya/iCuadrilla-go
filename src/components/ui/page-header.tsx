@@ -54,6 +54,7 @@ export function PageHeader({
   };
 
   const showBack = Boolean(back);
+  const hasActions = Boolean(primaryAction || secondaryAction || rightSlot);
 
   if (variant === 'sticky') {
     return (
@@ -124,7 +125,7 @@ export function PageHeader({
           <BackButton onClick={handleBack} />
         </div>
       )}
-      <div className="text-center space-y-0.5 min-w-0 px-12">
+      <div className={cn('text-center space-y-0.5 min-w-0', hasActions ? 'px-12 pr-20' : 'px-12')}>
         {eyebrow && (
           <div className="text-[10px] font-black text-primary uppercase tracking-widest">
             {eyebrow}

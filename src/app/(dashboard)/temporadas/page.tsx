@@ -115,8 +115,8 @@ export default function GestionTemporadas() {
       );
       setNuevaTemporada('');
       refetch();
-    } catch (e: any) {
-      toast.error('Error al crear la temporada: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Error al crear la temporada: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     } finally {
       setCreating(false);
     }

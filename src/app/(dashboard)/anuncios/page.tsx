@@ -12,10 +12,17 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
+interface Anuncio {
+  id: string;
+  titulo: string;
+  contenido: string;
+  created_at: string;
+}
+
 export default function TablonAnuncios() {
   const router = useRouter();
   const toast = useToast();
-  const [anuncios, setAnuncios] = useState<any[]>([]);
+  const [anuncios, setAnuncios] = useState<Anuncio[]>([]);
   const [nuevo, setNuevo] = useState({ titulo: '', contenido: '' });
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);

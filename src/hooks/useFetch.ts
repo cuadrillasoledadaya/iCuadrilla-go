@@ -119,8 +119,9 @@ export function useFetch<T = unknown>(
     } finally {
       setLoading(false);
     }
-    // Stable deps: serialized strings ensure useCallback identity is stable
-    // across renders when filter/order values haven't actually changed.
+    // Intentionally serialized deps: JSON.stringify produces stable references
+    // across renders when filter/order objects are semantically equal, avoiding
+    // unnecessary re-creations without deep comparison overhead.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table, cacheKey, maxAgeMs, JSON.stringify(filters), JSON.stringify(orders), JSON.stringify(order)]);
 

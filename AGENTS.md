@@ -10,7 +10,7 @@ Guía compacta para agentes de IA que trabajan en este proyecto. Cada sección r
 |----------|-------|
 | Nombre | iCuadrilla PWA |
 | Stack | Next.js 14.2.35, React 18.3.1, TypeScript, Tailwind CSS, Supabase, Radix UI |
-| Versión | `MAJOR.MINOR.PATCH` (actual `1.6.14`) |
+| Versión | `MAJOR.MINOR.PATCH` (actual `1.6.15`) |
 | Package manager | **npm** (no yarn, no pnpm) |
 
 ---

@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useEventos, type Evento } from '@/hooks/useEventos';
 import { Spinner } from '@/components/ui/spinner';
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeVariant } from '@/components/ui/badge';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
 
@@ -84,7 +84,7 @@ export default function AgendaEventos() {
       e.ubicacion.toLowerCase().includes(search.toLowerCase())
   );
 
-  const getStatusStyle = (estado: string) => {
+  const getStatusStyle = (estado: string): BadgeVariant => {
     switch (estado) {
       case 'en-curso':
         return 'en-curso';
@@ -199,7 +199,7 @@ export default function AgendaEventos() {
                 <h3 className="text-xl font-black text-neutral-900 group-hover:text-primary transition-colors uppercase tracking-tight">
                   {e.titulo}
                 </h3>
-                <Badge variant={getStatusStyle(e.estado) as any} size="sm">
+                <Badge variant={getStatusStyle(e.estado)} size="sm">
                   {getStatusIcon(e.estado)}
                   {getStatusLabel(e.estado)}
                 </Badge>

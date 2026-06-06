@@ -13,7 +13,7 @@ export default function BajaCostalero() {
   const router = useRouter();
   const params = useParams();
   const toast = useToast();
-  const [costalero, setCostalero] = useState<any>(null);
+  const [costalero, setCostalero] = useState<{ id: string; nombre: string; apellidos: string; apodo?: string } | null>(null);
   const [motivo, setMotivo] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -71,8 +71,8 @@ export default function BajaCostalero() {
       toast.success('Baja tramitada correctamente.');
       router.push('/cuadrilla');
       router.refresh();
-    } catch (e: any) {
-      toast.error('Error: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Error: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     } finally {
       setSaving(false);
     }

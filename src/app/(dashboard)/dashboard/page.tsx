@@ -9,6 +9,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { saveToCache, getFromCache } from '@/lib/offline-utils';
+import { formatDateShort, formatTime, formatDateDefault, toISODate } from '@/lib/date-utils';
 import { Spinner } from '@/components/ui/spinner';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -22,6 +23,21 @@ interface Stats {
     presentes: number;
     porcentaje: number;
   };
+}
+
+interface Evento {
+  id: string;
+  titulo: string;
+  estado: string;
+  fecha_inicio: string;
+  fecha_fin: string | null;
+}
+
+interface Aviso {
+  id: string;
+  titulo: string;
+  contenido: string;
+  created_at: string;
 }
 
 export default function DashboardPage() {
@@ -43,8 +59,8 @@ export default function DashboardPage() {
     eventosPendientes: 0,
     asistencias: { total: 0, presentes: 0, porcentaje: 0 },
   });
-  const [proximosEventos, setProximosEventos] = useState<any[]>([]);
-  const [avisos, setAvisos] = useState<any[]>([]); // New State
+  const [proximosEventos, setProximosEventos] = useState<Evento[]>([]);
+  const [avisos, setAvisos] = useState<Aviso[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeSeasonName, setActiveSeasonName] = useState('');
@@ -85,8 +101,8 @@ export default function DashboardPage() {
       try {
         // Cargar de caché primero
         const cachedStats = getFromCache<Stats>('dashboard_stats');
-        const cachedProximos = getFromCache<any[]>('dashboard_eventos');
-        const cachedAvisos = getFromCache<any[]>('dashboard_avisos');
+        const cachedProximos = getFromCache<Evento[]>('dashboard_eventos');
+        const cachedAvisos = getFromCache<Aviso[]>('dashboard_avisos');
         const cachedSeason = getFromCache<string>('active_season');
         const cachedUser = getFromCache<string>('user_name');
 
@@ -138,6 +154,7 @@ export default function DashboardPage() {
 
         // 3. Parallel Fetch
         const now = new Date().toISOString();
+
         const notifPromises = [];
         if (isAdmin) {
           notifPromises.push(
@@ -374,7 +391,7 @@ export default function DashboardPage() {
               onScroll={() => handleCarouselScroll(carouselRef.current, setActiveIndex)}
               className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar"
             >
-              {proximosEventos.map((evento: any) => (
+              {proximosEventos.map((evento) => (
                 <div
                   key={evento.id}
                   className="snap-center shrink-0 w-[85%] bg-orange-50/50 border border-orange-100 p-6 rounded-[32px] shadow-sm flex flex-col justify-between min-h-[160px]"
@@ -397,24 +414,15 @@ export default function DashboardPage() {
 
                   <div className="flex items-center gap-3 pt-4 border-t border-orange-200/50 mt-4">
                     <span className="text-neutral-600 font-bold text-xs">
-                      {new Date(evento.fecha_inicio).toLocaleDateString('es-ES', {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
+                      {formatDateShort(evento.fecha_inicio)}
                     </span>
                     <div className="h-3 w-[1px] bg-neutral-300" />
                     <span className="text-neutral-900 font-black text-sm flex items-center">
-                      {new Date(evento.fecha_inicio).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                      {formatTime(evento.fecha_inicio)}
                       {evento.fecha_fin && (
                         <>
                           <span className="text-neutral-300 mx-1">-</span>
-                          {new Date(evento.fecha_fin).toLocaleTimeString('es-ES', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {formatTime(evento.fecha_fin)}
                         </>
                       )}
                     </span>
@@ -425,7 +433,7 @@ export default function DashboardPage() {
 
             {/* Interactive Dots Indicator */}
             <div className="flex justify-center gap-1.5">
-              {proximosEventos.map((_: any, idx: number) => (
+              {proximosEventos.map((_, idx) => (
                 <div
                   key={idx}
                   className={cn(
@@ -457,7 +465,7 @@ export default function DashboardPage() {
               onScroll={() => handleCarouselScroll(avisosCarouselRef.current, setActiveAvisoIndex)}
               className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 no-scrollbar"
             >
-              {avisos.map((aviso: any) => (
+              {avisos.map((aviso) => (
                 <div
                   key={aviso.id}
                   className="snap-center shrink-0 w-[85%] bg-white p-6 rounded-[32px] border border-black/5 shadow-sm space-y-3 flex flex-col min-h-[140px]"
@@ -474,7 +482,7 @@ export default function DashboardPage() {
                     {aviso.contenido}
                   </p>
                   <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider pt-2 border-t border-neutral-100">
-                    {new Date(aviso.created_at).toLocaleDateString()}
+                    {formatDateDefault(aviso.created_at)}
                   </p>
                 </div>
               ))}
@@ -482,7 +490,7 @@ export default function DashboardPage() {
 
             {/* Interactive Dots Indicator */}
             <div className="flex justify-center gap-1.5">
-              {avisos.map((_: any, idx: number) => (
+              {avisos.map((_, idx) => (
                 <div
                   key={idx}
                   className={cn(

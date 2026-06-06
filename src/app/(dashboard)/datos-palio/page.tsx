@@ -139,8 +139,8 @@ export default function DatosPalioPage() {
           return [...prev, { trabajadera, altura_cm: altura }];
         }
       });
-    } catch (e: any) {
-      toast.error('Error al guardar: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Error al guardar: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     }
   };
 

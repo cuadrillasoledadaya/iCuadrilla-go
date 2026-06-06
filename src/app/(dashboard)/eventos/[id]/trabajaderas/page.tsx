@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import type { Evento } from '@/hooks/useEventos';
 import { CheckCircle2, XCircle, FileText, Trash2, AlertCircle } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -135,7 +136,7 @@ export default function TrabajaderasAsistencia() {
         const allAsistencias = asistenciasRes.data || [];
 
         const fullCuadrilla = allCostaleros.map((c) => {
-          const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
+          const asistencia = allAsistencias.find((a: { costalero_id: string }) => a.costalero_id === c.id);
           return {
             ...c,
             estado: asistencia?.estado,
@@ -158,7 +159,7 @@ export default function TrabajaderasAsistencia() {
   const updateStatus = async (newStatus: 'presente' | 'justificado' | 'ausente' | 'delete') => {
     if (!selectedCostalero) return;
 
-    const dbStatus = newStatus === 'justificado' ? 'justificada' : newStatus;
+    const dbStatus: Costalero['estado'] = newStatus === 'justificado' ? 'justificada' : newStatus === 'delete' ? undefined : newStatus;
 
     // 1. Optimistic Update in State
     const updatedCuadrilla = cuadrilla.map((c) => {
@@ -166,7 +167,7 @@ export default function TrabajaderasAsistencia() {
         if (newStatus === 'delete') {
           return { ...c, estado: undefined, asistencia_id: undefined };
         }
-        return { ...c, estado: dbStatus as any };
+        return { ...c, estado: dbStatus };
       }
       return c;
     });
@@ -181,7 +182,7 @@ export default function TrabajaderasAsistencia() {
     // 3. Add to sync queue AND attempt DB update only if online
     const actionPayload = {
       costalero_id: selectedCostalero.id,
-      evento_id: params.id,
+      evento_id: params.id as string,
       estado: dbStatus,
       isDelete: newStatus === 'delete',
     };
@@ -208,7 +209,7 @@ export default function TrabajaderasAsistencia() {
         const { error } = await supabase.from('asistencias').upsert(
           {
             costalero_id: selectedCostalero.id,
-            evento_id: params.id,
+            evento_id: params.id as string,
             estado: dbStatus,
           },
           {

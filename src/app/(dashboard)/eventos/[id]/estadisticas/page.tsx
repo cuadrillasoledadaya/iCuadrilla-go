@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { supabase } from '@/lib/supabase';
+import type { Evento } from '@/hooks/useEventos';
 import {
   LayoutGrid,
   Activity,
@@ -43,7 +44,7 @@ function EstadisticasContent() {
   const router = useRouter();
   const { canManageEvents } = useUserRole();
   const [loading, setLoading] = useState(true);
-  const [evento, setEvento] = useState<any>(null);
+  const [evento, setEvento] = useState<Evento | null>(null);
   const [stats, setStats] = useState({
     presentes: 0,
     justificados: 0,

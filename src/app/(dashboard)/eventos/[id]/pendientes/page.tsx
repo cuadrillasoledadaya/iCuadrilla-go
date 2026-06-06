@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import type { Evento } from '@/hooks/useEventos';
 import { CheckCircle2, XCircle, FileText, MoreVertical, Clock } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,7 @@ export default function PendientesPage() {
   const params = useParams();
   const router = useRouter();
   const toast = useToast();
-  const [evento, setEvento] = useState<any>(null);
+  const [evento, setEvento] = useState<Evento | null>(null);
   const [pendientes, setPendientes] = useState<Costalero[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCostalero, setSelectedCostalero] = useState<Costalero | null>(null);
@@ -55,7 +56,7 @@ export default function PendientesPage() {
 
       // 3. Filter Pendientes (NO tiene registro en asistencias)
       const filtered = allCostaleros.filter((c) => {
-        const asistencia = allAsistencias.find((a: any) => a.costalero_id === c.id);
+        const asistencia = allAsistencias.find((a: { costalero_id: string }) => a.costalero_id === c.id);
         return !asistencia; // Si NO tiene asistencia, es pendiente.
       });
 

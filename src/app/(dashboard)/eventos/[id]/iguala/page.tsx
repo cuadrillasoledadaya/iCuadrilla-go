@@ -513,37 +513,37 @@ export default function GestionIguala() {
                       key={`${t}-${p}`}
                       onClick={() => handlePosClick(t, p)}
                       className={cn(
-                        'relative flex-1 min-w-[70px] p-2 rounded-2xl border-2 transition-all flex flex-col justify-between h-20 text-left',
+                        'relative flex-1 min-w-[80px] p-2 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-0.5 h-20 text-center overflow-hidden',
                         getAsistenciaBg()
                       )}
                     >
-                      <div className="flex justify-between items-start">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-neutral-900">
-                          {releveData?.posicion_label || `Pos. ${p}`}
-                        </span>
-                        <div className="flex flex-col items-end gap-1">
-                          {costalero && (
-                            <span className="text-[7px] font-black bg-neutral-900/5 text-neutral-900 px-1 py-0.5 rounded-full uppercase tracking-tighter">
-                              {costalero.puesto}
-                            </span>
-                          )}
-                          {(releveData?.suplemento != null || costalero?.suplemento != null) && (
-                            <span className="text-[8px] font-black bg-primary/10 text-primary px-1 py-0.5 rounded-full">
-                              +{releveData?.suplemento ?? costalero?.suplemento}cm
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-neutral-900 w-full truncate leading-none pr-6">
+                        {releveData?.posicion_label || `Pos. ${p}`}
+                      </span>
                       <span
                         className={cn(
-                          'font-black text-[10px] leading-tight line-clamp-2',
+                          'font-black text-[11px] leading-tight w-full truncate',
                           costalero ? 'text-neutral-900' : 'text-neutral-300 font-medium'
                         )}
                       >
                         {costalero ? getDisplayName(costalero) : 'Asignar...'}
                       </span>
+                      {costalero && (
+                        <div className="absolute top-1 right-1 flex flex-col items-end gap-0.5 max-w-[60%]">
+                          {costalero.puesto && (
+                            <span className="text-[7px] font-black bg-neutral-900/5 text-neutral-900 px-1 rounded-full">
+                              {costalero.puesto}
+                            </span>
+                          )}
+                          {(releveData?.suplemento != null || costalero?.suplemento != null) && (
+                            <span className="text-[7px] font-black bg-primary/10 text-primary px-1 rounded-full">
+                              +{releveData?.suplemento ?? costalero?.suplemento}cm
+                            </span>
+                          )}
+                        </div>
+                      )}
                       {isSelected && (
-                        <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                        <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                       )}
                     </button>
                   );

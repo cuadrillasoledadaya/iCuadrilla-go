@@ -24,6 +24,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
+import type { Temporada } from '@/hooks/useTemporadas';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -34,8 +35,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [temporadasList, setTemporadasList] = useState<any[]>([]);
-  const [activeSeason, setActiveSeason] = useState<any | null>(null);
+  const [temporadasList, setTemporadasList] = useState<Temporada[]>([]);
+  const [activeSeason, setActiveSeason] = useState<Temporada | null>(null);
   const [seasonsOpen, setSeasonsOpen] = useState(false);
   const [loadingSeasons, setLoadingSeasons] = useState(true);
 
@@ -63,7 +64,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         .order('created_at', { ascending: false });
       if (data) {
         setTemporadasList(data);
-        const active = data.find((t: any) => t.activa);
+        const active = data.find((t: Temporada) => t.activa);
         setActiveSeason(active || null);
       }
     } catch {
@@ -73,7 +74,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
   };
 
-  const handleSwitchSeason = async (season: any) => {
+  const handleSwitchSeason = async (season: Temporada) => {
     if (season.activa) {
       setSeasonsOpen(false);
       return;

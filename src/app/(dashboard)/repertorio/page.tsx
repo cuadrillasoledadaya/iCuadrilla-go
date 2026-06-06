@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
+import type { Temporada } from '@/hooks/useTemporadas';
 import { Spinner } from '@/components/ui/spinner';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -39,7 +40,7 @@ export default function RepertorioPage() {
   const { isAdmin, isMaster, loading: roleLoading } = useUserRole();
   const toast = useToast();
   const [repertorios, setRepertorios] = useState<Repertorio[]>([]);
-  const [temporadas, setTemporadas] = useState<any[]>([]);
+  const [temporadas, setTemporadas] = useState<Temporada[]>([]);
   const [selectedTemporada, setSelectedTemporada] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -127,9 +128,9 @@ export default function RepertorioPage() {
       setNewNombre('');
       setSelectedFile(null);
       await fetchRepertorios();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Error uploading:', e);
-      toast.error('Error al subir: ' + e.message);
+      toast.error('Error al subir: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     } finally {
       setUploading(false);
     }
@@ -161,8 +162,8 @@ export default function RepertorioPage() {
       if (dbError) throw dbError;
 
       setRepertorios((prev) => prev.filter((r) => r.id !== rep.id));
-    } catch (e: any) {
-      toast.error('Error al borrar: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Error al borrar: ' + (e instanceof Error ? e.message : 'Error desconocido'));
     }
   };
 

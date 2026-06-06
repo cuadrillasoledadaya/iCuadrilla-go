@@ -2,6 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+
+interface Profile {
+  id: string;
+  nombre: string;
+  apellidos: string;
+  apodo?: string;
+  trabajadera: number;
+  puesto: string;
+  puesto_secundario?: string;
+  email: string;
+  altura: string | null;
+  qr_code: string | null;
+}
 import { useUserRole } from '@/hooks/useUserRole';
 import { User, Ruler, MapPin, BadgeCheck, Mail } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -11,7 +24,7 @@ import { ErrorState } from '@/components/ui/error-state';
 
 export default function PerfilPage() {
   const { userId, isCostalero } = useUserRole();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
