@@ -1,5 +1,12 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.19 (06/06/2026) - Iguala: modal de asignación más espacioso
+
+- **Modal más alto**: `max-h-[85vh]` → `max-h-[92vh]` — más espacio vertical en pantalla
+- **Chips de posición en fila con scroll horizontal**: pasan de 3 filas wrappeadas a 1 fila scrollable, con `flex-shrink-0` y `whitespace-nowrap` en cada chip
+- **Input de suplemento más compacto**: `h-12` → `h-11`
+- **Más aire entre la lista y el botón "Dejar hueco vacío"**: `mt-2` añadido
+
 ## v1.6.18 (06/06/2026) - Iguala: burbujas minimalistas (solo nombre + posición)
 
 - **Quitados los badges**: `puesto` y `suplemento` ya no se muestran dentro del globo (se ven en el modal si hace falta)

@@ -547,7 +547,7 @@ export default function GestionIguala() {
           }}
         >
           <div
-            className="w-full max-w-sm bg-white rounded-t-[40px] p-8 pb-32 space-y-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] flex flex-col"
+            className="w-full max-w-sm bg-white rounded-t-[40px] p-8 pb-32 space-y-5 animate-in slide-in-from-bottom duration-300 max-h-[92vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center space-y-2">
@@ -582,12 +582,12 @@ export default function GestionIguala() {
                   <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1">
                     Posición
                   </label>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
                     <button
                       type="button"
                       onClick={() => setSelectedPosition(null)}
                       className={cn(
-                        'px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all',
+                        'flex-shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all',
                         selectedPosition === null
                           ? 'bg-primary text-white shadow-md shadow-primary/20'
                           : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
@@ -601,7 +601,7 @@ export default function GestionIguala() {
                         type="button"
                         onClick={() => setSelectedPosition(pos)}
                         className={cn(
-                          'px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all',
+                          'flex-shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all',
                           selectedPosition === pos
                             ? 'bg-primary text-white shadow-md shadow-primary/20'
                             : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
@@ -621,7 +621,7 @@ export default function GestionIguala() {
                 <Input
                   type="number"
                   placeholder="Ej: 2.5"
-                  className="h-12 bg-neutral-50 border-none rounded-2xl font-bold"
+                  className="h-11 bg-neutral-50 border-none rounded-2xl font-bold"
                   value={assignmentSupplement}
                   onChange={(e) => setAssignmentSupplement(e.target.value)}
                 />
@@ -642,7 +642,7 @@ export default function GestionIguala() {
 
             <Button
               variant="outline"
-              className="h-14 border-red-100 text-red-500 rounded-2xl font-black text-xs uppercase"
+              className="h-14 border-red-100 text-red-500 rounded-2xl font-black text-xs uppercase mt-2"
               onClick={() => assignCostalero(null)}
             >
               <Trash2 size={16} className="mr-2" /> Dejar hueco vacío
