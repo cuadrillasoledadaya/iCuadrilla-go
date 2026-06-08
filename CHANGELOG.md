@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.23 (08/06/2026) - API: columna puntuacion_total en tabla costaleros
+
+- **Migración DB**: añadida columna `puntuacion_total` (NUMERIC, default 0) a la tabla `costaleros` para persistir la puntuación acumulada.
+- **API `/api/costaleros`**: ahora devuelve el campo `puntuacion_total` directamente desde la base de datos, simplificando la respuesta y permitiendo que iRelevos consuma el dato persistente.
+- **Eliminada lógica de cálculo en API**: el cálculo en tiempo real se ha movido a la UI interna (`/eventos/[id]/puntuacion`), la API ahora solo lee la columna DB.
+
 ## v1.6.22 (08/06/2026) - Nueva sección Puntuación por evento
 
 - **Puntuación de asistencia**: nueva página dentro de cada evento que muestra la puntuación de todos los costaleros basada en su asistencia
