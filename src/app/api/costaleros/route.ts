@@ -6,6 +6,13 @@ import { rateLimit } from '@/lib/rate-limit';
 // Configurar el endpoint para no cachearse y servir datos en tiempo real
 export const dynamic = 'force-dynamic';
 
+function getAttendancePoints(estado: string | null): number {
+  if (!estado) return 0;
+  if (estado === 'presente') return 1;
+  if (estado === 'justificado' || estado === 'justificada') return 0.5;
+  return 0;
+}
+
 export async function GET(request: Request) {
   // 0. Rate limiting por IP
   const ip =
@@ -61,18 +68,63 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   // 5. Recuperar solo los datos solicitados (activos únicamente)
-  const { data, error } = await supabase
+  const { data: costalerosData, error: costalerosError } = await supabase
     .from('costaleros')
     .select('id, nombre, apellidos, apodo, trabajadera, puesto, puesto_secundario, email')
     .eq('estado', 'activo');
 
-  if (error) {
+  if (costalerosError) {
     return NextResponse.json(
-      { error: `Error al obtener datos: ${error.message}` },
+      { error: `Error al obtener datos: ${costalerosError.message}` },
       { status: 500 }
     );
   }
 
-  // 6. Devolver respuesta exitosa con los datos
-  return NextResponse.json(data, { status: 200 });
+  // 6. Calcular puntuación acumulada de la temporada activa
+  let puntuacionMap: Record<string, number> = {};
+
+  try {
+    // 6a. Obtener temporada activa
+    const { data: temporadaActiva } = await supabase
+      .from('temporadas')
+      .select('id')
+      .eq('activa', true)
+      .single();
+
+    if (temporadaActiva) {
+      // 6b. Obtener todos los eventos de la temporada
+      const { data: eventos } = await supabase
+        .from('eventos')
+        .select('id')
+        .eq('temporada_id', temporadaActiva.id);
+
+      if (eventos && eventos.length > 0) {
+        const eventIds = eventos.map((e) => e.id);
+
+        // 6c. Obtener todas las asistencias de esos eventos
+        const { data: asistencias } = await supabase
+          .from('asistencias')
+          .select('costalero_id, estado')
+          .in('evento_id', eventIds);
+
+        if (asistencias) {
+          // 6d. Calcular puntuación acumulada por costalero
+          puntuacionMap = asistencias.reduce<Record<string, number>>((acc, a) => {
+            acc[a.costalero_id] = (acc[a.costalero_id] || 0) + getAttendancePoints(a.estado);
+            return acc;
+          }, {});
+        }
+      }
+    }
+  } catch {
+    // Si falla el cálculo de puntuación, continuar sin ella (campo será 0)
+  }
+
+  // 7. Devolver respuesta exitosa con los datos incluyendo puntuación total
+  const responseData = (costalerosData || []).map((c) => ({
+    ...c,
+    puntuacion_total: puntuacionMap[c.id] || 0,
+  }));
+
+  return NextResponse.json(responseData, { status: 200 });
 }
