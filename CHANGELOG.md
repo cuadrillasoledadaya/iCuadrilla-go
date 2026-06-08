@@ -1,5 +1,10 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.21 (08/06/2026) - Iguala: fix alerta falsa de fuera de posición
+
+- **Fix en la comparación de posición**: la alerta de "fuera de posición" saltaba para TODOS los costaleros porque comparaba `Number(costalero.puesto)` (string como "Patero Der") contra `Number(p)` (número de posición). `Number("Patero Der")` es `NaN`, así que siempre era `true`.
+- **Comparación correcta**: ahora compara `releveData.posicion_label` (posición asignada, ej: "Patero Der") contra `costalero.puesto` (posición habitual, ej: "Patero Der"). Solo muestra la alerta cuando realmente difieren.
+
 ## v1.6.20 (06/06/2026) - Iguala: alerta de costalero fuera de posición o con suplemento
 
 - **Icono de alerta en el bocadillo**: cada burbuja con costalero muestra un `AlertTriangle` rojo si está fuera de su posición principal (`puesto !== posicion`) o un `AlertCircle` ámbar si lleva suplemento

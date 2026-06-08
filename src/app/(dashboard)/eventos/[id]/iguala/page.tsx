@@ -585,11 +585,13 @@ export default function GestionIguala() {
                   const isSelected = selectedPos?.t === t && selectedPos?.p === p;
                   const releveData = igualas.find((r) => r.trabajadera === t && r.posicion === p);
 
+                  const assignedPosition = releveData?.posicion_label;
                   const isOutOfPosition =
                     !!costalero &&
+                    !!assignedPosition &&
                     costalero.puesto != null &&
                     costalero.puesto !== '' &&
-                    Number(costalero.puesto) !== Number(p);
+                    assignedPosition !== costalero.puesto;
                   const suplementoVal = releveData?.suplemento ?? costalero?.suplemento;
                   const hasSuplemento = suplementoVal != null && Number(suplementoVal) > 0;
                   const showAlert = !!costalero && (isOutOfPosition || hasSuplemento);
