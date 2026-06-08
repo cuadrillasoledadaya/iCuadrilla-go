@@ -1,5 +1,14 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.22 (08/06/2026) - Nueva sección Puntuación por evento
+
+- **Puntuación de asistencia**: nueva página dentro de cada evento que muestra la puntuación de todos los costaleros basada en su asistencia
+- **Sistema de puntos**: Presente = 1 pt, Justificado = 0.5 pts, Ausente = 0 pts
+- **Doble columna**: puntuación del evento actual + puntuación acumulada de toda la temporada
+- **Agrupado por trabajaderas**: lista ordenada por trabajadera, luego por puntuación acumulada (desc), luego por apellido
+- **Búsqueda**: filtro por nombre/apodo de costalero
+- **Acceso**: botón "PUNTUACIÓN" en el grid de acciones del detalle de evento (solo admins/capataces)
+
 ## v1.6.21 (08/06/2026) - Iguala: fix alerta falsa de fuera de posición
 
 - **Fix en la comparación de posición**: la alerta de "fuera de posición" saltaba para TODOS los costaleros porque comparaba `Number(costalero.puesto)` (string como "Patero Der") contra `Number(p)` (número de posición). `Number("Patero Der")` es `NaN`, así que siempre era `true`.

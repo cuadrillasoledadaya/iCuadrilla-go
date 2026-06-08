@@ -21,6 +21,7 @@ import {
   Send,
   BarChart3,
   MoreVertical,
+  Trophy,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -245,6 +246,12 @@ export default function DetalleEvento() {
             icon: Repeat,
             color: 'bg-amber-600 shadow-amber-200',
             href: `/eventos/${params.id}/iguala`,
+          },
+          {
+            label: 'PUNTUACIÓN',
+            icon: Trophy,
+            color: 'bg-violet-600 shadow-violet-200',
+            href: `/eventos/${params.id}/puntuacion`,
           },
           {
             label: 'MEDICIONES',
