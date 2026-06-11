@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: 'iCuadrilla',
   },
   formatDetection: {
@@ -53,6 +53,12 @@ import { ToastProvider } from '@/components/ui/toast';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
+      <head>
+        <style>{`
+          /* Critical splash prevention - execute before CSS loads */
+          html, body { background: #0a0a0a !important; }
+        `}</style>
+      </head>
       <body className={inter.className}>
         <SessionTimeout />
         <OfflineBanner />
