@@ -6,15 +6,15 @@ export default function Home() {
     <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden landing-transition">
       {/* Background Effects */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05)_0%,transparent_50%)] pointer-events-none" />
-      <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[5000ms]" />
-      <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[6000ms]" />
+      <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[3000ms]" />
+      <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[3500ms]" />
 
       <div className="max-w-md w-full space-y-12 relative z-10 flex flex-col items-center">
         {/* Logo Section */}
         <div className="intro-logo relative group">
-          <div className="absolute inset-0 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all duration-[2000ms]" />
+          <div className="absolute inset-0 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all duration-700" />
           <div
-            className="relative w-48 h-48 sm:w-56 sm:h-56 transition-transform duration-[2000ms] ease-in-out group-hover:scale-105"
+            className="relative w-48 h-48 sm:w-56 sm:h-56 transition-transform duration-700 ease-in-out group-hover:scale-105"
             style={{
               maskImage: 'radial-gradient(circle, black 40%, transparent 80%)',
               WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 80%)',
