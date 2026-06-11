@@ -49,6 +49,7 @@ import { OfflineBanner } from '@/components/offline-banner';
 import { SyncProvider } from '@/components/sync-provider';
 import { SessionTimeout } from '@/components/session-timeout';
 import { ToastProvider } from '@/components/ui/toast';
+import { PwaInstallPrompt } from '@/components/pwa-install-prompt';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </ToastProvider>
           </LayoutProvider>
         </SyncProvider>
+        <PwaInstallPrompt />
         <ScrollToTopButton />
       </body>
     </html>
