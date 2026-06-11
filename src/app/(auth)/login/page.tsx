@@ -75,7 +75,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center space-y-4 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="relative w-32 h-32 drop-shadow-2xl">
             <Image
-              src="/icons/icon-512x512.png"
+              src="/icons/icon-512x512.jpg"
               alt="Escudo Hermandad"
               fill
               className="object-contain"

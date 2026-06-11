@@ -9,7 +9,7 @@ export default function Loading() {
       className="flex min-h-[100dvh] flex-col items-center justify-center bg-black transition-colors duration-300"
     >
       <div className="relative w-32 h-32 opacity-80">
-        <Image src="/escudo.png" alt="Escudo Hermandad" fill className="object-contain" priority />
+        <Image src="/escudo.jpg" alt="Escudo Hermandad" fill className="object-contain" priority />
       </div>
     </div>
   );

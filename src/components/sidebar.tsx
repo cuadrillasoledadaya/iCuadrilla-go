@@ -162,7 +162,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="relative mb-8 animate-pulse">
             <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full" />
             <div className="relative w-32 h-32 opacity-80">
-              <Image src="/escudo.png" alt="Escudo" fill className="object-contain" />
+              <Image src="/escudo.jpg" alt="Escudo" fill className="object-contain" />
             </div>
           </div>
           <div className="space-y-2">
