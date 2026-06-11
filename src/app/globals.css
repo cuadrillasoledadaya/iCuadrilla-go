@@ -58,6 +58,17 @@ body {
   color: #111111;
 }
 
+/* Ensure dark background during loading for landing page (prevents white flash on mobile PWA) */
+body:has(.landing-transition) {
+  background: #0a0a0a;
+  transition: background-color 300ms ease-out;
+}
+
+/* Fallback for browsers that don't support :has() */
+.landing-transition {
+  background: #0a0a0a;
+}
+
 @layer utilities {
   .glass {
     @apply bg-white/70 backdrop-blur-xl border border-black/5;

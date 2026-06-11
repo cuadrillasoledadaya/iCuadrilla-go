@@ -1,29 +1,9 @@
 import Link from 'next/link';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Image from 'next/image';
 
-export default async function Home() {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
+export default function Home() {
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden animate-in fade-in duration-[2000ms] ease-in-out">
+    <main className="flex min-h-[100dvh] flex-col items-center justify-center p-6 bg-black relative overflow-hidden landing-transition">
       {/* Background Effects */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05)_0%,transparent_50%)] pointer-events-none" />
       <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[5000ms]" />
