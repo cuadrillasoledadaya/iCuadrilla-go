@@ -75,7 +75,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center space-y-4 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="relative w-32 h-32 drop-shadow-2xl">
             <Image
-              src="/icons/icon-512x512.jpg"
+              src="/icons/icon-512x512.png"
               alt="Escudo Hermandad"
               fill
               className="object-contain"
@@ -152,7 +152,10 @@ export default function LoginPage() {
             </div>
 
             {message && (
-              <div role="alert" className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium">
+              <div
+                role="alert"
+                className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium"
+              >
                 <AlertCircle size={16} />
                 {message}
               </div>
@@ -160,7 +163,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              disabled={loading || (lockUntil > Date.now())}
+              disabled={loading || lockUntil > Date.now()}
               className="w-full h-14 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm uppercase tracking-widest shadow-lg shadow-emerald-900/20 transition-all active:scale-[0.98]"
             >
               {loading

@@ -21,7 +21,7 @@ export default function Home() {
             }}
           >
             <Image
-              src="/escudo.jpg"
+              src="/escudo.png"
               alt="Escudo Hermandad"
               fill
               className="object-contain drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]"

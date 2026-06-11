@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
   Home,
@@ -17,8 +17,6 @@ import {
   ChevronDown,
   X,
   Lock,
-  MoreVertical,
-  Trash2,
   Music,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -33,25 +31,30 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [temporadasList, setTemporadasList] = useState<Temporada[]>([]);
   const [activeSeason, setActiveSeason] = useState<Temporada | null>(null);
   const [seasonsOpen, setSeasonsOpen] = useState(false);
   const [loadingSeasons, setLoadingSeasons] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
+    const fetchSeasons = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) setUserEmail(user.email || null);
+        setLoadingSeasons(true);
+        const { data } = await supabase
+          .from('temporadas')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (data) {
+          setTemporadasList(data);
+          const active = data.find((t: Temporada) => t.activa);
+          setActiveSeason(active || null);
+        }
       } catch {
-        // Error getting user in sidebar — non-critical
+        // Error fetching seasons in sidebar — non-critical
+      } finally {
+        setLoadingSeasons(false);
       }
     };
-    getUser();
     fetchSeasons();
   }, []);
 
@@ -162,7 +165,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="relative mb-8 animate-pulse">
             <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full" />
             <div className="relative w-32 h-32 opacity-80">
-              <Image src="/escudo.jpg" alt="Escudo" fill className="object-contain" />
+              <Image src="/escudo.png" alt="Escudo" fill className="object-contain" />
             </div>
           </div>
           <div className="space-y-2">

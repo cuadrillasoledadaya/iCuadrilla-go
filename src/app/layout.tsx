@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/icons/icon-192x192.jpg', sizes: '192x192', type: 'image/jpeg' },
-      { url: '/icons/icon-512x512.jpg', sizes: '512x512', type: 'image/jpeg' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: [{ url: '/apple-touch-icon.jpg', sizes: '180x180', type: 'image/jpeg' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   appleWebApp: {
     capable: true,
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
     locale: 'es_ES',
     title: 'iCuadrilla - Gestión de Costaleros',
     description: 'La gestión de tu cuadrilla, en la palma de tu mano.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'iCuadrilla' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'iCuadrilla' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'iCuadrilla - Gestión de Costaleros',
     description: 'La gestión de tu cuadrilla, en la palma de tu mano.',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.png'],
   },
 };
 
