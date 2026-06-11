@@ -1,0 +1,18 @@
+# Build outputs
+.next/
+.swc/
+out/
+build/
+
+# Graphify outputs (don't re-index the index)
+graphify-out/
+
+# Dependencies
+node_modules/
+
+# Test coverage
+coverage/
+
+# Misc
+.DS_Store
+*.log
