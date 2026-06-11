@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: '#16a34a',
+  themeColor: '#0a0a0a',
 };
 
 import { LayoutProvider } from '@/components/layout-context';
