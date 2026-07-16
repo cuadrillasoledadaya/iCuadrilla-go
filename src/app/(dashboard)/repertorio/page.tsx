@@ -259,7 +259,7 @@ export default function RepertorioPage() {
 
                   <div className="flex items-center gap-2 ml-4">
                     <a
-                      href={rep.archivo_path}
+                      href={getFileUrl(rep.archivo_path)}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Abrir archivo"

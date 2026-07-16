@@ -1,5 +1,11 @@
 # Historial de Cambios - iCuadrilla
 
+## v1.6.25 (16/07/2026) - Fix: 404 al visualizar archivos de repertorio
+
+- **Bug crítico**: el enlace "Abrir archivo" en la página de Repertorio usaba `archivo_path` crudo en el `href`, lo que el navegador interpretaba como una ruta interna de Next.js (`/repertorios/<uuid>/<archivo>.pdf`) y respondía con 404.
+- **Fix**: el href ahora pasa por la función `getFileUrl(path)` (que ya existía en el archivo y usa `supabase.storage.from('repertorios').getPublicUrl(path)`) para construir la URL pública real del bucket.
+- **Bucket**: `repertorios` es público (confirmado por el patrón de runtime caching `*.supabase.co/storage/v1/object/public/*` en `next.config.js`), por lo que `getPublicUrl` devuelve una URL accesible directamente.
+
 ## v1.6.23 (08/06/2026) - API: columna puntuacion_total en tabla costaleros
 
 - **Migración DB**: añadida columna `puntuacion_total` (NUMERIC, default 0) a la tabla `costaleros` para persistir la puntuación acumulada.
